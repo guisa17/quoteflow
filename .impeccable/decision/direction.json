@@ -1,0 +1,148 @@
+{
+  "title": "Mundo visual de la consola QuoteFlow",
+  "question": "La tirada asignó el talonario de cotización con sello. Puedes quedarte con esa dirección, elegir una alternativa o volver a tirar.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Talonario autocopiativo y sello",
+      "kicker": "THE ROLL",
+      "lineage": "Talonarios de cotización por triplicado y sellos de goma de las oficinas comerciales de distribuidores",
+      "thesis": "Cada solicitud es un formulario numerado, y cada decisión humana queda como un sello de tinta con fecha y firma.",
+      "palette": ["#f7f4ec", "#1d2430", "#f2c94c", "#e7a3b4", "#2f5fd0", "#c2362b"],
+      "materials": ["papel autocopiativo blanco, canario y rosa", "tinta de sello azul y roja", "campos numerados con filete fino"],
+      "viewport": "Barra superior en azul tinta con la bandeja como lista de folios. Al abrir una solicitud, el formulario muestra el texto original arriba y las líneas cotizadas en tabla. El panel de decisión queda fijo a la derecha y el sello aparece sobre el total al decidir.",
+      "risk": "Si el papel se exagera, la consola parece una oficina retro y pierde velocidad de lectura.",
+      "raised": [
+        { "from": "challenger-folio", "raise": "La trazabilidad usa una tira registrada de 12 etapas, siempre en las mismas posiciones; las etapas no recorridas quedan atenuadas." },
+        { "from": "challenger-timetable", "raise": "En las tablas, el rango se marca con peso y mayúsculas, no con tamaño; cada pantalla tiene una sola placa invertida: la decisión pendiente." },
+        { "from": "challenger-feed", "raise": "Un caso pendiente ocupa el foco completo, y el siguiente pendiente está a una tecla (J/K)." }
+      ],
+      "wireframe": { "cols": 12, "rows": 10, "regions": [
+        { "label": "barra azul tinta + folios", "x": 0, "y": 0, "w": 12, "h": 1, "accent": true },
+        { "label": "texto original del cliente", "x": 0, "y": 1, "w": 8, "h": 2 },
+        { "label": "tira de 12 etapas", "x": 0, "y": 3, "w": 8, "h": 1 },
+        { "label": "líneas cotizadas + total", "x": 0, "y": 4, "w": 8, "h": 4 },
+        { "label": "auditoría", "x": 0, "y": 8, "w": 8, "h": 2 },
+        { "label": "decisión + sello", "x": 8, "y": 1, "w": 4, "h": 9, "accent": true }
+      ] }
+    },
+    {
+      "id": "model-pick",
+      "label": "Señalética de seguridad industrial",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Señales de seguridad ISO 7010 y ANSI Z535: palabras de señal, colores normalizados y pictogramas",
+      "thesis": "Cada resultado es una señal de seguridad: PELIGRO, ADVERTENCIA o PRECAUCIÓN, con su color normalizado y su motivo en una línea.",
+      "palette": ["#ffd100", "#111111", "#c8102e", "#00843d", "#0055a5", "#f2f2f2"],
+      "materials": ["placas esmaltadas", "franjas de seguridad", "pictogramas en marco"],
+      "viewport": "Bandeja en grafito con una banda de señal por fila. En el detalle, la placa del resultado encabeza la página, el motivo va debajo y las reglas disparadas aparecen como pictogramas.",
+      "risk": "Es la dirección más predecible para un producto industrial, y el amarillo con negro cansa en jornadas largas.",
+      "wireframe": { "cols": 12, "rows": 10, "regions": [
+        { "label": "barra grafito", "x": 0, "y": 0, "w": 12, "h": 1 },
+        { "label": "placa de señal del resultado", "x": 0, "y": 1, "w": 12, "h": 2, "accent": true },
+        { "label": "cotización", "x": 0, "y": 3, "w": 7, "h": 5 },
+        { "label": "reglas como pictogramas", "x": 7, "y": 3, "w": 5, "h": 5 },
+        { "label": "auditoría", "x": 0, "y": 8, "w": 12, "h": 2 }
+      ] }
+    },
+    {
+      "id": "challenger-wayfinding",
+      "label": "Señalización de aeropuerto",
+      "verdict": "competitive",
+      "lineage": "Sistema amarillo de señalización de terminal aérea",
+      "thesis": "El enrutamiento se lee como un recorrido: en cada punto de decisión se ve hacia dónde siguió la solicitud y por qué.",
+      "palette": ["#ffcc00", "#121212", "#ffffff", "#3a3a3a"],
+      "materials": ["bandas amarillas suspendidas", "pictogramas blancos sobre negro", "códigos monumentales"],
+      "viewport": "Banda amarilla fija arriba con el resultado y el siguiente paso; debajo, el recorrido de nodos como cadena de cruces y la cotización a la derecha.",
+      "case": "Hace muy clara la ruta de decisión, pero un operador comercial no reconoce su mundo en un aeropuerto.",
+      "risk": "El amarillo reservado para orientar choca con los colores de estado.",
+      "hero": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-terminal-yellow-wayfinding-hero.webp",
+      "wireframe": { "cols": 12, "rows": 10, "regions": [
+        { "label": "banda amarilla: resultado + siguiente paso", "x": 0, "y": 0, "w": 12, "h": 2, "accent": true },
+        { "label": "recorrido de decisiones", "x": 0, "y": 2, "w": 7, "h": 8 },
+        { "label": "cotización", "x": 7, "y": 2, "w": 5, "h": 8 }
+      ] }
+    },
+    {
+      "id": "challenger-folio",
+      "label": "Folio botánico por estaciones",
+      "verdict": "declined",
+      "lineage": "Láminas registradas de una planta a lo largo de sus etapas",
+      "thesis": "Una misma escala para todas las etapas, para comparar a simple vista.",
+      "palette": ["#f3ecd9", "#5b6b3a", "#b3261e", "#6d6d6d"],
+      "materials": ["láminas crema", "filetes sepia"],
+      "viewport": "Etapas alineadas sobre una misma línea base.",
+      "case": "Pierde en ambos ejes: nadie del mundo comercial se reconoce en una lámina botánica.",
+      "kept": "Etapas registradas en posiciones fijas, que se usan en la tira de trazabilidad.",
+      "risk": "Se lee como decoración editorial.",
+      "hero": "https://impeccable.style/worlds/cards/editorial-sequence-montage-botanical-folio-season-hero.webp"
+    },
+    {
+      "id": "challenger-timetable",
+      "label": "Horario de aerolínea en cristal",
+      "verdict": "declined",
+      "lineage": "Horario de bolsillo de 1971 sobre mesa de luz",
+      "thesis": "Un solo tamaño de letra; el rango lo dan el peso, las mayúsculas y la inversión.",
+      "palette": ["#d9a400", "#2b2f36", "#f1ead3", "#c0392b"],
+      "materials": ["cristal tintado", "cartulina dorada"],
+      "viewport": "Una fila continua de diapositivas inclinadas.",
+      "case": "Pierde en ambos ejes: la inclinación y la luz entorpecen la lectura.",
+      "kept": "El rango por peso y caja en las tablas, y una única placa invertida por pantalla.",
+      "risk": "Ilegible en uso diario.",
+      "hero": "https://impeccable.style/worlds/cards/rw-timetable-slide-rack-hero.webp"
+    },
+    {
+      "id": "challenger-feed",
+      "label": "Feed vertical a pantalla completa",
+      "verdict": "declined",
+      "lineage": "Feeds de video vertical",
+      "thesis": "Un elemento ocupa todo el foco y el siguiente espera a un gesto.",
+      "palette": ["#000000", "#ffffff"],
+      "materials": ["video a sangre", "riel de íconos"],
+      "viewport": "Un caso a la vez, con el siguiente precargado.",
+      "case": "Pierde en ambos ejes: destruye la densidad de la bandeja.",
+      "kept": "Foco completo en el pendiente y el siguiente a una tecla.",
+      "risk": "Imposible de escanear.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-vertical-video-feed-surface-hero.webp"
+    },
+    {
+      "id": "challenger-bitmap",
+      "label": "Espécimen tipográfico bitmap",
+      "verdict": "declined",
+      "lineage": "Especímenes Emigre",
+      "thesis": "Una misma forma repetida en varios tamaños.",
+      "palette": ["#ffffff", "#000000", "#ff3b00"],
+      "materials": ["píxel visible", "trama de puntos"],
+      "viewport": "Titular pixelado sobre columnas densas.",
+      "case": "Pierde en ambos ejes: no aporta nada al flujo de cotización.",
+      "kept": "El código del resultado se mantiene igual en todas sus escalas: contador, fila y placa.",
+      "risk": "Ruido visual.",
+      "hero": "https://impeccable.style/worlds/cards/emigre-bitmap-specimen-hero.webp"
+    },
+    {
+      "id": "challenger-datamatics",
+      "label": "Campo de datos en blanco y negro",
+      "verdict": "declined",
+      "lineage": "Instalaciones datamatics",
+      "thesis": "Solo blanco y negro, con una inversión total ocasional.",
+      "palette": ["#000000", "#ffffff"],
+      "materials": ["barras finas", "cifras monoespaciadas"],
+      "viewport": "Muros de código de barras.",
+      "case": "Pierde en ambos ejes: el estado necesita color además de forma.",
+      "kept": "Cifras monoespaciadas en columnas tabulares exactas.",
+      "risk": "Agresivo e ilegible para un operador.",
+      "hero": "https://impeccable.style/worlds/cards/ikeda-datamatics-hero.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "code", "toggle": false },
+  "canon": true,
+  "canonCard": {
+    "label": "El estándar de la categoría",
+    "thesis": "Una consola B2B limpia al estilo de Linear o Attio, ejecutada con todo el oficio.",
+    "palette": ["#ffffff", "#0f172a", "#4f46e5", "#f1f5f9"],
+    "materials": ["grilla limpia", "insignias de estado", "barra lateral"],
+    "viewport": "Barra lateral, tabla de solicitudes con insignias y detalle en dos columnas.",
+    "risk": "Por diseño, no se distingue de la competencia."
+  },
+  "steer": true
+}

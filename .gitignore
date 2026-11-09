@@ -36,3 +36,7 @@ desktop.ini
 
 # Material de trabajo personal: nunca se versiona
 _local/
+
+# Artefactos locales de revisión de diseño
+.impeccable/review/
+.impeccable/questions/

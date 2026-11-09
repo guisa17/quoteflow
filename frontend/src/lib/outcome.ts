@@ -1,38 +1,67 @@
-import type { Outcome, ReasonCode } from '@/types/api'
-import type { BadgeProps } from '@/components/ui/badge'
+import { CircleCheck, CircleHelp, CircleSlash, Clock3, OctagonX, type LucideIcon } from 'lucide-react'
 
-/** Etiqueta y color semántico de cada uno de los cinco resultados
- * terminales (REQUIREMENTS.md §1, §3 RF-09). Un solo lugar para esta
- * traducción -- la bandeja y el detalle la comparten. */
+import type { Outcome, ReasonCode } from '@/types/api'
+
+export type Tint = 'canary' | 'pink' | 'green' | 'sky' | 'red'
+
+/** Cada resultado se lee como una copia del talonario: un tinte de papel,
+ * su tinta, un ícono y una etiqueta. El color nunca va solo. */
 export const OUTCOME_META: Record<
   Outcome,
-  { label: string; variant: NonNullable<BadgeProps['variant']>; description: string }
+  { label: string; short: string; tint: Tint; icon: LucideIcon; description: string }
 > = {
-  DRAFT_READY: {
-    label: 'Borrador listo',
-    variant: 'success',
-    description: 'Cotización calculada dentro de política; borrador emitido.',
+  PENDING_APPROVAL: {
+    label: 'Pendiente de aprobación',
+    short: 'Pendientes',
+    tint: 'canary',
+    icon: Clock3,
+    description: 'Espera una decisión humana antes de continuar.',
   },
   NEEDS_CLARIFICATION: {
     label: 'Necesita aclaración',
-    variant: 'warning',
-    description: 'Falta información esencial para poder cotizar (BR-10).',
+    short: 'Aclaración',
+    tint: 'sky',
+    icon: CircleHelp,
+    description: 'Falta información esencial para poder cotizar.',
   },
-  PENDING_APPROVAL: {
-    label: 'Pendiente de aprobación',
-    variant: 'accent',
-    description: 'Requiere una decisión humana antes de continuar (BR-05/06/08).',
+  DRAFT_READY: {
+    label: 'Borrador listo',
+    short: 'Listas',
+    tint: 'green',
+    icon: CircleCheck,
+    description: 'Cotización dentro de política, borrador preparado.',
   },
   BLOCKED: {
     label: 'Detenida',
-    variant: 'destructive',
-    description: 'SKU inexistente o stock insuficiente (BR-12/13).',
+    short: 'Detenidas',
+    tint: 'pink',
+    icon: CircleSlash,
+    description: 'SKU inexistente o stock insuficiente.',
   },
   REJECTED_BY_POLICY: {
-    label: 'Rechazada por política',
-    variant: 'destructive',
-    description: 'Descuento por encima del techo duro, o rechazo humano (BR-07/14).',
+    label: 'Rechazada',
+    short: 'Rechazadas',
+    tint: 'red',
+    icon: OctagonX,
+    description: 'Descuento sobre el techo duro, o rechazo humano.',
   },
+}
+
+/** Orden de la bandeja: primero lo que pide atención. */
+export const OUTCOME_ORDER: Outcome[] = [
+  'PENDING_APPROVAL',
+  'NEEDS_CLARIFICATION',
+  'DRAFT_READY',
+  'BLOCKED',
+  'REJECTED_BY_POLICY',
+]
+
+export const TINT_CLASSES: Record<Tint, { surface: string; ink: string; dot: string }> = {
+  canary: { surface: 'bg-canary', ink: 'text-canary-ink', dot: 'bg-canary-ink' },
+  pink: { surface: 'bg-pink', ink: 'text-pink-ink', dot: 'bg-pink-ink' },
+  green: { surface: 'bg-green', ink: 'text-green-ink', dot: 'bg-green-ink' },
+  sky: { surface: 'bg-sky', ink: 'text-sky-ink', dot: 'bg-sky-ink' },
+  red: { surface: 'bg-red', ink: 'text-red-ink', dot: 'bg-red-ink' },
 }
 
 export const REASON_LABELS: Record<ReasonCode, string> = {
@@ -45,4 +74,19 @@ export const REASON_LABELS: Record<ReasonCode, string> = {
   UNKNOWN_CUSTOMER: 'Cliente desconocido',
   DISCOUNT_ABOVE_HARD_CEILING: 'Descuento sobre el techo duro',
   EXTRACTION_FAILED: 'Fallo de extracción',
+}
+
+/** Qué hacer a continuación, por resultado: la línea que el operador lee primero. */
+export const NEXT_STEP: Record<Outcome, string> = {
+  PENDING_APPROVAL: 'Revisa los motivos y decide: aprobar, rechazar u observar.',
+  NEEDS_CLARIFICATION: 'Pide al cliente el dato que falta y registra una solicitud nueva.',
+  DRAFT_READY: 'Revisa el borrador y envíalo por tu canal habitual. QuoteFlow no envía nada.',
+  BLOCKED: 'Corrige el SKU o la cantidad con el cliente; no se cotizó nada parcialmente.',
+  REJECTED_BY_POLICY: 'El caso está cerrado. Una nueva condición requiere una solicitud nueva.',
+}
+
+/** Número de folio mostrado: derivado del id, nunca inventado. */
+export function folioNumber(id: string): string {
+  const compact = id.replace(/[^a-zA-Z0-9]/g, '')
+  return compact.slice(-6).toUpperCase()
 }

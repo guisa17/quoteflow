@@ -1,62 +1,80 @@
-import { Inbox, PlusCircle } from 'lucide-react'
+import { Monitor, Moon, Plus, Sun } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 
+import { API_MODE } from '@/lib/config'
+import { useTheme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
-function navLinkClass({ isActive }: { isActive: boolean }) {
+const THEME_META = {
+  system: { icon: Monitor, label: 'Tema: sistema' },
+  light: { icon: Sun, label: 'Tema: claro' },
+  dark: { icon: Moon, label: 'Tema: oscuro' },
+} as const
+
+function navClass({ isActive }: { isActive: boolean }) {
   return cn(
-    'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors',
+    'relative flex h-12 items-center px-3 text-sm font-medium transition-colors',
+    'after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:transition-colors',
     isActive
-      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
+      ? 'text-bar-ink after:bg-bar-ink'
+      : 'text-bar-ink-soft hover:text-bar-ink after:bg-transparent',
   )
 }
 
-/**
- * Barra superior delgada + panel de contenido, en vez del sidebar de app
- * multi-módulo de un producto más grande: QuoteFlow tiene tres destinos
- * (bandeja, nueva solicitud, detalle), no una familia de módulos que
- * justifique una barra lateral permanente (PROJECT.md §2.3, alcance
- * modesto). El panel flota sobre el canvas con hairline, mismo principio
- * de profundidad por borde que el resto de la app: nunca sombra.
- */
+/** Barra de tinta azul con la marca, la navegación y el tema. Debajo, el
+ * escritorio sobre el que se apoyan los folios. */
 export function AppShell() {
+  const { choice, cycle } = useTheme()
+  const ThemeIcon = THEME_META[choice].icon
+
   return (
-    <div className="bg-canvas text-foreground flex h-screen flex-col overflow-hidden">
-      <header className="border-sidebar-border bg-sidebar shrink-0 border-b">
-        <div className="mx-auto flex h-12 max-w-7xl items-center gap-4 px-4">
-          <NavLink to="/" className="flex items-center gap-2">
+    <div className="bg-desk text-ink flex min-h-dvh flex-col">
+      <header className="bg-bar text-bar-ink sticky top-0 z-30">
+        <div className="mx-auto flex h-12 max-w-[88rem] items-center gap-2 px-4 sm:px-6">
+          <NavLink to="/" className="mr-3 flex items-center gap-2" aria-label="QuoteFlow, ir a la bandeja">
             <span
               aria-hidden
-              className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold"
+              className="border-bar-ink/70 font-figures flex h-6 items-center rounded-[3px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
             >
-              Q
+              QF
             </span>
-            <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
-              QuoteFlow
-            </span>
+            <span className="condensed text-[0.9375rem] font-semibold tracking-tight">QuoteFlow</span>
           </NavLink>
 
-          <nav aria-label="Navegación principal" className="flex items-center gap-1">
-            <NavLink to="/" end className={navLinkClass}>
-              <Inbox aria-hidden className="size-4 stroke-[1.5]" />
+          <nav aria-label="Navegación principal" className="flex items-center">
+            <NavLink to="/" end className={navClass}>
               Bandeja
             </NavLink>
           </nav>
 
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1.5">
+            {API_MODE === 'mock' && (
+              <span className="text-bar-ink-soft hidden text-xs md:inline">
+                Demo con datos ficticios · Ferrocima Industrial
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={cycle}
+              aria-label={`${THEME_META[choice].label}. Cambiar tema`}
+              title={THEME_META[choice].label}
+              className="text-bar-ink-soft hover:text-bar-ink hover:bg-bar-ink/10 flex size-8 items-center justify-center rounded-md transition-colors"
+            >
+              <ThemeIcon aria-hidden className="size-4" />
+            </button>
             <NavLink
               to="/new"
-              className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors"
+              className="bg-bar-ink text-bar hover:bg-bar-ink/90 inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors"
             >
-              <PlusCircle aria-hidden className="size-4" />
-              Nueva solicitud
+              <Plus aria-hidden className="size-4 stroke-[2.5]" />
+              <span className="sm:hidden">Nueva</span>
+              <span className="hidden sm:inline">Registrar solicitud</span>
             </NavLink>
           </div>
         </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>

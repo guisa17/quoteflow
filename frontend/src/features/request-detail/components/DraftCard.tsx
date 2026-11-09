@@ -1,39 +1,40 @@
-import { Copy } from 'lucide-react'
+import { Check, Copy } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-
-/** RF-09.5 — ver el borrador final cuando `outcome = DRAFT_READY`. Texto
- * plano generado por plantilla determinista (ADR-002 regla 5: la redacción
- * no introduce cifras que el dominio no haya calculado ya). */
+/** El borrador listo para enviar por el canal del operador. Lo arma una
+ * plantilla con cifras ya calculadas; QuoteFlow no envía nada al cliente. */
 export function DraftCard({ draftText }: { draftText: string }) {
+  const [copied, setCopied] = useState(false)
+
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(draftText)
-      toast.success('Borrador copiado al portapapeles.')
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
     } catch {
-      toast.error('No se pudo copiar. Selecciona el texto manualmente.')
+      toast.error('No se pudo copiar. Selecciona el texto y cópialo a mano.')
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Borrador</CardTitle>
-        <CardDescription>Listo para revisión — el MVP prepara borradores, no envía nada al cliente.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <pre className="bg-muted/60 font-figures max-h-96 overflow-auto rounded-md p-4 text-xs whitespace-pre-wrap">
-          {draftText}
-        </pre>
-      </CardContent>
-      <CardFooter>
-        <Button variant="outline" size="sm" onClick={handleCopy}>
-          <Copy aria-hidden />
-          Copiar
-        </Button>
-      </CardFooter>
-    </Card>
+    <section aria-labelledby="draft-title">
+      <div className="flex items-center justify-between">
+        <h2 id="draft-title" className="field-label">
+          Borrador para el cliente
+        </h2>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="text-ink-soft hover:text-ink inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-semibold transition-colors"
+        >
+          {copied ? <Check aria-hidden className="size-3.5" /> : <Copy aria-hidden className="size-3.5" />}
+          {copied ? 'Copiado' : 'Copiar texto'}
+        </button>
+      </div>
+      <pre className="bg-green/50 border-rule-strong font-figures mt-2 max-h-96 overflow-auto rounded-sm border p-4 text-[0.8125rem] leading-relaxed whitespace-pre-wrap">
+        {draftText}
+      </pre>
+    </section>
   )
 }
