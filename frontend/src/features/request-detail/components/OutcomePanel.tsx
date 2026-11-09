@@ -20,7 +20,7 @@ export function OutcomePanel({
   const Icon = meta.icon
   return (
     <section aria-labelledby="outcome-title" className={cn('rounded-md p-4', tint.surface, tint.ink)}>
-      <h2 id="outcome-title" className="condensed flex items-center gap-2 text-lg font-bold tracking-tight">
+      <h2 id="outcome-title" className="flex items-center gap-2 text-lg font-bold tracking-[-0.01em]">
         <Icon aria-hidden className="size-5 stroke-[2.25]" />
         {meta.label}
       </h2>

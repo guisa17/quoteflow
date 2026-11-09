@@ -61,7 +61,7 @@ export function InboxPage() {
     <div className="mx-auto max-w-[88rem] px-4 pt-6 pb-16 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div>
-          <h1 className="condensed text-2xl font-semibold tracking-tight">Bandeja</h1>
+          <h1 className="type-title">Bandeja</h1>
           <p className="text-ink-soft mt-1 text-sm">
             {isPending
               ? 'Cargando folios…'
@@ -218,7 +218,7 @@ export function InboxPage() {
                       </span>
                       <span className="font-figures text-ink-faint text-xs">{r.customer_id}</span>
                     </td>
-                    <td className="font-figures hidden py-2.5 pl-3 align-top text-[0.8125rem] md:table-cell">
+                    <td className="font-figures hidden py-2.5 pl-3 align-top md:table-cell">
                       {r.summary}
                     </td>
                     <td className="py-2.5 pl-3 align-top">

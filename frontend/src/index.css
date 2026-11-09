@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource/jetbrains-mono/latin-400.css';
 @import '@fontsource/jetbrains-mono/latin-500.css';
-@import '@fontsource/jetbrains-mono/latin-600.css';
 
 /* ── QuoteFlow — talonario autocopiativo y sello ─────────────────────
    Cada solicitud es un folio numerado; cada decisión humana, un sello.
@@ -136,8 +134,13 @@
 
   --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
-  --text-sm: 0.8125rem;
-  --text-sm--line-height: 1.25rem;
+  /* Escala de roles: meta 12 · cuerpo 14 · lectura 16 · título 26 */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6rem;
 
   --color-desk: var(--qf-desk);
   --color-paper: var(--qf-paper);
@@ -215,7 +218,8 @@
     background-color: var(--qf-desk);
     color: var(--qf-ink);
     font-family: var(--font-sans);
-    font-stretch: 96%;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -247,24 +251,37 @@
 }
 
 @layer utilities {
-  /* Cifras, SKU y folios: monoespaciada tabular, para alinear dígito a dígito. */
+  /* Cifras, SKU y folios: la misma Archivo con cifras tabulares, para que
+     las columnas alineen dígito a dígito sin cambiar de voz. */
   .font-figures {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Código literal (nombres de nodos del grafo): única función de la mono. */
+  .font-code {
     font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums slashed-zero;
+    font-weight: 500;
     letter-spacing: -0.01em;
+  }
+  /* Título de página y de folio. */
+  .type-title {
+    font-size: 1.625rem;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
   /* Rótulo de campo del formulario impreso. */
   .field-label {
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1rem;
     font-weight: 600;
-    font-stretch: 82%;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.055em;
     text-transform: uppercase;
     color: var(--qf-ink-soft);
   }
+  /* Solo el sello: la palabra de goma, angosta y espaciada. */
   .condensed {
-    font-stretch: 80%;
+    font-stretch: 78%;
   }
 }
 

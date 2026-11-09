@@ -25,27 +25,39 @@ colors:
 typography:
   title:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.5rem"
+    fontSize: "1.625rem"
     fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "-0.025em"
+    lineHeight: 1.15
+    letterSpacing: "-0.02em"
+  reading:
+    fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: "normal"
   body:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.8125rem"
+    fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: 1.54
+    lineHeight: 1.57
     letterSpacing: "normal"
   field-label:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.6875rem"
+    fontSize: "0.75rem"
     fontWeight: 600
-    lineHeight: 1.45
-    letterSpacing: "0.07em"
-  figures:
-    fontFamily: "JetBrains Mono, ui-monospace, monospace"
-    fontSize: "0.8125rem"
+    lineHeight: 1.33
+    letterSpacing: "0.055em"
+  meta:
+    fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.75rem"
     fontWeight: 400
-    lineHeight: 1.54
+    lineHeight: 1.47
+    letterSpacing: "normal"
+  code:
+    fontFamily: "JetBrains Mono, ui-monospace, monospace"
+    fontSize: "0.75rem"
+    fontWeight: 500
+    lineHeight: 1.47
     letterSpacing: "-0.01em"
 rounded:
   sm: "3px"
@@ -127,14 +139,19 @@ Estrategia: neutros de papel y tinta, más cinco tintes de copia que hacen el tr
 
 ## Typography
 
-**Interfaz:** Archivo Variable, usando su eje de ancho: títulos y rótulos condensados (80–82 %), cuerpo casi normal (96 %).
-**Cifras:** JetBrains Mono con cifras tabulares y cero barrado, para montos, SKU, folios y horas.
+**Una sola familia:** Archivo Variable en ancho normal para todo, incluidas las cifras, con `tabular-nums` para que montos, SKU y folios alineen en columna.
+**Código:** JetBrains Mono 500 solo para identificadores literales del sistema (nombres de nodos en la auditoría).
+**Ancho condensado:** reservado a la palabra del sello (78 %).
 
 ### Hierarchy
-- **Title** (600, 1.5rem, condensado): nombre del cliente y título de página.
-- **Body** (400, 0.8125rem): texto general y celdas.
-- **Field label** (600, 0.6875rem, mayúsculas, 0.07em): rótulo de cada sección o campo, como en un formulario impreso.
-- **Figures** (mono, 0.8125rem): toda cifra y código; el total sube a 1.125rem en negrita.
+- **Title** (600, 1.625rem, −0.02em): nombre del cliente y título de página.
+- **Reading** (400, 1rem, 1.6): el texto del cliente, con un máximo de 70ch.
+- **Body** (400, 0.875rem): texto general y celdas.
+- **Field label** (600, 0.75rem, mayúsculas, 0.055em): rótulo de cada sección o campo, como en un formulario impreso.
+- **Meta** (400, 0.75rem): fechas, códigos de cliente y notas. Nada baja de 0.6875rem.
+- **Total** (700, 1.125rem, tabular): la única cifra que sube de tamaño.
+
+**The One Voice Rule.** Montos, códigos y texto comparten la misma Archivo; la monoespaciada no es un disfraz técnico, solo marca código literal.
 
 **The Weight Not Size Rule.** Dentro de tablas, el rango se marca con peso y mayúsculas: una fila pendiente pone al cliente en negrita, no en un tamaño mayor.
 

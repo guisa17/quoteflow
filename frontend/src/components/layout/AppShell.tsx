@@ -34,11 +34,11 @@ export function AppShell() {
           <NavLink to="/" className="mr-3 flex items-center gap-2" aria-label="QuoteFlow, ir a la bandeja">
             <span
               aria-hidden
-              className="border-bar-ink/70 font-figures flex h-6 items-center rounded-[3px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
+              className="border-bar-ink/70 font-code flex h-6 items-center rounded-[3px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
             >
               QF
             </span>
-            <span className="condensed text-[0.9375rem] font-semibold tracking-tight">QuoteFlow</span>
+            <span className="text-[0.9375rem] font-semibold tracking-[-0.01em]">QuoteFlow</span>
           </NavLink>
 
           <nav aria-label="Navegación principal" className="flex items-center">

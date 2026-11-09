@@ -26,7 +26,7 @@ export function AuditTrailCard({ events }: { events: AuditEvent[] }) {
             {events.map((event, i) => (
               <tr key={i} className="border-rule border-b last:border-0">
                 <td className="font-figures text-ink-faint w-20 py-1.5 pl-3 align-top text-xs">{time(event.timestamp)}</td>
-                <td className="font-figures w-40 py-1.5 pl-2 align-top text-xs font-semibold">{event.node}</td>
+                <td className="font-code w-40 py-1.5 pl-2 align-top text-xs">{event.node}</td>
                 <td className="text-ink-soft py-1.5 pr-3 pl-2 align-top">{event.note}</td>
               </tr>
             ))}

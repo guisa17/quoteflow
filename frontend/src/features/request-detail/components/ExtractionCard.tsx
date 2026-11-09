@@ -49,7 +49,7 @@ export function ExtractionCard({ extraction }: { extraction: Extraction | null }
 function Field({ label, children, className = '' }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={`border-rule border-r border-b px-3 pt-1.5 pb-2 last:border-r-0 sm:border-b-0 ${className}`}>
-      <div className="field-label !text-[0.625rem]">{label}</div>
+      <div className="field-label !text-[0.6875rem]">{label}</div>
       <div className="mt-0.5 text-sm font-medium">{children}</div>
     </div>
   )
