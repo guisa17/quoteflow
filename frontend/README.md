@@ -86,15 +86,16 @@ datos persisten en `localStorage` para sobrevivir a un refresh; el botón
 
 ## Decisiones de diseño
 
-- **Talonario y sello**: cada solicitud es un folio numerado y cada decisión
-  humana, un sello con fecha y nombre. Los estados son tintes de copia
-  autocopiativa (canario, celeste, verde, rosa, rojo), siempre con ícono y
-  texto. Sistema completo en [`../DESIGN.md`](../DESIGN.md).
-- **Archivo Variable + JetBrains Mono**: Archivo usa su eje de ancho para
-  títulos y rótulos condensados; la mono tabular alinea montos, SKU y folios
-  dígito a dígito.
-- **Tema claro y oscuro**: sigue la preferencia del sistema, y el botón de la
-  barra permite fijar uno (`src/lib/theme.ts`).
+- **Editorial sobrio**: tarjetas blancas con una sombra tenue sobre un fondo
+  gris frío, rótulos "// SECCIÓN" y una sola placa oscura para la decisión
+  pendiente. Cada decisión humana queda como un sello con fecha y nombre. Los
+  estados son cinco tintes (canario, celeste, verde, violeta, rojo), siempre
+  con ícono y texto. Sistema completo en [`../DESIGN.md`](../DESIGN.md).
+- **Source Serif 4 + Inter**: la serif solo en titulares; Inter con cifras
+  tabulares para texto, montos, SKU y folios. JetBrains Mono únicamente para
+  nombres de nodos en la auditoría.
+- **Tema claro y oscuro**: sigue la preferencia del sistema, y el selector del
+  encabezado permite fijar uno (`src/lib/theme.ts`).
 - **Recorrido de doce etapas** (`StageStrip`): cada nodo del grafo ocupa
   siempre la misma casilla, así dos solicitudes se comparan de un vistazo.
 - **Atajos**: en el detalle, `J` y `K` recorren las solicitudes pendientes.

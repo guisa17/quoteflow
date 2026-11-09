@@ -119,11 +119,12 @@ export function InboxPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[88rem] px-4 pt-6 pb-16 sm:px-6">
+    <div className="mx-auto max-w-[88rem] px-4 pt-8 pb-16 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div>
-          <h1 className="type-title">Bandeja</h1>
-          <p className="text-ink-soft mt-1 text-sm">
+          <p className="eyebrow-tag">// Cola de aprobación</p>
+          <h1 className="type-title mt-3">Bandeja</h1>
+          <p className="text-ink-soft mt-1.5 text-sm">
             {isPending
               ? 'Cargando folios…'
               : pendingCount > 0
@@ -146,9 +147,11 @@ export function InboxPage() {
       {latest && latestRequest && !bannerDismissed && (
         <div
           role="status"
-          className="border-stamp-blue/40 bg-paper mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border py-2 pr-2 pl-3.5"
+          className="border-rule bg-paper shadow-card mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border py-2 pr-2 pl-2"
         >
-          <Stamp aria-hidden className="text-stamp-blue size-4 shrink-0 stroke-[2.25]" />
+          <span className="bg-lilac text-lilac-ink flex size-8 shrink-0 items-center justify-center rounded-md">
+            <Stamp aria-hidden className="size-4 stroke-[2.25]" />
+          </span>
           <p className="min-w-0 flex-1 text-sm">
             <span className="font-semibold">
               {ACTION_VERB[latest.action]} el folio{' '}
@@ -174,14 +177,14 @@ export function InboxPage() {
                   setQuery('')
                   setStatus(null)
                 }}
-                className="text-stamp-blue hover:bg-stamp-blue/10 inline-flex h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold transition-colors"
+                className="border-rule-strong hover:bg-paper-ruled inline-flex h-8 items-center gap-1 rounded-md border px-3 text-xs font-medium transition-colors"
               >
                 Ver en Todas
               </button>
             )}
             <Link
               to={`/requests/${latest.requestId}`}
-              className="text-stamp-blue hover:bg-stamp-blue/10 inline-flex h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold transition-colors"
+              className="bg-ink text-paper inline-flex h-8 items-center gap-1 rounded-md px-3 text-xs font-medium transition-opacity hover:opacity-85"
             >
               Abrir folio <ArrowRight aria-hidden className="size-3.5" />
             </Link>
@@ -189,7 +192,7 @@ export function InboxPage() {
               type="button"
               onClick={() => setBannerDismissed(true)}
               aria-label="Cerrar aviso"
-              className="text-ink-soft hover:text-ink hover:bg-paper-ruled flex size-8 items-center justify-center rounded-full transition-colors"
+              className="text-ink-soft hover:text-ink hover:bg-paper-ruled flex size-8 items-center justify-center rounded-md transition-colors"
             >
               <X aria-hidden className="size-4" />
             </button>
@@ -197,7 +200,7 @@ export function InboxPage() {
         </div>
       )}
 
-      <div className="bg-paper border-rule-strong mt-5 overflow-hidden rounded-xl border">
+      <div className="bg-paper border-rule shadow-card mt-6 overflow-hidden rounded-xl border">
         {/* Vistas a la izquierda; búsqueda y estado a la derecha. */}
         <div className="border-rule flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b px-2 pt-1 sm:px-3">
           <div role="tablist" aria-label="Vistas de la bandeja" className="flex">

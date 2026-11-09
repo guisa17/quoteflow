@@ -123,11 +123,11 @@ export function RequestDetailPage() {
         )}
       </nav>
 
-      <article className="bg-paper border-rule-strong mt-3 rounded-xl border">
-        <header className="border-rule-strong flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b px-5 pt-4 pb-3.5">
+      <article className="bg-paper border-rule shadow-card mt-3 rounded-xl border">
+        <header className="border-rule flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b px-5 pt-5 pb-4">
           <div className="min-w-0">
-            <p className="font-figures text-ink-soft text-xs">Folio Nº {folioNumber(detail.id)}</p>
-            <h1 className="type-title mt-0.5 truncate">
+            <p className="field-label font-figures">// Folio Nº {folioNumber(detail.id)}</p>
+            <h1 className="type-title mt-1.5 truncate">
               {detail.customer_name || 'Cliente no registrado'}
             </h1>
             <p className="text-ink-soft mt-1 text-xs">
@@ -178,7 +178,7 @@ export function RequestDetailPage() {
             <AuditTrailCard events={detail.audit_trail} />
           </div>
 
-          <aside className="border-rule-strong order-1 min-w-0 border-b px-4 py-5 sm:px-5 lg:order-2 lg:border-b-0 lg:border-l">
+          <aside className="border-rule order-1 min-w-0 border-b px-4 py-5 sm:px-5 lg:order-2 lg:border-b-0 lg:border-l">
             <div className="lg:sticky lg:top-16">
               {pending ? (
                 <DecisionPanel

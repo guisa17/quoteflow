@@ -76,7 +76,7 @@ export function StageStrip({ events, outcome }: { events: AuditEvent[]; outcome:
               </span>
               <span
                 className={cn(
-                  'truncate text-xs leading-tight',
+                  'truncate text-xs leading-tight xl:text-[0.6875rem] xl:tracking-[-0.01em]',
                   state === 'skipped' ? 'font-normal' : 'font-semibold',
                 )}
               >
