@@ -1,0 +1,23 @@
+# Solo Postgres: es la unica dependencia de infraestructura del MVP.
+# Sin optimizaciones de produccion (declarado fuera de alcance en PROJECT.md).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: quoteflow-postgres
+    environment:
+      POSTGRES_USER: quoteflow
+      POSTGRES_PASSWORD: quoteflow
+      POSTGRES_DB: quoteflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - quoteflow_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # El backend espera este healthcheck antes de correr setup() del checkpointer.
+      test: ["CMD-SHELL", "pg_isready -U quoteflow -d quoteflow"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  quoteflow_pgdata:

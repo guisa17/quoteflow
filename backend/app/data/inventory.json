@@ -1,0 +1,8 @@
+[
+  { "sku": "HX-200", "warehouse": "LIMA-01", "on_hand": 380, "reserved": 30 },
+  { "sku": "GL-500", "warehouse": "LIMA-01", "on_hand": 1250, "reserved": 50 },
+  { "sku": "BT-900", "warehouse": "LIMA-01", "on_hand": 160, "reserved": 20 },
+  { "sku": "RP-300", "warehouse": "LIMA-01", "on_hand": 95, "reserved": 15 },
+  { "sku": "AR-450", "warehouse": "LIMA-01", "on_hand": 90, "reserved": 10 },
+  { "sku": "LN-120", "warehouse": "LIMA-01", "on_hand": 2100, "reserved": 100 }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "customer_id": "FER-1001",
+    "legal_name": "Minera Cumbre Alta S.A.A.",
+    "tier": "GOLD",
+    "country": "PE",
+    "sites": ["Arequipa", "Lima"],
+    "payment_terms_days": 45,
+    "active": true
+  },
+  {
+    "customer_id": "FER-1002",
+    "legal_name": "Constructora Andina del Sur S.A.C.",
+    "tier": "SILVER",
+    "country": "PE",
+    "sites": ["Lima", "Ica"],
+    "payment_terms_days": 30,
+    "active": true
+  },
+  {
+    "customer_id": "FER-1003",
+    "legal_name": "Textiles Pacifico E.I.R.L.",
+    "tier": "STANDARD",
+    "country": "PE",
+    "sites": ["Trujillo"],
+    "payment_terms_days": 15,
+    "active": true
+  }
+]

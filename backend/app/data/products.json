@@ -1,0 +1,56 @@
+[
+  {
+    "sku": "HX-200",
+    "name": "Casco de seguridad clase E, ala completa",
+    "category": "Proteccion craneal",
+    "unit": "unidad",
+    "list_price_usd": 45.00,
+    "lead_time_days": 3,
+    "active": true
+  },
+  {
+    "sku": "GL-500",
+    "name": "Guantes anticorte nivel 5 (par)",
+    "category": "Proteccion de manos",
+    "unit": "par",
+    "list_price_usd": 18.50,
+    "lead_time_days": 2,
+    "active": true
+  },
+  {
+    "sku": "BT-900",
+    "name": "Botas dielectricas punta composite",
+    "category": "Proteccion de pies",
+    "unit": "par",
+    "list_price_usd": 89.00,
+    "lead_time_days": 5,
+    "active": true
+  },
+  {
+    "sku": "RP-300",
+    "name": "Respirador media cara doble filtro P100",
+    "category": "Proteccion respiratoria",
+    "unit": "unidad",
+    "list_price_usd": 62.00,
+    "lead_time_days": 7,
+    "active": true
+  },
+  {
+    "sku": "AR-450",
+    "name": "Arnes de cuerpo entero 4 anillas",
+    "category": "Proteccion contra caidas",
+    "unit": "unidad",
+    "list_price_usd": 215.00,
+    "lead_time_days": 10,
+    "active": true
+  },
+  {
+    "sku": "LN-120",
+    "name": "Lentes de seguridad antiempanhe",
+    "category": "Proteccion visual",
+    "unit": "unidad",
+    "list_price_usd": 12.75,
+    "lead_time_days": 2,
+    "active": true
+  }
+]

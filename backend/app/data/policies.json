@@ -1,0 +1,25 @@
+{
+  "policy_version": "2026.08",
+  "currency": "USD",
+  "quote_validity_days": 15,
+
+  "discount_by_tier": {
+    "GOLD": { "max_discount_pct": 12.0 },
+    "SILVER": { "max_discount_pct": 8.0 },
+    "STANDARD": { "max_discount_pct": 5.0 }
+  },
+
+  "hard_discount_ceiling_pct": 20.0,
+
+  "approval_threshold_usd": 10000.00,
+  "threshold_basis": "net_total_after_discount_before_tax",
+
+  "unknown_customer_requires_review": true,
+
+  "tax": {
+    "name": "IGV",
+    "rate": 0.18,
+    "applies_to": "net_total_after_discount",
+    "counts_toward_approval_threshold": false
+  }
+}

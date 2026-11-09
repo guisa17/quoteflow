@@ -1,0 +1,38 @@
+# Entorno y secretos
+.env
+.env.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+.vite/
+*.local
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# SO
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Material de trabajo personal: nunca se versiona
+_local/
