@@ -127,7 +127,7 @@ export function RequestDetailPage() {
         <header className="border-rule-strong flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b px-5 pt-4 pb-3.5">
           <div className="min-w-0">
             <p className="font-figures text-ink-soft text-xs">Folio Nº {folioNumber(detail.id)}</p>
-            <h1 className="condensed mt-0.5 truncate text-2xl font-semibold tracking-tight">
+            <h1 className="type-title mt-0.5 truncate">
               {detail.customer_name || 'Cliente no registrado'}
             </h1>
             <p className="text-ink-soft mt-1 text-xs">
@@ -145,7 +145,7 @@ export function RequestDetailPage() {
               <h2 id="raw-title" className="field-label">
                 Lo que escribió el cliente
               </h2>
-              <blockquote className="bg-paper-ruled mt-2 rounded-sm px-4 py-3 text-[0.9375rem] leading-relaxed">
+              <blockquote className="bg-paper-ruled mt-2 max-w-[70ch] rounded-sm px-4 py-3 text-base leading-relaxed">
                 {detail.raw_text}
               </blockquote>
               {!detail.customer_name && (

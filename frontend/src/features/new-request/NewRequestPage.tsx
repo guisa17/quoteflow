@@ -72,7 +72,7 @@ export function NewRequestPage() {
       <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule-strong mt-3 rounded-md border">
         <header className="border-rule-strong border-b px-5 pt-4 pb-3.5">
           <p className="font-figures text-ink-faint text-xs">Folio Nº ——————</p>
-          <h1 className="condensed mt-0.5 text-2xl font-semibold tracking-tight">Nueva solicitud</h1>
+          <h1 className="type-title mt-0.5">Nueva solicitud</h1>
           <p className="text-ink-soft mt-1 text-sm">
             Pega el pedido tal como llegó. QuoteFlow lo lee, consulta catálogo, stock y política, y lo resuelve al
             instante.
@@ -136,7 +136,7 @@ export function NewRequestPage() {
               aria-invalid={touched && !rawTextValid}
               placeholder="Necesito 20 cascos modelo HX-200 para la planta de Arequipa…"
               className={cn(
-                'bg-paper border-rule-strong placeholder:text-ink-faint focus-visible:border-stamp-blue mt-1 w-full resize-y rounded-sm border px-3 py-2.5 text-[0.9375rem] leading-relaxed outline-none',
+                'bg-paper border-rule-strong placeholder:text-ink-faint focus-visible:border-stamp-blue mt-1 w-full resize-y rounded-sm border px-3 py-2.5 text-base leading-relaxed outline-none',
                 touched && !rawTextValid && 'border-stamp-red',
               )}
             />

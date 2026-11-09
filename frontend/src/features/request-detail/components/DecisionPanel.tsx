@@ -90,7 +90,7 @@ export function DecisionPanel({
 
   return (
     <section aria-labelledby="decision-title" className="bg-plate text-plate-ink rounded-md p-4">
-      <h2 id="decision-title" className="condensed text-lg font-bold tracking-tight">
+      <h2 id="decision-title" className="text-lg font-bold tracking-[-0.01em]">
         Tu decisión
       </h2>
       <p className="text-plate-ink-soft mt-1 text-sm">

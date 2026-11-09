@@ -32,7 +32,7 @@ export function DraftCard({ draftText }: { draftText: string }) {
           {copied ? 'Copiado' : 'Copiar texto'}
         </button>
       </div>
-      <pre className="bg-green/50 border-rule-strong font-figures mt-2 max-h-96 overflow-auto rounded-sm border p-4 text-[0.8125rem] leading-relaxed whitespace-pre-wrap">
+      <pre className="bg-green/50 border-rule-strong font-figures mt-2 max-h-96 overflow-auto rounded-sm border p-4 text-sm leading-relaxed whitespace-pre-wrap">
         {draftText}
       </pre>
     </section>

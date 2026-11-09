@@ -28,10 +28,10 @@ export function Stamp({ decision, fresh = false, className }: { decision: HumanD
       <span className="condensed text-[1.375rem] leading-none font-extrabold tracking-[0.12em] uppercase">
         {s.word}
       </span>
-      <span className="font-figures mt-1 text-[0.625rem] font-semibold tracking-wide uppercase">
+      <span className="font-figures mt-1 text-[0.6875rem] font-semibold tracking-wide uppercase">
         {formatDate(decision.timestamp)}
       </span>
-      <span className="max-w-44 truncate text-[0.625rem] font-semibold">{decision.actor}</span>
+      <span className="max-w-44 truncate text-[0.6875rem] font-semibold">{decision.actor}</span>
     </div>
   )
 }

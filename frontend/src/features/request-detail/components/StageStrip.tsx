@@ -9,7 +9,7 @@ const STAGES: { node: string; label: string }[] = [
   { node: 'ingest', label: 'Registro' },
   { node: 'extract', label: 'Lectura' },
   { node: 'resolve_customer', label: 'Cliente' },
-  { node: 'validate_request', label: 'Completitud' },
+  { node: 'validate_request', label: 'Datos' },
   { node: 'resolve_catalog', label: 'Catálogo' },
   { node: 'check_inventory', label: 'Stock' },
   { node: 'price_quote', label: 'Precio' },
@@ -54,7 +54,7 @@ export function StageStrip({ events, outcome }: { events: AuditEvent[]; outcome:
       <h2 id="stages-title" className="field-label">
         Recorrido
       </h2>
-      <ol className="mt-2 grid grid-cols-6 gap-px overflow-hidden rounded-sm sm:grid-cols-12">
+      <ol className="mt-2 grid grid-cols-4 gap-px overflow-hidden rounded-sm sm:grid-cols-6 xl:grid-cols-12">
         {STAGES.map((stage, i) => {
           const state = states[i]
           const Icon = state === 'done' ? Check : state === 'stopped' ? X : state === 'waiting' ? Clock3 : Minus
@@ -71,12 +71,12 @@ export function StageStrip({ events, outcome }: { events: AuditEvent[]; outcome:
               )}
             >
               <span className="flex items-center justify-between">
-                <span className="font-figures text-[0.625rem] opacity-70">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-figures text-[0.6875rem] opacity-70">{String(i + 1).padStart(2, '0')}</span>
                 <Icon aria-hidden className={cn('size-3.5 stroke-[2.5]', state === 'done' && 'text-ink')} />
               </span>
               <span
                 className={cn(
-                  'condensed truncate text-[0.75rem] leading-tight',
+                  'truncate text-xs leading-tight',
                   state === 'skipped' ? 'font-normal' : 'font-semibold',
                 )}
               >

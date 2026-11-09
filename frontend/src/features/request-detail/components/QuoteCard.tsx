@@ -24,7 +24,7 @@ export function QuoteCard({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[34rem] text-left text-sm">
             <thead>
-              <tr className="field-label bg-paper-ruled border-rule-strong border-b !text-[0.625rem]">
+              <tr className="field-label bg-paper-ruled border-rule-strong border-b !text-[0.6875rem]">
                 <th scope="col" className="py-1.5 pl-3 font-semibold">SKU</th>
                 <th scope="col" className="py-1.5 pl-3 font-semibold">Descripción</th>
                 <th scope="col" className="py-1.5 pl-3 text-right font-semibold">Cant.</th>
