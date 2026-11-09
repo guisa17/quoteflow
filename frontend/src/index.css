@@ -1,156 +1,296 @@
 @import 'tailwindcss';
-/* Solo el subset latino (RF-09/PROJECT.md §2.3: un solo idioma, español) --
- * evitar los subsets cirílico/griego/vietnamita que trae el paquete completo
- * mantiene el payload de fuentes acotado al alcance real de la app. */
-@import '@fontsource/ibm-plex-sans/latin-400.css';
-@import '@fontsource/ibm-plex-sans/latin-500.css';
-@import '@fontsource/ibm-plex-sans/latin-600.css';
-@import '@fontsource/ibm-plex-mono/latin-400.css';
-@import '@fontsource/ibm-plex-mono/latin-500.css';
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
 
-/* ── QuoteFlow — tokens de diseño ──────────────────────────────────
-   Alcance deliberadamente modesto (PROJECT.md §2.3 excluye "diseño
-   visual avanzado"): un solo acento, cero sombras/gradientes/glow,
-   profundidad por borde hairline y por un único salto de superficie
-   (canvas -> panel -> tarjeta), peso de fuente contenido (nunca bold).
+/* ── QuoteFlow — talonario autocopiativo y sello ─────────────────────
+   Cada solicitud es un folio numerado; cada decisión humana, un sello.
+   Los colores de estado son los tintes de las copias de un talonario
+   (canario, rosa, verde, celeste) y las dos tintas de sello (azul, rojo).
+   Ver DESIGN.md. */
 
-   Acento "acero" (azul-gris industrial, hue 235) en vez de un violeta
-   genérico de dashboard — identidad propia de un distribuidor B2B,
-   no una paleta de SaaS de moda. IBM Plex Sans/Mono en vez de Inter:
-   Plex Mono se usa además para cifras monetarias y SKU (tabular). */
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme='light']) *) {
+      @slot;
+    }
+  }
+}
 
-@theme {
-  --radius-md: 0.375rem; /* 6px — botones, inputs */
-  --radius-lg: 0.5rem; /*   8px — popovers, badges */
-  --radius-xl: 0.5rem; /*   8px — tarjetas */
-  --radius-2xl: 0.625rem; /* 10px — panel de contenido */
+:root {
+  /* Papel y tinta */
+  --qf-desk: oklch(94.6% 0.006 85);
+  --qf-paper: oklch(98.9% 0.003 85);
+  --qf-paper-ruled: oklch(96.4% 0.005 85);
+  --qf-ink: oklch(24% 0.045 262);
+  --qf-ink-soft: oklch(45% 0.03 262);
+  --qf-ink-faint: oklch(62% 0.02 262);
+  --qf-rule: oklch(24% 0.045 262 / 13%);
+  --qf-rule-strong: oklch(24% 0.045 262 / 26%);
 
-  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
+  /* Barra superior y placa invertida: tinta azul de talonario */
+  --qf-bar: oklch(26% 0.075 263);
+  --qf-bar-ink: oklch(97% 0.005 85);
+  --qf-bar-ink-soft: oklch(80% 0.03 263);
+  --qf-plate: oklch(26% 0.075 263);
+  --qf-plate-ink: oklch(97% 0.005 85);
+  --qf-plate-ink-soft: oklch(81% 0.03 263);
+  --qf-plate-rule: oklch(97% 0.005 85 / 16%);
+  --qf-plate-field: oklch(31% 0.07 263);
+
+  /* Tintas de sello */
+  --qf-stamp-blue: oklch(47% 0.17 263);
+  --qf-stamp-red: oklch(51% 0.19 27);
+  --qf-stamp-ochre: oklch(52% 0.12 75);
+
+  /* Tintes de copia: fondo + tinta legible encima */
+  --qf-canary: oklch(93.5% 0.085 96);
+  --qf-canary-ink: oklch(40% 0.09 75);
+  --qf-pink: oklch(92.5% 0.045 5);
+  --qf-pink-ink: oklch(43% 0.14 10);
+  --qf-green: oklch(93% 0.055 158);
+  --qf-green-ink: oklch(38% 0.09 158);
+  --qf-sky: oklch(93% 0.035 240);
+  --qf-sky-ink: oklch(40% 0.1 250);
+  --qf-red: oklch(92.5% 0.05 27);
+  --qf-red-ink: oklch(44% 0.17 27);
+}
+
+/* Carbón: el mismo talonario a media luz. Se aplica por preferencia del
+   sistema salvo que el usuario elija tema claro. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --qf-desk: oklch(15% 0.014 262);
+    --qf-paper: oklch(19.5% 0.016 262);
+    --qf-paper-ruled: oklch(22.5% 0.018 262);
+    --qf-ink: oklch(93.5% 0.008 85);
+    --qf-ink-soft: oklch(75% 0.018 262);
+    --qf-ink-faint: oklch(60% 0.018 262);
+    --qf-rule: oklch(93.5% 0.008 85 / 11%);
+    --qf-rule-strong: oklch(93.5% 0.008 85 / 22%);
+    --qf-bar: oklch(12% 0.03 263);
+    --qf-bar-ink: oklch(94% 0.008 85);
+    --qf-bar-ink-soft: oklch(72% 0.03 263);
+    --qf-plate: oklch(88% 0.06 96);
+    --qf-plate-ink: oklch(20% 0.04 262);
+    --qf-plate-ink-soft: oklch(36% 0.05 262);
+    --qf-plate-rule: oklch(20% 0.04 262 / 18%);
+    --qf-plate-field: oklch(93% 0.05 96);
+    --qf-stamp-blue: oklch(72% 0.13 258);
+    --qf-stamp-red: oklch(70% 0.16 25);
+    --qf-stamp-ochre: oklch(80% 0.12 85);
+    --qf-canary: oklch(33% 0.06 90);
+    --qf-canary-ink: oklch(89% 0.11 94);
+    --qf-pink: oklch(31% 0.05 5);
+    --qf-pink-ink: oklch(87% 0.07 5);
+    --qf-green: oklch(30% 0.045 158);
+    --qf-green-ink: oklch(87% 0.08 158);
+    --qf-sky: oklch(30% 0.045 245);
+    --qf-sky-ink: oklch(87% 0.06 240);
+    --qf-red: oklch(31% 0.07 27);
+    --qf-red-ink: oklch(86% 0.08 27);
+  }
+}
+
+:root[data-theme='dark'] {
+  --qf-desk: oklch(15% 0.014 262);
+  --qf-paper: oklch(19.5% 0.016 262);
+  --qf-paper-ruled: oklch(22.5% 0.018 262);
+  --qf-ink: oklch(93.5% 0.008 85);
+  --qf-ink-soft: oklch(75% 0.018 262);
+  --qf-ink-faint: oklch(60% 0.018 262);
+  --qf-rule: oklch(93.5% 0.008 85 / 11%);
+  --qf-rule-strong: oklch(93.5% 0.008 85 / 22%);
+  --qf-bar: oklch(12% 0.03 263);
+  --qf-bar-ink: oklch(94% 0.008 85);
+  --qf-bar-ink-soft: oklch(72% 0.03 263);
+  --qf-plate: oklch(88% 0.06 96);
+  --qf-plate-ink: oklch(20% 0.04 262);
+  --qf-plate-ink-soft: oklch(36% 0.05 262);
+  --qf-plate-rule: oklch(20% 0.04 262 / 18%);
+  --qf-plate-field: oklch(93% 0.05 96);
+  --qf-stamp-blue: oklch(72% 0.13 258);
+  --qf-stamp-red: oklch(70% 0.16 25);
+  --qf-stamp-ochre: oklch(80% 0.12 85);
+  --qf-canary: oklch(33% 0.06 90);
+  --qf-canary-ink: oklch(89% 0.11 94);
+  --qf-pink: oklch(31% 0.05 5);
+  --qf-pink-ink: oklch(87% 0.07 5);
+  --qf-green: oklch(30% 0.045 158);
+  --qf-green-ink: oklch(87% 0.08 158);
+  --qf-sky: oklch(30% 0.045 245);
+  --qf-sky-ink: oklch(87% 0.06 240);
+  --qf-red: oklch(31% 0.07 27);
+  --qf-red-ink: oklch(86% 0.08 27);
+}
+
+@theme inline {
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.375rem;
+
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
   --text-sm: 0.8125rem;
   --text-sm--line-height: 1.25rem;
 
-  /* ── Light (por defecto) ──────────────────────────────── */
-  --color-canvas: oklch(95% 0.003 240);
-  --color-background: oklch(97.8% 0.002 240);
-  --color-foreground: oklch(22% 0.008 240);
+  --color-desk: var(--qf-desk);
+  --color-paper: var(--qf-paper);
+  --color-paper-ruled: var(--qf-paper-ruled);
+  --color-ink: var(--qf-ink);
+  --color-ink-soft: var(--qf-ink-soft);
+  --color-ink-faint: var(--qf-ink-faint);
+  --color-rule: var(--qf-rule);
+  --color-rule-strong: var(--qf-rule-strong);
+  --color-bar: var(--qf-bar);
+  --color-bar-ink: var(--qf-bar-ink);
+  --color-bar-ink-soft: var(--qf-bar-ink-soft);
+  --color-plate: var(--qf-plate);
+  --color-plate-ink: var(--qf-plate-ink);
+  --color-plate-ink-soft: var(--qf-plate-ink-soft);
+  --color-plate-rule: var(--qf-plate-rule);
+  --color-plate-field: var(--qf-plate-field);
+  --color-stamp-blue: var(--qf-stamp-blue);
+  --color-stamp-red: var(--qf-stamp-red);
+  --color-stamp-ochre: var(--qf-stamp-ochre);
+  --color-canary: var(--qf-canary);
+  --color-canary-ink: var(--qf-canary-ink);
+  --color-pink: var(--qf-pink);
+  --color-pink-ink: var(--qf-pink-ink);
+  --color-green: var(--qf-green);
+  --color-green-ink: var(--qf-green-ink);
+  --color-sky: var(--qf-sky);
+  --color-sky-ink: var(--qf-sky-ink);
+  --color-red: var(--qf-red);
+  --color-red-ink: var(--qf-red-ink);
 
-  --color-card: oklch(100% 0 0);
-  --color-card-foreground: oklch(22% 0.008 240);
-
-  --color-popover: oklch(100% 0 0);
-  --color-popover-foreground: oklch(22% 0.008 240);
-
-  --color-primary: oklch(46% 0.11 240);
-  --color-primary-hover: color-mix(in oklch, var(--color-primary) 88%, black);
-  --color-primary-text: color-mix(in oklch, var(--color-primary) 85%, black);
-  --color-primary-foreground: oklch(100% 0 0);
-
-  --color-secondary: oklch(95.5% 0.003 240);
-  --color-secondary-foreground: oklch(28% 0.008 240);
-
-  --color-muted: oklch(95.5% 0.003 240);
-  --color-muted-foreground: oklch(48% 0.008 240);
-
-  --color-accent: oklch(94% 0.005 240);
-  --color-accent-foreground: oklch(22% 0.008 240);
-
-  --color-destructive: oklch(54% 0.19 25);
-  --color-destructive-foreground: oklch(100% 0 0);
-
-  --color-success: oklch(54% 0.13 150);
-  --color-success-foreground: oklch(100% 0 0);
-  --color-warning: oklch(64% 0.14 75);
-  --color-warning-foreground: oklch(20% 0.02 75);
-
-  --color-border: oklch(0% 0 0 / 9%);
-  --color-input: oklch(0% 0 0 / 14%);
-  --color-ring: oklch(46% 0.11 240);
-
-  --color-sidebar: oklch(95% 0.003 240);
-  --color-sidebar-foreground: oklch(22% 0.008 240);
-  --color-sidebar-border: oklch(0% 0 0 / 7%);
-  --color-sidebar-accent: oklch(90.5% 0.006 240);
-  --color-sidebar-accent-foreground: oklch(22% 0.008 240);
-}
-
-/* ── Dark ─────────────────────────────────────────────────
-   Mismo principio que el light: la app se abre en claro por defecto
-   (consola de oficina), pero el tema oscuro está disponible vía
-   preferencia del sistema para no forzar un único modo. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-canvas: oklch(13% 0.006 240);
-    --color-background: oklch(19% 0.006 240);
-    --color-foreground: oklch(95% 0.004 240);
-
-    --color-card: oklch(24% 0.006 240);
-    --color-card-foreground: oklch(95% 0.004 240);
-
-    --color-popover: oklch(28% 0.006 240);
-    --color-popover-foreground: oklch(95% 0.004 240);
-
-    --color-primary: oklch(64% 0.11 235);
-    --color-primary-hover: color-mix(in oklch, var(--color-primary) 82%, white);
-    --color-primary-text: color-mix(in oklch, var(--color-primary) 75%, white);
-    --color-primary-foreground: oklch(12% 0.01 240);
-
-    --color-secondary: oklch(25% 0.006 240);
-    --color-secondary-foreground: oklch(95% 0.004 240);
-
-    --color-muted: oklch(25% 0.006 240);
-    --color-muted-foreground: oklch(67% 0.008 240);
-
-    --color-accent: oklch(29% 0.006 240);
-    --color-accent-foreground: oklch(95% 0.004 240);
-
-    --color-destructive: oklch(63% 0.17 25);
-    --color-destructive-foreground: oklch(97% 0.003 240);
-
-    --color-success: oklch(66% 0.14 150);
-    --color-success-foreground: oklch(12% 0.02 150);
-    --color-warning: oklch(76% 0.13 80);
-    --color-warning-foreground: oklch(18% 0.02 80);
-
-    --color-border: oklch(100% 0 0 / 10%);
-    --color-input: oklch(100% 0 0 / 15%);
-    --color-ring: oklch(64% 0.11 235);
-
-    --color-sidebar: oklch(13% 0.006 240);
-    --color-sidebar-foreground: oklch(95% 0.004 240);
-    --color-sidebar-border: oklch(100% 0 0 / 9%);
-    --color-sidebar-accent: oklch(19% 0.006 240);
-    --color-sidebar-accent-foreground: oklch(95% 0.004 240);
-  }
+  /* Alias para los primitivos shadcn existentes */
+  --color-background: var(--qf-desk);
+  --color-foreground: var(--qf-ink);
+  --color-card: var(--qf-paper);
+  --color-card-foreground: var(--qf-ink);
+  --color-popover: var(--qf-paper);
+  --color-popover-foreground: var(--qf-ink);
+  --color-primary: var(--qf-stamp-blue);
+  --color-primary-foreground: var(--qf-paper);
+  --color-primary-hover: color-mix(in oklch, var(--qf-stamp-blue) 86%, var(--qf-ink));
+  --color-primary-text: var(--qf-stamp-blue);
+  --color-secondary: var(--qf-paper-ruled);
+  --color-secondary-foreground: var(--qf-ink);
+  --color-muted: var(--qf-paper-ruled);
+  --color-muted-foreground: var(--qf-ink-soft);
+  --color-accent: var(--qf-paper-ruled);
+  --color-accent-foreground: var(--qf-ink);
+  --color-destructive: var(--qf-stamp-red);
+  --color-destructive-foreground: var(--qf-paper);
+  --color-success: var(--qf-green-ink);
+  --color-warning: var(--qf-canary-ink);
+  --color-border: var(--qf-rule);
+  --color-input: var(--qf-rule-strong);
+  --color-ring: var(--qf-stamp-blue);
 }
 
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--color-rule);
   }
   html {
-    color-scheme: light dark;
+    color-scheme: light;
+    scrollbar-color: var(--qf-rule-strong) transparent;
+  }
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      color-scheme: dark;
+    }
   }
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--qf-desk);
+    color: var(--qf-ink);
     font-family: var(--font-sans);
-    letter-spacing: -0.005em;
+    font-stretch: 96%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: color-mix(in oklch, var(--color-primary) 25%, transparent);
+    background-color: var(--qf-canary);
+    color: var(--qf-canary-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--qf-stamp-blue);
+    outline-offset: 2px;
+  }
+  input,
+  textarea {
+    caret-color: var(--qf-stamp-blue);
+  }
+  a {
+    text-underline-offset: 3px;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--qf-rule-strong);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
   }
 }
 
 @layer utilities {
-  /* Cifras monetarias y SKU: tabular, en mono, para que las columnas de
-     una tabla de líneas de cotización alineen dígito a dígito. */
+  /* Cifras, SKU y folios: monoespaciada tabular, para alinear dígito a dígito. */
   .font-figures {
     font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums slashed-zero;
+    letter-spacing: -0.01em;
+  }
+  /* Rótulo de campo del formulario impreso. */
+  .field-label {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    font-stretch: 82%;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--qf-ink-soft);
+  }
+  .condensed {
+    font-stretch: 80%;
+  }
+}
+
+/* El sello cae sobre el papel: llega grande y desenfocado, se asienta. */
+@keyframes stamp-land {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--stamp-rotate, -7deg)) scale(1.9);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--stamp-rotate, -7deg)) scale(1);
+  }
+}
+
+.stamp-fresh {
+  animation: stamp-land 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-fresh {
+    animation: none;
   }
 }

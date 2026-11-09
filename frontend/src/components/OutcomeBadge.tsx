@@ -1,8 +1,32 @@
-import { Badge } from '@/components/ui/badge'
-import { OUTCOME_META } from '@/lib/outcome'
+import { OUTCOME_META, TINT_CLASSES } from '@/lib/outcome'
+import { cn } from '@/lib/utils'
 import type { Outcome } from '@/types/api'
 
-export function OutcomeBadge({ outcome }: { outcome: Outcome }) {
+/** El resultado como copia del talonario: tinte de papel, tinta, ícono y texto. */
+export function OutcomeBadge({
+  outcome,
+  size = 'sm',
+  className,
+}: {
+  outcome: Outcome
+  size?: 'sm' | 'lg'
+  className?: string
+}) {
   const meta = OUTCOME_META[outcome]
-  return <Badge variant={meta.variant}>{meta.label}</Badge>
+  const tint = TINT_CLASSES[meta.tint]
+  const Icon = meta.icon
+  return (
+    <span
+      className={cn(
+        'inline-flex w-fit shrink-0 items-center gap-1.5 rounded-sm font-semibold whitespace-nowrap',
+        tint.surface,
+        tint.ink,
+        size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2.5 py-1 text-sm',
+        className,
+      )}
+    >
+      <Icon aria-hidden className={cn('shrink-0 stroke-[2.25]', size === 'sm' ? 'size-3.5' : 'size-4')} />
+      {meta.label}
+    </span>
+  )
 }

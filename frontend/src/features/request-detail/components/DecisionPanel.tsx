@@ -2,14 +2,11 @@ import { Check, Eye, Loader2, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useSubmitDecision } from '@/hooks/useRequests'
 import { formatDate } from '@/lib/money'
-import type { DecisionAction, HumanDecision } from '@/types/api'
+import { OUTCOME_META } from '@/lib/outcome'
+import { cn } from '@/lib/utils'
+import type { ApprovalReason, DecisionAction, HumanDecision } from '@/types/api'
 
 const ACTOR_STORAGE_KEY = 'quoteflow.actor'
 
@@ -27,28 +24,38 @@ function newDecisionId(): string {
     : `dec_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`
 }
 
-/** RF-09.4 — panel de decisión: aprobar / rechazar / observar, con
- * comentario (BR-14). El `decision_id` se conserva solo al reintentar la misma
- * acción tras un fallo (BR-15); cambiar de acción o tener éxito usa uno nuevo,
- * porque repetir un id con otra acción es un conflicto (BR-19). */
+const ACTION_WORD: Record<DecisionAction, string> = {
+  APPROVE: 'Aprobado',
+  REJECT: 'Rechazado',
+  OBSERVE: 'Observado',
+}
+
+/** La única placa invertida de la pantalla: la decisión pendiente. El
+ * `decision_id` se conserva solo al reintentar la misma acción tras un fallo
+ * (BR-15); cambiar de acción o tener éxito usa uno nuevo, porque repetir un id
+ * con otra acción es un conflicto (BR-19). */
 export function DecisionPanel({
   requestId,
   lastDecision,
+  approvalReasons,
+  onDecided,
 }: {
   requestId: string
   lastDecision: HumanDecision | null
+  approvalReasons: ApprovalReason[]
+  onDecided: () => void
 }) {
   const [failedAttempt, setFailedAttempt] = useState<{ id: string; action: DecisionAction } | null>(null)
   const [actor, setActor] = useState(readStoredActor)
   const [comment, setComment] = useState('')
   const [pendingAction, setPendingAction] = useState<DecisionAction | null>(null)
+  const [actorMissing, setActorMissing] = useState(false)
   const submitDecision = useSubmitDecision(requestId)
 
-  const actorValid = actor.trim().length > 0
-
   async function handleDecide(action: DecisionAction) {
-    if (!actorValid) {
-      toast.error('Indica quién decide antes de continuar.')
+    if (actor.trim().length === 0) {
+      setActorMissing(true)
+      document.getElementById('decision-actor')?.focus()
       return
     }
     setPendingAction(action)
@@ -57,7 +64,7 @@ export function DecisionPanel({
       try {
         localStorage.setItem(ACTOR_STORAGE_KEY, actor.trim())
       } catch {
-        // localStorage no disponible: no bloquea el envío.
+        // Sin almacenamiento: no bloquea el envío.
       }
       const detail = await submitDecision.mutateAsync({
         decision_id: decisionId,
@@ -67,11 +74,11 @@ export function DecisionPanel({
       })
       setFailedAttempt(null)
       setComment('')
-      const label = { APPROVE: 'Aprobada', REJECT: 'Rechazada', OBSERVE: 'Observación registrada' }[action]
-      toast.success(label, { description: `Resultado actual: ${detail.outcome}` })
+      onDecided()
+      toast.success(`${ACTION_WORD[action]}. ${OUTCOME_META[detail.outcome].label}.`)
     } catch (err) {
       setFailedAttempt({ id: decisionId, action })
-      toast.error('No se pudo registrar la decisión', {
+      toast.error('No se registró la decisión', {
         description: err instanceof Error ? err.message : 'Error desconocido.',
       })
     } finally {
@@ -79,72 +86,97 @@ export function DecisionPanel({
     }
   }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Decisión</CardTitle>
-        <CardDescription>
-          Aprobar avanza a borrador; rechazar cierra el caso; observar deja constancia sin
-          resolver (BR-14) — el caso sigue en pausa.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {lastDecision && (
-          <div className="bg-muted/60 rounded-md px-3 py-2 text-xs">
-            <span className="font-medium">Última decisión registrada:</span>{' '}
-            {lastDecision.action} por {lastDecision.actor} — {formatDate(lastDecision.timestamp)}
-            {lastDecision.comment && (
-              <p className="text-muted-foreground mt-1">"{lastDecision.comment}"</p>
-            )}
-          </div>
-        )}
+  const busy = submitDecision.isPending
 
-        <div className="space-y-1.5">
-          <Label htmlFor="decision-actor">Actor (quién decide)</Label>
-          <Input
+  return (
+    <section aria-labelledby="decision-title" className="bg-plate text-plate-ink rounded-md p-4">
+      <h2 id="decision-title" className="condensed text-lg font-bold tracking-tight">
+        Tu decisión
+      </h2>
+      <p className="text-plate-ink-soft mt-1 text-sm">
+        {approvalReasons.length > 1
+          ? `${approvalReasons.length} motivos requieren aprobación; una sola decisión los resuelve.`
+          : 'Esta solicitud se detuvo para que alguien la apruebe.'}
+      </p>
+
+      {lastDecision && (
+        <div className="border-plate-rule mt-3 border-t pt-3 text-xs">
+          <span className="font-semibold">Observada</span> por {lastDecision.actor} ·{' '}
+          <span className="font-figures">{formatDate(lastDecision.timestamp)}</span>
+          {lastDecision.comment && <p className="text-plate-ink-soft mt-1">“{lastDecision.comment}”</p>}
+        </div>
+      )}
+
+      <div className="mt-4 space-y-3">
+        <label className="block">
+          <span className="field-label !text-plate-ink-soft">Quién decide</span>
+          <input
             id="decision-actor"
             value={actor}
-            onChange={(e) => setActor(e.target.value)}
+            onChange={(e) => {
+              setActor(e.target.value)
+              setActorMissing(false)
+            }}
             maxLength={254}
-            placeholder="ej. jefe.comercial@ferrocima.example"
+            aria-invalid={actorMissing}
+            aria-describedby={actorMissing ? 'actor-error' : undefined}
+            placeholder="jefe.comercial@ferrocima.example"
+            className={cn(
+              'bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 mt-1 h-9 w-full rounded-sm border px-2.5 text-sm outline-none',
+              actorMissing ? 'border-stamp-red' : 'border-plate-rule focus-visible:border-plate-ink',
+            )}
           />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="decision-comment">Comentario (opcional)</Label>
-          <Textarea
-            id="decision-comment"
+          {actorMissing && (
+            <span id="actor-error" className="mt-1 block text-xs font-semibold">
+              Escribe tu nombre o correo: queda en el sello y en la auditoría.
+            </span>
+          )}
+        </label>
+        <label className="block">
+          <span className="field-label !text-plate-ink-soft">Comentario · opcional</span>
+          <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             maxLength={2000}
-            placeholder="Motivo de la decisión, condiciones, o lo que deba quedar en la auditoría."
             rows={3}
+            placeholder="Condiciones o motivo, para la auditoría."
+            className="bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 border-plate-rule focus-visible:border-plate-ink mt-1 w-full resize-y rounded-sm border px-2.5 py-2 text-sm outline-none"
           />
-        </div>
+        </label>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => handleDecide('APPROVE')} disabled={submitDecision.isPending}>
-            {pendingAction === 'APPROVE' ? <Loader2 aria-hidden className="animate-spin" /> : <Check aria-hidden />}
-            Aprobar
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => handleDecide('REJECT')}
-            disabled={submitDecision.isPending}
-          >
-            {pendingAction === 'REJECT' ? <Loader2 aria-hidden className="animate-spin" /> : <X aria-hidden />}
-            Rechazar
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleDecide('OBSERVE')}
-            disabled={submitDecision.isPending}
-          >
-            {pendingAction === 'OBSERVE' ? <Loader2 aria-hidden className="animate-spin" /> : <Eye aria-hidden />}
-            Observar
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => handleDecide('APPROVE')}
+          disabled={busy}
+          className="bg-plate-ink text-plate col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-sm text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {pendingAction === 'APPROVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Check aria-hidden className="size-4 stroke-[2.5]" />}
+          Aprobar y generar borrador
+        </button>
+        <button
+          type="button"
+          onClick={() => handleDecide('REJECT')}
+          disabled={busy}
+          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-sm border text-sm font-semibold transition-colors disabled:opacity-50"
+        >
+          {pendingAction === 'REJECT' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <X aria-hidden className="size-4" />}
+          Rechazar
+        </button>
+        <button
+          type="button"
+          onClick={() => handleDecide('OBSERVE')}
+          disabled={busy}
+          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-sm border text-sm font-semibold transition-colors disabled:opacity-50"
+        >
+          {pendingAction === 'OBSERVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Eye aria-hidden className="size-4" />}
+          Observar
+        </button>
+      </div>
+      <p className="text-plate-ink-soft mt-3 text-xs">
+        Observar deja constancia y mantiene el caso en pausa. Rechazar lo cierra.
+      </p>
+    </section>
   )
 }

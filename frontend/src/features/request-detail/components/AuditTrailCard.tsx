@@ -1,36 +1,38 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatDate } from '@/lib/money'
 import type { AuditEvent } from '@/types/api'
 
-/** RF-09.3 — "trazabilidad": la secuencia de nodos del grafo que procesó la
- * solicitud (RF-08). Se muestra en orden de ejecución, no el más reciente
- * primero -- es una traza, se lee de arriba hacia abajo como ocurrió. */
+const TIME = new Intl.DateTimeFormat('es-PE', {
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hourCycle: 'h23',
+})
+
+function time(iso: string) {
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? iso : TIME.format(d)
+}
+
+/** La traza completa en orden de ejecución, como el registro al reverso del
+ * formulario: hora, etapa y lo que pasó. */
 export function AuditTrailCard({ events }: { events: AuditEvent[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Trazabilidad</CardTitle>
-        <CardDescription>Secuencia de nodos ejecutados, en orden (RF-08).</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ol className="space-y-0">
-          {events.map((event, i) => (
-            <li key={i} className="border-border relative flex gap-3 border-l pb-4 pl-4 last:border-transparent last:pb-0">
-              <span
-                aria-hidden
-                className="bg-primary absolute top-1 -left-[3.5px] size-1.5 shrink-0 rounded-full"
-              />
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-figures text-xs font-semibold">{event.node}</span>
-                  <span className="text-muted-foreground text-xs">{formatDate(event.timestamp)}</span>
-                </div>
-                <p className="text-muted-foreground mt-0.5 text-sm">{event.note}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </CardContent>
-    </Card>
+    <section aria-labelledby="audit-title">
+      <h2 id="audit-title" className="field-label">
+        Registro de auditoría · {events.length} eventos
+      </h2>
+      <div className="border-rule-strong mt-2 overflow-x-auto rounded-sm border">
+        <table className="w-full min-w-[32rem] text-left text-[0.8125rem]">
+          <tbody>
+            {events.map((event, i) => (
+              <tr key={i} className="border-rule border-b last:border-0">
+                <td className="font-figures text-ink-faint w-20 py-1.5 pl-3 align-top text-xs">{time(event.timestamp)}</td>
+                <td className="font-figures w-40 py-1.5 pl-2 align-top text-xs font-semibold">{event.node}</td>
+                <td className="text-ink-soft py-1.5 pr-3 pl-2 align-top">{event.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   )
 }

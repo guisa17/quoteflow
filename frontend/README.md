@@ -86,22 +86,21 @@ datos persisten en `localStorage` para sobrevivir a un refresh; el botón
 
 ## Decisiones de diseño
 
-- **Alcance visual deliberadamente modesto** (`PROJECT.md` §2.3 excluye
-  "diseño visual avanzado"): un panel con hairlines, cero sombras/gradientes,
-  un solo color de acento. El principio viene de un sistema de diseño propio
-  de otro proyecto (Bento) — **no se copió su código ni su identidad**:
-  QuoteFlow usa su propio acento ("acero", azul-gris industrial en vez de
-  lavanda), su propia tipografía (IBM Plex Sans/Mono en vez de Inter) y su
-  propio layout (barra superior delgada en vez de sidebar de app
-  multi-módulo, porque QuoteFlow tiene tres destinos, no una familia de
-  módulos que justifique una barra lateral permanente).
-- **IBM Plex Mono para cifras y SKU** (`.font-figures`, `font-variant-numeric:
-  tabular-nums`): las columnas de una tabla de cotización alinean dígito a
-  dígito: era el motivo original de usar una mono para números en primer
-  lugar.
-- **shadcn/ui vendorizado, no instalado como paquete**: `src/components/ui/*`
-  son primitivas reales (Radix + `class-variance-authority`), igual que el
-  patrón de referencia — no HTML suelto con clases sueltas.
+- **Talonario y sello**: cada solicitud es un folio numerado y cada decisión
+  humana, un sello con fecha y nombre. Los estados son tintes de copia
+  autocopiativa (canario, celeste, verde, rosa, rojo), siempre con ícono y
+  texto. Sistema completo en [`../DESIGN.md`](../DESIGN.md).
+- **Archivo Variable + JetBrains Mono**: Archivo usa su eje de ancho para
+  títulos y rótulos condensados; la mono tabular alinea montos, SKU y folios
+  dígito a dígito.
+- **Tema claro y oscuro**: sigue la preferencia del sistema, y el botón de la
+  barra permite fijar uno (`src/lib/theme.ts`).
+- **Recorrido de doce etapas** (`StageStrip`): cada nodo del grafo ocupa
+  siempre la misma casilla, así dos solicitudes se comparan de un vistazo.
+- **Atajos**: en el detalle, `J` y `K` recorren las solicitudes pendientes.
+- **Radix solo donde aporta**: el selector de cliente usa
+  `@radix-ui/react-select` (`src/components/ui/select.tsx`); el resto son
+  elementos nativos con estilos propios.
 - **TanStack Query** para el estado remoto (`src/hooks/useRequests.ts`):
   cache por id, invalidación tras crear/decidir, sin estado global propio —
   no hace falta más para tres pantallas.

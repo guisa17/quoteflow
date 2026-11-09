@@ -1,21 +1,9 @@
-import { AlertOctagon, ShieldAlert, XCircle } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { REASON_LABELS } from '@/lib/outcome'
 import { cn } from '@/lib/utils'
 import type { ApprovalReason } from '@/types/api'
 
-interface ReasonGroup {
-  icon: LucideIcon
-  tone: 'warning' | 'destructive'
-  title: string
-  reasons: ApprovalReason[]
-}
-
-/** RF-09.3 — "riesgos/motivos": por qué la solicitud no siguió de largo a
- * `DRAFT_READY`. BR-09 permite varios motivos de aprobación concurrentes,
- * así que esto siempre es una lista, nunca un único valor. */
+/** Por qué la solicitud no siguió de largo: la regla de negocio que actuó.
+ * Puede haber varios motivos de aprobación a la vez (BR-09). */
 export function ReasonsCard({
   approvalReasons,
   rejectionReason,
@@ -25,55 +13,43 @@ export function ReasonsCard({
   rejectionReason: ApprovalReason | null
   blockingReason: ApprovalReason | null
 }) {
-  const groups: ReasonGroup[] = []
-  if (blockingReason) {
-    groups.push({ icon: AlertOctagon, tone: 'warning', title: 'Motivo de bloqueo', reasons: [blockingReason] })
-  }
-  if (rejectionReason) {
-    groups.push({ icon: XCircle, tone: 'destructive', title: 'Motivo de rechazo', reasons: [rejectionReason] })
-  }
-  if (approvalReasons.length > 0) {
-    groups.push({
-      icon: ShieldAlert,
-      tone: 'warning',
-      title: `Motivo${approvalReasons.length > 1 ? 's' : ''} de aprobación (BR-09)`,
-      reasons: approvalReasons,
-    })
-  }
+  const items: { reason: ApprovalReason; kind: 'block' | 'reject' | 'approve' }[] = [
+    ...(blockingReason ? [{ reason: blockingReason, kind: 'block' as const }] : []),
+    ...(rejectionReason ? [{ reason: rejectionReason, kind: 'reject' as const }] : []),
+    ...approvalReasons.map((reason) => ({ reason, kind: 'approve' as const })),
+  ]
+  if (items.length === 0) return null
 
-  if (groups.length === 0) return null
+  const title =
+    items[0].kind === 'approve'
+      ? items.length > 1
+        ? 'Por qué requiere aprobación'
+        : 'Por qué requiere aprobación'
+      : items[0].kind === 'reject'
+        ? 'Por qué se rechazó'
+        : 'Por qué se detuvo'
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Riesgos y motivos</CardTitle>
-        <CardDescription>Reglas de negocio que determinaron el resultado.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {groups.map((group) => (
-          <div key={group.title} className="space-y-2">
-            <p
-              className={cn(
-                'flex items-center gap-1.5 text-xs font-semibold',
-                group.tone === 'destructive' ? 'text-destructive' : 'text-warning',
-              )}
-            >
-              <group.icon aria-hidden className="size-3.5" />
-              {group.title}
-            </p>
-            <ul className="space-y-1.5">
-              {group.reasons.map((reason, i) => (
-                <li key={i} className="bg-muted/60 rounded-md px-3 py-2 text-sm">
-                  <span className="font-figures block text-xs font-medium">
-                    {REASON_LABELS[reason.reason_code]} ({reason.reason_code})
-                  </span>
-                  <span className="text-muted-foreground">{reason.detail}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <section aria-labelledby="reasons-title">
+      <h2 id="reasons-title" className="field-label">
+        {title}
+      </h2>
+      <ul className="mt-2 space-y-1.5">
+        {items.map(({ reason, kind }, i) => (
+          <li
+            key={i}
+            className={cn(
+              'grid gap-x-4 gap-y-0.5 rounded-sm px-3 py-2 sm:grid-cols-[14rem_1fr]',
+              kind === 'approve' && 'bg-canary text-canary-ink',
+              kind === 'reject' && 'bg-red text-red-ink',
+              kind === 'block' && 'bg-pink text-pink-ink',
+            )}
+          >
+            <span className="text-sm font-bold">{REASON_LABELS[reason.reason_code]}</span>
+            <span className="text-sm">{reason.detail}</span>
+          </li>
         ))}
-      </CardContent>
-    </Card>
+      </ul>
+    </section>
   )
 }
