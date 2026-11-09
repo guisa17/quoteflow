@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useSubmitDecision } from '@/hooks/useRequests'
 import { formatDate } from '@/lib/money'
 import { OUTCOME_META } from '@/lib/outcome'
+import { recordDecision } from '@/lib/recentDecisions'
 import { cn } from '@/lib/utils'
 import type { ApprovalReason, DecisionAction, HumanDecision } from '@/types/api'
 
@@ -72,6 +73,7 @@ export function DecisionPanel({
         actor: actor.trim(),
         comment: comment.trim() || undefined,
       })
+      recordDecision({ requestId, action, outcome: detail.outcome })
       setFailedAttempt(null)
       setComment('')
       onDecided()
@@ -89,7 +91,7 @@ export function DecisionPanel({
   const busy = submitDecision.isPending
 
   return (
-    <section aria-labelledby="decision-title" className="bg-plate text-plate-ink rounded-md p-4">
+    <section aria-labelledby="decision-title" className="bg-plate text-plate-ink rounded-lg p-4">
       <h2 id="decision-title" className="text-lg font-bold tracking-[-0.01em]">
         Tu decisión
       </h2>

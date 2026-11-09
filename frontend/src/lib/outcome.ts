@@ -2,7 +2,7 @@ import { CircleCheck, CircleHelp, CircleSlash, Clock3, OctagonX, type LucideIcon
 
 import type { Outcome, ReasonCode } from '@/types/api'
 
-export type Tint = 'canary' | 'pink' | 'green' | 'sky' | 'red'
+export type Tint = 'canary' | 'violet' | 'green' | 'sky' | 'red'
 
 /** Cada resultado se lee como una copia del talonario: un tinte de papel,
  * su tinta, un ícono y una etiqueta. El color nunca va solo. */
@@ -34,7 +34,7 @@ export const OUTCOME_META: Record<
   BLOCKED: {
     label: 'Detenida',
     short: 'Detenidas',
-    tint: 'pink',
+    tint: 'violet',
     icon: CircleSlash,
     description: 'SKU inexistente o stock insuficiente.',
   },
@@ -57,11 +57,11 @@ export const OUTCOME_ORDER: Outcome[] = [
 ]
 
 export const TINT_CLASSES: Record<Tint, { surface: string; ink: string; dot: string }> = {
-  canary: { surface: 'bg-canary', ink: 'text-canary-ink', dot: 'bg-canary-ink' },
-  pink: { surface: 'bg-pink', ink: 'text-pink-ink', dot: 'bg-pink-ink' },
-  green: { surface: 'bg-green', ink: 'text-green-ink', dot: 'bg-green-ink' },
-  sky: { surface: 'bg-sky', ink: 'text-sky-ink', dot: 'bg-sky-ink' },
-  red: { surface: 'bg-red', ink: 'text-red-ink', dot: 'bg-red-ink' },
+  canary: { surface: 'bg-canary', ink: 'text-canary-ink', dot: 'bg-canary-mark' },
+  violet: { surface: 'bg-violet', ink: 'text-violet-ink', dot: 'bg-violet-mark' },
+  green: { surface: 'bg-green', ink: 'text-green-ink', dot: 'bg-green-mark' },
+  sky: { surface: 'bg-sky', ink: 'text-sky-ink', dot: 'bg-sky-mark' },
+  red: { surface: 'bg-red', ink: 'text-red-ink', dot: 'bg-red-mark' },
 }
 
 export const REASON_LABELS: Record<ReasonCode, string> = {

@@ -16,7 +16,7 @@ Memorable moment: the decision lands as an ink stamp with date and actor over th
 
 THESIS: Every request is a numbered quote form and every human decision is an ink stamp. Refuses the category-default sidebar + identical cards + badge soup.
 
-OWN-WORLD: Carbonless order-book palette. Light: paper white ground, ink-navy text and top bar, canary and pink copy tints as surface roles (pending = canary, rejected = pink), stamp blue for approval, stamp red for rejection. Dark: carbon-black paper, the same inks lifted. Hairline ruled fields with small uppercase field labels, numbered folio codes (Nº 000123), tabular mono figures. Rank by weight and case inside tables; one reversed ink plate per screen, the pending decision.
+OWN-WORLD: Carbonless order-book palette. Light: paper white ground, ink-navy text and top bar, five copy tints with hues at least 60 degrees apart (pending = canary, clarification = sky, ready = green, blocked = violet, rejected = red), stamp blue for approval, stamp red for rejection. Dark: carbon-black paper, the same inks lifted. Hairline ruled fields with small uppercase field labels, numbered folio codes (Nº 000123), tabular mono figures. Rank by weight and case inside tables; one reversed ink plate per screen, the pending decision.
 
 STORY: The visitor sees a stack of folios sorted by what needs attention, opens one, reads the customer's own words, sees the extraction and the twelve-stage strip light up the path taken, sees the rule that paused it, and stamps it.
 

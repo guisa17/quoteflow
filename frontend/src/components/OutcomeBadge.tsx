@@ -18,10 +18,10 @@ export function OutcomeBadge({
   return (
     <span
       className={cn(
-        'inline-flex w-fit shrink-0 items-center gap-1.5 rounded-sm font-semibold whitespace-nowrap',
+        'inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full font-semibold whitespace-nowrap',
         tint.surface,
         tint.ink,
-        size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2.5 py-1 text-sm',
+        size === 'sm' ? 'py-0.5 pr-2 pl-1.5 text-xs' : 'py-1 pr-3 pl-2.5 text-sm',
         className,
       )}
     >

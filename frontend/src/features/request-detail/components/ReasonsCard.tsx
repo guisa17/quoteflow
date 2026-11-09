@@ -42,7 +42,7 @@ export function ReasonsCard({
               'grid gap-x-4 gap-y-0.5 rounded-sm px-3 py-2 sm:grid-cols-[14rem_1fr]',
               kind === 'approve' && 'bg-canary text-canary-ink',
               kind === 'reject' && 'bg-red text-red-ink',
-              kind === 'block' && 'bg-pink text-pink-ink',
+              kind === 'block' && 'bg-violet text-violet-ink',
             )}
           >
             <span className="text-sm font-bold">{REASON_LABELS[reason.reason_code]}</span>

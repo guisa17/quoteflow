@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 
 export type ThemeChoice = 'system' | 'light' | 'dark'
+export type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = 'quoteflow.theme'
+const DARK_QUERY = '(prefers-color-scheme: dark)'
 
 function readChoice(): ThemeChoice {
   try {
@@ -11,6 +13,10 @@ function readChoice(): ThemeChoice {
   } catch {
     return 'system'
   }
+}
+
+function systemTheme(): Theme {
+  return typeof window !== 'undefined' && window.matchMedia?.(DARK_QUERY).matches ? 'dark' : 'light'
 }
 
 function apply(choice: ThemeChoice) {
@@ -24,8 +30,19 @@ export function applyStoredTheme() {
   apply(readChoice())
 }
 
+/** Claro u oscuro con un clic. Mientras no se elija nada, sigue al sistema;
+ * elegir el mismo tema que el sistema vuelve a seguirlo. */
 export function useTheme() {
   const [choice, setChoice] = useState<ThemeChoice>(readChoice)
+  const [system, setSystem] = useState<Theme>(systemTheme)
+
+  useEffect(() => {
+    const media = window.matchMedia?.(DARK_QUERY)
+    if (!media) return
+    const onChange = () => setSystem(media.matches ? 'dark' : 'light')
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [])
 
   useEffect(() => {
     apply(choice)
@@ -37,9 +54,11 @@ export function useTheme() {
     }
   }, [choice])
 
-  const cycle = useCallback(() => {
-    setChoice((c) => (c === 'system' ? 'light' : c === 'light' ? 'dark' : 'system'))
-  }, [])
+  const setTheme = useCallback(
+    (theme: Theme) => setChoice(theme === system ? 'system' : theme),
+    [system],
+  )
 
-  return { choice, cycle }
+  const theme: Theme = choice === 'system' ? system : choice
+  return { theme, setTheme }
 }

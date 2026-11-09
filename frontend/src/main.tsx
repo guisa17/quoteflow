@@ -32,7 +32,7 @@ createRoot(rootElement).render(
         closeButton
         toastOptions={{
           classNames: {
-            toast: '!bg-paper !text-ink !border-rule-strong !rounded-md !font-sans',
+            toast: '!bg-paper !text-ink !border-rule-strong !rounded-lg !font-sans',
             description: '!text-ink-soft',
             error: '!border-stamp-red',
           },

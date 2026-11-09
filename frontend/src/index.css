@@ -5,7 +5,7 @@
 /* ── QuoteFlow — talonario autocopiativo y sello ─────────────────────
    Cada solicitud es un folio numerado; cada decisión humana, un sello.
    Los colores de estado son los tintes de las copias de un talonario
-   (canario, rosa, verde, celeste) y las dos tintas de sello (azul, rojo).
+   (canario, violeta, verde, celeste, rojo) y las tintas de sello (azul, rojo).
    Ver DESIGN.md. */
 
 @custom-variant dark {
@@ -45,17 +45,26 @@
   --qf-stamp-red: oklch(51% 0.19 27);
   --qf-stamp-ochre: oklch(52% 0.12 75);
 
-  /* Tintes de copia: fondo + tinta legible encima */
-  --qf-canary: oklch(93.5% 0.085 96);
-  --qf-canary-ink: oklch(40% 0.09 75);
-  --qf-pink: oklch(92.5% 0.045 5);
-  --qf-pink-ink: oklch(43% 0.14 10);
-  --qf-green: oklch(93% 0.055 158);
-  --qf-green-ink: oklch(38% 0.09 158);
-  --qf-sky: oklch(93% 0.035 240);
-  --qf-sky-ink: oklch(40% 0.1 250);
-  --qf-red: oklch(92.5% 0.05 27);
-  --qf-red-ink: oklch(44% 0.17 27);
+  /* Tintes de copia: fondo + tinta legible encima. Cinco tonos separados
+     al menos 60° en el círculo (ámbar 85, rojo 27, violeta 300, azul 250,
+     verde 152) para que se distingan de un vistazo, no solo por la palabra. */
+  --qf-canary: oklch(91% 0.12 88);
+  --qf-canary-ink: oklch(44% 0.11 65);
+  --qf-violet: oklch(91.5% 0.06 300);
+  --qf-violet-ink: oklch(44% 0.17 300);
+  --qf-green: oklch(91.5% 0.085 152);
+  --qf-green-ink: oklch(40% 0.12 152);
+  --qf-sky: oklch(91.5% 0.055 245);
+  --qf-sky-ink: oklch(43% 0.15 255);
+  --qf-red: oklch(90% 0.07 25);
+  --qf-red-ink: oklch(47% 0.19 27);
+
+  /* Marcas: el tono puro de cada tinte, para puntos y lomos de fila. */
+  --qf-canary-mark: oklch(78% 0.16 82);
+  --qf-violet-mark: oklch(58% 0.19 300);
+  --qf-green-mark: oklch(63% 0.15 152);
+  --qf-sky-mark: oklch(60% 0.15 245);
+  --qf-red-mark: oklch(58% 0.21 27);
 }
 
 /* Carbón: el mismo talonario a media luz. Se aplica por preferencia del
@@ -81,16 +90,21 @@
     --qf-stamp-blue: oklch(72% 0.13 258);
     --qf-stamp-red: oklch(70% 0.16 25);
     --qf-stamp-ochre: oklch(80% 0.12 85);
-    --qf-canary: oklch(33% 0.06 90);
-    --qf-canary-ink: oklch(89% 0.11 94);
-    --qf-pink: oklch(31% 0.05 5);
-    --qf-pink-ink: oklch(87% 0.07 5);
-    --qf-green: oklch(30% 0.045 158);
-    --qf-green-ink: oklch(87% 0.08 158);
-    --qf-sky: oklch(30% 0.045 245);
-    --qf-sky-ink: oklch(87% 0.06 240);
-    --qf-red: oklch(31% 0.07 27);
-    --qf-red-ink: oklch(86% 0.08 27);
+    --qf-canary: oklch(36% 0.08 85);
+    --qf-canary-ink: oklch(90% 0.13 92);
+    --qf-violet: oklch(34% 0.08 300);
+    --qf-violet-ink: oklch(88% 0.08 300);
+    --qf-green: oklch(34% 0.07 155);
+    --qf-green-ink: oklch(88% 0.11 155);
+    --qf-sky: oklch(34% 0.07 250);
+    --qf-sky-ink: oklch(88% 0.07 240);
+    --qf-red: oklch(35% 0.1 25);
+    --qf-red-ink: oklch(88% 0.08 25);
+    --qf-canary-mark: oklch(84% 0.16 88);
+    --qf-violet-mark: oklch(72% 0.15 300);
+    --qf-green-mark: oklch(76% 0.15 155);
+    --qf-sky-mark: oklch(73% 0.13 245);
+    --qf-red-mark: oklch(70% 0.18 25);
   }
 }
 
@@ -114,23 +128,29 @@
   --qf-stamp-blue: oklch(72% 0.13 258);
   --qf-stamp-red: oklch(70% 0.16 25);
   --qf-stamp-ochre: oklch(80% 0.12 85);
-  --qf-canary: oklch(33% 0.06 90);
-  --qf-canary-ink: oklch(89% 0.11 94);
-  --qf-pink: oklch(31% 0.05 5);
-  --qf-pink-ink: oklch(87% 0.07 5);
-  --qf-green: oklch(30% 0.045 158);
-  --qf-green-ink: oklch(87% 0.08 158);
-  --qf-sky: oklch(30% 0.045 245);
-  --qf-sky-ink: oklch(87% 0.06 240);
-  --qf-red: oklch(31% 0.07 27);
-  --qf-red-ink: oklch(86% 0.08 27);
+  --qf-canary: oklch(36% 0.08 85);
+  --qf-canary-ink: oklch(90% 0.13 92);
+  --qf-violet: oklch(34% 0.08 300);
+  --qf-violet-ink: oklch(88% 0.08 300);
+  --qf-green: oklch(34% 0.07 155);
+  --qf-green-ink: oklch(88% 0.11 155);
+  --qf-sky: oklch(34% 0.07 250);
+  --qf-sky-ink: oklch(88% 0.07 240);
+  --qf-red: oklch(35% 0.1 25);
+  --qf-red-ink: oklch(88% 0.08 25);
+  --qf-canary-mark: oklch(84% 0.16 88);
+  --qf-violet-mark: oklch(72% 0.15 300);
+  --qf-green-mark: oklch(76% 0.15 155);
+  --qf-sky-mark: oklch(73% 0.13 245);
+  --qf-red-mark: oklch(70% 0.18 25);
 }
 
 @theme inline {
-  --radius-sm: 0.1875rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.375rem;
-  --radius-xl: 0.375rem;
+  /* Esquinas de tarjeta de cartulina: suaves, no de burbuja. */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.875rem;
 
   --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
@@ -163,14 +183,19 @@
   --color-stamp-ochre: var(--qf-stamp-ochre);
   --color-canary: var(--qf-canary);
   --color-canary-ink: var(--qf-canary-ink);
-  --color-pink: var(--qf-pink);
-  --color-pink-ink: var(--qf-pink-ink);
+  --color-violet: var(--qf-violet);
+  --color-violet-ink: var(--qf-violet-ink);
   --color-green: var(--qf-green);
   --color-green-ink: var(--qf-green-ink);
   --color-sky: var(--qf-sky);
   --color-sky-ink: var(--qf-sky-ink);
   --color-red: var(--qf-red);
   --color-red-ink: var(--qf-red-ink);
+  --color-canary-mark: var(--qf-canary-mark);
+  --color-violet-mark: var(--qf-violet-mark);
+  --color-green-mark: var(--qf-green-mark);
+  --color-sky-mark: var(--qf-sky-mark);
+  --color-red-mark: var(--qf-red-mark);
 
   /* Alias para los primitivos shadcn existentes */
   --color-background: var(--qf-desk);
@@ -306,8 +331,26 @@
   animation: stamp-land 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* La fila que acabas de decidir destella al volver a la bandeja y queda
+   marcada con un fondo azul de sello muy tenue. */
+@keyframes row-flash {
+  0%,
+  35% {
+    background-color: color-mix(in oklch, var(--qf-stamp-blue) 28%, transparent);
+  }
+  100% {
+    background-color: color-mix(in oklch, var(--qf-stamp-blue) 9%, transparent);
+  }
+}
+
+.row-fresh {
+  background-color: color-mix(in oklch, var(--qf-stamp-blue) 9%, transparent);
+  animation: row-flash 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .stamp-fresh {
+  .stamp-fresh,
+  .row-fresh {
     animation: none;
   }
 }

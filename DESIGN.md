@@ -12,16 +12,21 @@ colors:
   stamp-blue: "oklch(47% 0.17 263)"
   stamp-red: "oklch(51% 0.19 27)"
   stamp-ochre: "oklch(52% 0.12 75)"
-  canary: "oklch(93.5% 0.085 96)"
-  canary-ink: "oklch(40% 0.09 75)"
-  pink: "oklch(92.5% 0.045 5)"
-  pink-ink: "oklch(43% 0.14 10)"
-  green: "oklch(93% 0.055 158)"
-  green-ink: "oklch(38% 0.09 158)"
-  sky: "oklch(93% 0.035 240)"
-  sky-ink: "oklch(40% 0.1 250)"
-  red: "oklch(92.5% 0.05 27)"
-  red-ink: "oklch(44% 0.17 27)"
+  canary: "oklch(91% 0.12 88)"
+  canary-ink: "oklch(44% 0.11 65)"
+  canary-mark: "oklch(78% 0.16 82)"
+  violet: "oklch(91.5% 0.06 300)"
+  violet-ink: "oklch(44% 0.17 300)"
+  violet-mark: "oklch(58% 0.19 300)"
+  green: "oklch(91.5% 0.085 152)"
+  green-ink: "oklch(40% 0.12 152)"
+  green-mark: "oklch(63% 0.15 152)"
+  sky: "oklch(91.5% 0.055 245)"
+  sky-ink: "oklch(43% 0.15 255)"
+  sky-mark: "oklch(60% 0.15 245)"
+  red: "oklch(90% 0.07 25)"
+  red-ink: "oklch(47% 0.19 27)"
+  red-mark: "oklch(58% 0.21 27)"
 typography:
   title:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
@@ -60,9 +65,11 @@ typography:
     lineHeight: 1.47
     letterSpacing: "-0.01em"
 rounded:
-  sm: "3px"
-  md: "4px"
-  lg: "6px"
+  sm: "6px"
+  md: "8px"
+  lg: "12px"
+  xl: "14px"
+  full: "9999px"
 spacing:
   field: "12px"
   section: "24px"
@@ -89,7 +96,7 @@ components:
   outcome-chip-pending:
     backgroundColor: "{colors.canary}"
     textColor: "{colors.canary-ink}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.full}"
     padding: "2px 6px"
   decision-plate:
     backgroundColor: "{colors.bar}"
@@ -110,7 +117,7 @@ El razonamiento queda a la vista: el texto del cliente, el recorrido de doce eta
 
 **Key Characteristics:**
 - Folios sobre un escritorio: una hoja de papel con borde fino sobre un fondo apenas más oscuro, sin sombras.
-- Los colores de estado son tintes de copia: canario, celeste, verde, rosa y rojo, siempre con ícono y texto.
+- Los colores de estado son tintes de copia: canario, celeste, verde, violeta y rojo, siempre con ícono y texto.
 - Una sola placa invertida por pantalla: la decisión pendiente.
 - La decisión humana queda como un sello con palabra, fecha y nombre.
 
@@ -127,7 +134,7 @@ Estrategia: neutros de papel y tinta, más cinco tintes de copia que hacen el tr
 - **Tinta ocre** (stamp-ochre): el sello "Observado".
 
 ### Tertiary
-- **Tintes de copia**: canario (pendiente de aprobación), celeste (necesita aclaración), verde (borrador listo), rosa (detenida), rojo (rechazada). Cada tinte tiene su tinta (`*-ink`) para el texto encima.
+- **Tintes de copia**: canario (pendiente de aprobación), celeste (necesita aclaración), verde (borrador listo), violeta (detenida), rojo (rechazada). Los cinco tonos están separados al menos 60° en el círculo cromático para distinguirse de un vistazo. Cada tinte tiene su tinta (`*-ink`) para el texto encima y su marca (`*-mark`), el tono puro, para puntos y para el lomo de color de cada fila de la bandeja.
 
 ### Neutral
 - **Escritorio** (desk) de fondo, **papel** (paper) para los folios y **papel reglado** (paper-ruled) para filas, campos de solo lectura y celdas del recorrido.
@@ -167,7 +174,7 @@ Plano por completo. La profundidad viene de capas de papel (escritorio → folio
 
 ## Shapes
 
-Esquinas casi rectas, como un formulario cortado: 3px en campos y botones, 4–6px en folios y placas. El único objeto rotado es el sello (−7° aprobado, 5° rechazado, −3° observado).
+Esquinas de cartulina: suaves sin llegar a burbuja. 6–8px en campos y botones, 12px en placas y 14px en folios. Las etiquetas de estado, los chips de ejemplo, el botón de registrar y el selector de tema son píldoras. El único objeto rotado es el sello (−7° aprobado, 5° rechazado, −3° observado).
 
 ## Components
 
@@ -187,6 +194,10 @@ Esquinas casi rectas, como un formulario cortado: 3px en campos y botones, 4–6
 
 ### Navigation
 - Barra de tinta de 48px con la marca "QF" (doble filete), el enlace a la bandeja subrayado cuando está activo, el selector de tema y el botón de registrar en papel.
+- **Selector de tema:** dos botones (sol y luna) en una píldora; el activo va relleno. Un clic cambia el tema. Mientras no se elige nada sigue al sistema, y elegir el mismo tema que el sistema vuelve a seguirlo.
+
+### Rastro de decisiones
+- Al decidir, el folio se anota en la sesión. De vuelta en la bandeja aparece un aviso ("Aprobaste el folio Nº …, ahora está en …"), la fila destella en azul de sello, queda con un fondo tenue y se desplaza a la vista. Debajo de su resultado se lee "Aprobada por ti · recién". Las demás filas decididas en la sesión conservan la línea "… por ti".
 
 ### Sello
 - Doble filete del color de su tinta, la palabra en mayúsculas extra negritas y espaciadas, y debajo la fecha y quien decidió. Se mezcla con el papel (multiply en claro, screen en oscuro). Al decidir, cae: entra grande y desenfocado y se asienta en 420ms con curva exponencial; sin animación si se pide movimiento reducido.
