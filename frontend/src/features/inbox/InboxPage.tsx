@@ -1,8 +1,9 @@
-import { ArrowRight, Plus, RotateCcw, Search, Stamp, X } from 'lucide-react'
+import { ArrowRight, CircleCheckBig, Plus, RotateCcw, Search, Stamp, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 
 import { OutcomeBadge } from '@/components/OutcomeBadge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRequestList } from '@/hooks/useRequests'
 import { API_MODE } from '@/lib/config'
@@ -12,6 +13,13 @@ import { ACTION_PAST, clearRecentDecisions, readRecentDecisions } from '@/lib/re
 import { cn } from '@/lib/utils'
 import type { DecisionAction, Outcome, RequestSummary } from '@/types/api'
 
+/** Dos vistas, como en las bandejas de aprobación habituales: la cola de
+ * trabajo (lo que espera tu decisión) y el archivo completo. Lo que decides
+ * sale de la cola; el estado se filtra aparte, junto al buscador. */
+type View = 'pending' | 'all'
+
+const VIEW_PARAM: Record<View, string> = { pending: 'por-decidir', all: 'todas' }
+
 const ACTION_VERB: Record<DecisionAction, string> = {
   APPROVE: 'Aprobaste',
   REJECT: 'Rechazaste',
@@ -20,8 +28,6 @@ const ACTION_VERB: Record<DecisionAction, string> = {
 
 /** El aviso de "acabas de decidir" solo tiene sentido justo después. */
 const FRESH_WINDOW_MS = 15 * 60 * 1000
-
-type Filter = Outcome | 'ALL'
 
 function matches(request: RequestSummary, query: string): boolean {
   const q = query.trim().toLowerCase()
@@ -37,50 +43,80 @@ function byAttention(a: RequestSummary, b: RequestSummary): number {
   return rank !== 0 ? rank : b.updated_at.localeCompare(a.updated_at)
 }
 
+function parseStatus(value: string | null): Outcome | null {
+  return value && (OUTCOME_ORDER as string[]).includes(value) ? (value as Outcome) : null
+}
+
 export function InboxPage() {
   const navigate = useNavigate()
   const { data, isPending, isError, error, refetch } = useRequestList()
+  const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('ALL')
   const [recent, setRecent] = useState(readRecentDecisions)
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const freshRowRef = useRef<HTMLTableRowElement>(null)
-
-  const decidedById = useMemo(() => new Map(recent.map((d) => [d.requestId, d])), [recent])
-  const latest = recent[0]
-  const latestRequest = latest ? data?.find((r) => r.id === latest.requestId) : undefined
-  const freshId = latest && Date.now() - latest.at < FRESH_WINDOW_MS ? latest.requestId : undefined
-
-  // Al volver de decidir, lleva la vista a la fila: puede haber cambiado de grupo.
-  useEffect(() => {
-    freshRowRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [data, freshId])
 
   const counts = useMemo(() => {
     const result = Object.fromEntries(OUTCOME_ORDER.map((o) => [o, 0])) as Record<Outcome, number>
     for (const r of data ?? []) result[r.outcome] += 1
     return result
   }, [data])
+  const total = data?.length ?? 0
+  const pendingCount = counts.PENDING_APPROVAL
+
+  // La vista vive en la URL: el botón Atrás y los enlaces la conservan.
+  // Sin elección explícita, abre la cola si hay algo por decidir.
+  const status = parseStatus(params.get('estado'))
+  const viewParam = params.get('vista')
+  const view: View =
+    status || viewParam === VIEW_PARAM.all
+      ? 'all'
+      : viewParam === VIEW_PARAM.pending || isPending || pendingCount > 0
+        ? 'pending'
+        : 'all'
+
+  function setView(next: View) {
+    setParams({ vista: VIEW_PARAM[next] }, { replace: true })
+  }
+  function setStatus(next: Outcome | null) {
+    setParams(next ? { vista: VIEW_PARAM.all, estado: next } : { vista: VIEW_PARAM.all }, { replace: true })
+  }
 
   const rows = useMemo(
     () =>
       (data ?? [])
-        .filter((r) => matches(r, query) && (filter === 'ALL' || r.outcome === filter))
+        .filter((r) =>
+          view === 'pending' ? r.outcome === 'PENDING_APPROVAL' : status === null || r.outcome === status,
+        )
+        .filter((r) => matches(r, query))
         .sort(byAttention),
-    [data, query, filter],
+    [data, query, view, status],
   )
+
+  const decidedById = useMemo(() => new Map(recent.map((d) => [d.requestId, d])), [recent])
+  const latest = recent[0] && Date.now() - recent[0].at < FRESH_WINDOW_MS ? recent[0] : undefined
+  const latestRequest = latest ? data?.find((r) => r.id === latest.requestId) : undefined
+  const latestVisible = latestRequest ? rows.some((r) => r.id === latestRequest.id) : false
+
+  // Al volver de decidir, o al pasar a "Todas", lleva la vista a la fila.
+  useEffect(() => {
+    freshRowRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [rows, latest?.requestId])
 
   async function handleReset() {
     const { resetDemoData } = await import('@/mocks/store')
     resetDemoData()
     clearRecentDecisions()
     setRecent([])
-    setFilter('ALL')
     setQuery('')
+    setParams({}, { replace: true })
     await refetch()
   }
 
-  const total = data?.length ?? 0
+  function clearFilters() {
+    setQuery('')
+    setStatus(null)
+  }
 
   return (
     <div className="mx-auto max-w-[88rem] px-4 pt-6 pb-16 sm:px-6">
@@ -90,103 +126,158 @@ export function InboxPage() {
           <p className="text-ink-soft mt-1 text-sm">
             {isPending
               ? 'Cargando folios…'
-              : counts.PENDING_APPROVAL > 0
-                ? `${counts.PENDING_APPROVAL} ${counts.PENDING_APPROVAL === 1 ? 'solicitud espera' : 'solicitudes esperan'} tu decisión, de ${total} en total.`
-                : `${total} solicitudes, ninguna espera decisión.`}
+              : pendingCount > 0
+                ? `${pendingCount} ${pendingCount === 1 ? 'solicitud espera' : 'solicitudes esperan'} tu decisión.`
+                : 'Estás al día: nada espera tu decisión.'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {API_MODE === 'mock' && (
-            <button
-              type="button"
-              onClick={handleReset}
-              className="text-ink-soft hover:text-ink inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors"
-            >
-              <RotateCcw aria-hidden className="size-3.5" />
-              Restaurar datos de demo
-            </button>
-          )}
-        </div>
+        {API_MODE === 'mock' && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-ink-soft hover:text-ink inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors"
+          >
+            <RotateCcw aria-hidden className="size-3.5" />
+            Restaurar datos de demo
+          </button>
+        )}
       </div>
 
-      {latest && latestRequest && freshId && !bannerDismissed && (
+      {latest && latestRequest && !bannerDismissed && (
         <div
           role="status"
-          className="border-stamp-blue/40 bg-paper mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border py-2.5 pr-2 pl-3.5"
+          className="border-stamp-blue/40 bg-paper mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border py-2 pr-2 pl-3.5"
         >
           <Stamp aria-hidden className="text-stamp-blue size-4 shrink-0 stroke-[2.25]" />
           <p className="min-w-0 flex-1 text-sm">
             <span className="font-semibold">
-              {ACTION_VERB[latest.action]} el folio <span className="font-figures">Nº {folioNumber(latest.requestId)}</span>
+              {ACTION_VERB[latest.action]} el folio{' '}
+              <span className="font-figures">Nº {folioNumber(latest.requestId)}</span>
             </span>{' '}
-            de {latestRequest.customer_name || latestRequest.customer_id}
-            {' · '}ahora está en{' '}
+            de {latestRequest.customer_name || latestRequest.customer_id} · ahora está en{' '}
             <span className={cn('font-semibold', TINT_CLASSES[OUTCOME_META[latestRequest.outcome].tint].ink)}>
               {OUTCOME_META[latestRequest.outcome].label}
-            </span>{' '}
-            y queda resaltado abajo.
+            </span>
+            .
+            {view === 'pending' && pendingCount > 0 && latestRequest.outcome !== 'PENDING_APPROVAL' && (
+              <span className="text-ink-soft">
+                {' '}
+                Te {pendingCount === 1 ? 'queda' : 'quedan'} {pendingCount} por decidir.
+              </span>
+            )}
           </p>
-          <Link
-            to={`/requests/${latest.requestId}`}
-            className="text-stamp-blue hover:bg-stamp-blue/10 inline-flex h-7 items-center gap-1 rounded-full px-2.5 text-xs font-semibold transition-colors"
-          >
-            Abrir <ArrowRight aria-hidden className="size-3.5" />
-          </Link>
-          <button
-            type="button"
-            onClick={() => setBannerDismissed(true)}
-            aria-label="Cerrar aviso"
-            className="text-ink-soft hover:text-ink hover:bg-paper-ruled flex size-7 items-center justify-center rounded-full transition-colors"
-          >
-            <X aria-hidden className="size-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            {!latestVisible && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('')
+                  setStatus(null)
+                }}
+                className="text-stamp-blue hover:bg-stamp-blue/10 inline-flex h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold transition-colors"
+              >
+                Ver en Todas
+              </button>
+            )}
+            <Link
+              to={`/requests/${latest.requestId}`}
+              className="text-stamp-blue hover:bg-stamp-blue/10 inline-flex h-8 items-center gap-1 rounded-full px-3 text-xs font-semibold transition-colors"
+            >
+              Abrir folio <ArrowRight aria-hidden className="size-3.5" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setBannerDismissed(true)}
+              aria-label="Cerrar aviso"
+              className="text-ink-soft hover:text-ink hover:bg-paper-ruled flex size-8 items-center justify-center rounded-full transition-colors"
+            >
+              <X aria-hidden className="size-4" />
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Conteo por resultado: cada casilla filtra la bandeja. */}
-      <div
-        role="group"
-        aria-label="Filtrar por resultado"
-        className="bg-paper border-rule-strong mt-5 grid grid-cols-3 overflow-hidden rounded-xl border sm:grid-cols-6"
-      >
-        <TallyCell
-          label="Todas"
-          count={total}
-          active={filter === 'ALL'}
-          onClick={() => setFilter('ALL')}
-          loading={isPending}
-        />
-        {OUTCOME_ORDER.map((outcome) => (
-          <TallyCell
-            key={outcome}
-            label={OUTCOME_META[outcome].short}
-            count={counts[outcome]}
-            tint={OUTCOME_META[outcome].tint}
-            active={filter === outcome}
-            onClick={() => setFilter(filter === outcome ? 'ALL' : outcome)}
-            loading={isPending}
-          />
-        ))}
-      </div>
-
-      <div className="bg-paper border-rule-strong mt-4 overflow-hidden rounded-xl border">
-        <div className="border-rule flex flex-wrap items-center justify-between gap-3 border-b px-4 py-2.5">
-          <p className="text-ink-soft text-xs">
-            {filter === 'ALL' ? 'Todas las solicitudes' : OUTCOME_META[filter].label}
-            {' · '}
-            <span className="font-figures">{rows.length}</span> folio{rows.length === 1 ? '' : 's'}
-          </p>
-          <label className="relative block">
-            <span className="sr-only">Buscar solicitudes</span>
-            <Search aria-hidden className="text-ink-faint absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cliente, SKU o folio"
-              className="border-rule-strong bg-paper placeholder:text-ink-faint focus-visible:border-stamp-blue h-8 w-56 rounded-md border pr-2 pl-8 text-sm transition-colors outline-none sm:w-72"
+      <div className="bg-paper border-rule-strong mt-5 overflow-hidden rounded-xl border">
+        {/* Vistas a la izquierda; búsqueda y estado a la derecha. */}
+        <div className="border-rule flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b px-2 pt-1 sm:px-3">
+          <div role="tablist" aria-label="Vistas de la bandeja" className="flex">
+            <ViewTab
+              active={view === 'pending'}
+              onClick={() => setView('pending')}
+              label="Por decidir"
+              count={isPending ? null : pendingCount}
+              emphasize={pendingCount > 0}
             />
-          </label>
+            <ViewTab
+              active={view === 'all'}
+              onClick={() => setView('all')}
+              label="Todas"
+              count={isPending ? null : total}
+            />
+          </div>
+
+          <div className="flex w-full flex-wrap items-center gap-2 pb-2 sm:w-auto">
+            {view === 'all' && (
+              <div className="flex items-center gap-1">
+                <Select
+                  value={status ?? 'ALL'}
+                  onValueChange={(v) => setStatus(v === 'ALL' ? null : (v as Outcome))}
+                >
+                  <SelectTrigger
+                    aria-label="Filtrar por estado"
+                    className={cn(
+                      'h-9 w-auto min-w-[11rem] gap-2 rounded-md text-sm',
+                      status && 'border-ink/40 font-semibold',
+                    )}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end" className="min-w-[15rem]">
+                    <SelectItem value="ALL" className="[&>span:last-child]:flex-1">
+                      <span className="flex w-full items-center justify-between gap-4">
+                        Todos los estados
+                        <span className="font-figures text-ink-faint">{total}</span>
+                      </span>
+                    </SelectItem>
+                    {OUTCOME_ORDER.map((o) => (
+                      <SelectItem key={o} value={o} className="[&>span:last-child]:flex-1">
+                        <span className="flex w-full items-center gap-2">
+                          <span
+                            aria-hidden
+                            className={cn('size-2.5 shrink-0 rounded-full', TINT_CLASSES[OUTCOME_META[o].tint].dot)}
+                          />
+                          {OUTCOME_META[o].label}
+                          <span className="font-figures text-ink-faint ml-auto pl-4">{counts[o]}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {status && (
+                  <button
+                    type="button"
+                    onClick={() => setStatus(null)}
+                    aria-label="Quitar filtro de estado"
+                    title="Quitar filtro de estado"
+                    className="text-ink-soft hover:text-ink hover:bg-paper-ruled flex size-9 items-center justify-center rounded-md transition-colors"
+                  >
+                    <X aria-hidden className="size-4" />
+                  </button>
+                )}
+              </div>
+            )}
+            <label className="relative block min-w-0 flex-1 sm:flex-none">
+              <span className="sr-only">Buscar solicitudes</span>
+              <Search aria-hidden className="text-ink-faint absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Cliente, SKU o folio"
+                className="border-rule-strong bg-paper placeholder:text-ink-faint focus-visible:border-stamp-blue h-9 w-full rounded-md border pr-2 pl-8 text-sm transition-colors outline-none sm:w-64"
+              />
+            </label>
+          </div>
         </div>
 
         {isPending ? (
@@ -204,126 +295,109 @@ export function InboxPage() {
             <button
               type="button"
               onClick={() => refetch()}
-              className="border-rule-strong hover:bg-paper-ruled mt-4 h-8 rounded-md border px-3 text-sm font-medium"
+              className="border-rule-strong hover:bg-paper-ruled mt-4 h-9 rounded-md border px-3 text-sm font-medium"
             >
               Reintentar
             </button>
           </div>
         ) : rows.length === 0 ? (
-          <div className="px-6 py-14 text-center">
-            <p className="font-semibold">
-              {total > 0 ? 'Ningún folio coincide con el filtro.' : 'Todavía no hay solicitudes.'}
-            </p>
-            <p className="text-ink-soft mt-1 text-sm">
-              {total > 0
-                ? 'Prueba con otro resultado o borra la búsqueda.'
-                : 'Registra la primera y QuoteFlow la resolverá al instante.'}
-            </p>
-            <Link
-              to={total > 0 ? '/' : '/new'}
-              onClick={() => {
-                setFilter('ALL')
-                setQuery('')
-              }}
-              className="bg-ink text-paper mt-4 inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm font-semibold"
-            >
-              {total > 0 ? 'Ver todas' : (
-                <>
-                  <Plus aria-hidden className="size-4" /> Registrar solicitud
-                </>
-              )}
-            </Link>
-          </div>
+          <EmptyState
+            kind={
+              total === 0
+                ? 'no-data'
+                : query.trim() || status
+                  ? 'no-match'
+                  : view === 'pending'
+                    ? 'caught-up'
+                    : 'no-data'
+            }
+            onClear={clearFilters}
+            onShowAll={() => setView('all')}
+          />
         ) : (
           <div className="overflow-x-auto">
-          <table className="w-full min-w-[22rem] text-left text-sm">
-            <thead>
-              <tr className="field-label border-rule border-b">
-                <th scope="col" className="w-20 py-2 pl-4 font-semibold sm:w-24">Folio</th>
-                <th scope="col" className="py-2 pl-3 font-semibold">Cliente</th>
-                <th scope="col" className="hidden py-2 pl-3 font-semibold md:table-cell">Pedido</th>
-                <th scope="col" className="py-2 pl-3 font-semibold">Resultado</th>
-                <th scope="col" className="hidden py-2 pl-3 font-semibold lg:table-cell">Motivo</th>
-                <th scope="col" className="hidden py-2 pr-4 pl-3 text-right font-semibold sm:table-cell">
-                  Actualizado
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => {
-                const pending = r.outcome === 'PENDING_APPROVAL'
-                const href = `/requests/${r.id}`
-                const decided = decidedById.get(r.id)
-                const fresh = r.id === freshId
-                return (
-                  <tr
-                    key={r.id}
-                    ref={fresh ? freshRowRef : undefined}
-                    onClick={() => navigate(href)}
-                    aria-current={fresh ? 'true' : undefined}
-                    className={cn(
-                      'group border-rule cursor-pointer border-b transition-colors last:border-0',
-                      fresh
-                        ? 'row-fresh'
-                        : pending
-                          ? 'bg-canary/30 hover:bg-canary/55'
-                          : 'hover:bg-paper-ruled',
-                    )}
-                  >
-                    <td className="relative py-2.5 pl-4 align-top">
-                      {/* Lomo de color: el resultado se ve antes de leer la fila. */}
-                      <span
-                        aria-hidden
-                        className={cn(
-                          'absolute inset-y-1.5 left-1 w-1 rounded-full',
-                          TINT_CLASSES[OUTCOME_META[r.outcome].tint].dot,
-                        )}
-                      />
-                      <Link
-                        to={href}
-                        onClick={(e) => e.stopPropagation()}
-                        className="font-figures text-ink-soft group-hover:text-ink text-xs whitespace-nowrap focus-visible:outline-offset-4"
-                      >
-                        Nº {folioNumber(r.id)}
-                      </Link>
-                    </td>
-                    <td className="py-2.5 pl-3 align-top">
-                      <span className={cn('block leading-tight', pending ? 'font-bold' : 'font-medium')}>
-                        {r.customer_name || 'Cliente no registrado'}
-                      </span>
-                      <span className="font-figures text-ink-faint text-xs">{r.customer_id}</span>
-                    </td>
-                    <td className="font-figures hidden py-2.5 pl-3 align-top md:table-cell">
-                      {r.summary}
-                    </td>
-                    <td className="py-2.5 pl-3 align-top">
-                      <OutcomeBadge outcome={r.outcome} />
-                      {decided && (
-                        <span
-                          className={cn(
-                            'mt-1 flex items-center gap-1 text-xs font-semibold',
-                            fresh ? 'text-stamp-blue' : 'text-ink-soft',
-                          )}
-                        >
-                          <Stamp aria-hidden className="size-3 stroke-[2.25]" />
-                          {ACTION_PAST[decided.action]} por ti{fresh ? ' · recién' : ''}
-                        </span>
+            <table className="w-full min-w-[22rem] text-left text-sm">
+              <thead>
+                <tr className="field-label border-rule border-b">
+                  <th scope="col" className="w-20 py-2 pl-4 font-semibold sm:w-24">Folio</th>
+                  <th scope="col" className="py-2 pl-3 font-semibold">Cliente</th>
+                  <th scope="col" className="hidden py-2 pl-3 font-semibold md:table-cell">Pedido</th>
+                  <th scope="col" className="py-2 pl-3 font-semibold">Resultado</th>
+                  <th scope="col" className="hidden py-2 pl-3 font-semibold lg:table-cell">Motivo</th>
+                  <th scope="col" className="hidden py-2 pr-4 pl-3 text-right font-semibold sm:table-cell">
+                    Actualizado
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => {
+                  const pending = r.outcome === 'PENDING_APPROVAL'
+                  const href = `/requests/${r.id}`
+                  const decided = decidedById.get(r.id)
+                  const fresh = r.id === latest?.requestId
+                  return (
+                    <tr
+                      key={r.id}
+                      ref={fresh ? freshRowRef : undefined}
+                      onClick={() => navigate(href)}
+                      aria-current={fresh ? 'true' : undefined}
+                      className={cn(
+                        'group border-rule cursor-pointer border-b transition-colors last:border-0',
+                        fresh ? 'row-fresh' : 'hover:bg-paper-ruled',
                       )}
-                    </td>
-                    <td className="text-ink-soft hidden py-2.5 pl-3 align-top lg:table-cell">
-                      {r.reason_code ? REASON_LABELS[r.reason_code] : '—'}
-                    </td>
-                    <td className="text-ink-soft hidden py-2.5 pr-4 pl-3 text-right align-top text-xs whitespace-nowrap sm:table-cell">
-                      <span className="group-hover:hidden">{formatDate(r.updated_at)}</span>
-                      <span className="text-ink hidden items-center justify-end gap-1 font-medium group-hover:inline-flex">
-                        Abrir <ArrowRight aria-hidden className="size-3.5" />
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                    >
+                      <td className="relative py-3 pl-4 align-top">
+                        {/* Lomo de color: el resultado se ve antes de leer la fila. */}
+                        <span
+                          aria-hidden
+                          className={cn(
+                            'absolute inset-y-2 left-1 w-1 rounded-full',
+                            TINT_CLASSES[OUTCOME_META[r.outcome].tint].dot,
+                          )}
+                        />
+                        <Link
+                          to={href}
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-figures text-ink-soft group-hover:text-ink text-xs whitespace-nowrap focus-visible:outline-offset-4"
+                        >
+                          Nº {folioNumber(r.id)}
+                        </Link>
+                      </td>
+                      <td className="py-3 pl-3 align-top">
+                        <span className={cn('block leading-tight', pending ? 'font-bold' : 'font-medium')}>
+                          {r.customer_name || 'Cliente no registrado'}
+                        </span>
+                        <span className="font-figures text-ink-faint text-xs">{r.customer_id}</span>
+                      </td>
+                      <td className="font-figures hidden py-3 pl-3 align-top md:table-cell">{r.summary}</td>
+                      <td className="py-3 pl-3 align-top">
+                        <OutcomeBadge outcome={r.outcome} />
+                        {decided && (
+                          <span
+                            className={cn(
+                              'mt-1 flex items-center gap-1 text-xs font-semibold',
+                              fresh ? 'text-stamp-blue' : 'text-ink-soft',
+                            )}
+                          >
+                            <Stamp aria-hidden className="size-3 stroke-[2.25]" />
+                            {ACTION_PAST[decided.action]} por ti{fresh ? ' · recién' : ''}
+                          </span>
+                        )}
+                      </td>
+                      <td className="text-ink-soft hidden py-3 pl-3 align-top lg:table-cell">
+                        {r.reason_code ? REASON_LABELS[r.reason_code] : '—'}
+                      </td>
+                      <td className="text-ink-soft hidden py-3 pr-4 pl-3 text-right align-top text-xs whitespace-nowrap sm:table-cell">
+                        <span className="group-hover:hidden">{formatDate(r.updated_at)}</span>
+                        <span className="text-ink hidden items-center justify-end gap-1 font-medium group-hover:inline-flex">
+                          {pending ? 'Decidir' : 'Abrir'} <ArrowRight aria-hidden className="size-3.5" />
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
@@ -331,40 +405,103 @@ export function InboxPage() {
   )
 }
 
-function TallyCell({
-  label,
-  count,
-  tint,
+function ViewTab({
   active,
   onClick,
-  loading,
+  label,
+  count,
+  emphasize = false,
 }: {
-  label: string
-  count: number
-  tint?: keyof typeof TINT_CLASSES
   active: boolean
   onClick: () => void
-  loading: boolean
+  label: string
+  count: number | null
+  emphasize?: boolean
 }) {
-  const t = tint ? TINT_CLASSES[tint] : null
   return (
     <button
       type="button"
-      aria-pressed={active}
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
       className={cn(
-        'border-rule relative flex flex-col items-start gap-1 border-r border-b px-4 pt-3 pb-2.5 text-left transition-colors sm:border-b-0 [&:nth-child(3n)]:border-r-0 sm:[&:nth-child(3n)]:border-r sm:last:border-r-0',
-        active ? (t ? t.surface : 'bg-paper-ruled') : 'hover:bg-paper-ruled',
+        'relative flex h-12 items-center gap-2 px-3 text-sm font-semibold transition-colors',
+        'after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:transition-colors',
+        active ? 'text-ink after:bg-ink' : 'text-ink-soft hover:text-ink after:bg-transparent',
       )}
     >
-      <span className={cn('flex items-center gap-1.5 text-xs font-semibold', t ? t.ink : 'text-ink-soft')}>
-        {t && <span aria-hidden className={cn('size-2.5 rounded-full', t.dot)} />}
-        {label}
-      </span>
-      <span className="font-figures text-[1.375rem] leading-none font-semibold">
-        {loading ? '–' : count}
-      </span>
-      {active && <span aria-hidden className="bg-ink absolute inset-x-0 bottom-0 h-0.5" />}
+      {label}
+      {count !== null && (
+        <span
+          className={cn(
+            'font-figures inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold',
+            emphasize ? 'bg-canary-mark text-[oklch(24%_0.06_70)]' : 'bg-paper-ruled text-ink-soft',
+          )}
+        >
+          {count}
+        </span>
+      )}
     </button>
+  )
+}
+
+function EmptyState({
+  kind,
+  onClear,
+  onShowAll,
+}: {
+  kind: 'caught-up' | 'no-match' | 'no-data'
+  onClear: () => void
+  onShowAll: () => void
+}) {
+  const content = {
+    'caught-up': {
+      title: 'Nada por decidir',
+      body: 'Las solicitudes que necesiten tu aprobación aparecerán aquí.',
+    },
+    'no-match': {
+      title: 'Ningún folio coincide',
+      body: 'Prueba con otro estado o borra la búsqueda.',
+    },
+    'no-data': {
+      title: 'Todavía no hay solicitudes',
+      body: 'Registra la primera y QuoteFlow la resolverá al instante.',
+    },
+  }[kind]
+
+  return (
+    <div className="flex flex-col items-center px-6 py-14 text-center">
+      {kind === 'caught-up' && <CircleCheckBig aria-hidden className="text-green-mark mb-3 size-8" />}
+      <p className="font-semibold">{content.title}</p>
+      <p className="text-ink-soft mt-1 text-sm">{content.body}</p>
+      <div className="mt-4 flex gap-2">
+        {kind === 'caught-up' && (
+          <button
+            type="button"
+            onClick={onShowAll}
+            className="border-rule-strong hover:bg-paper-ruled h-9 rounded-md border px-3 text-sm font-semibold"
+          >
+            Ver todas
+          </button>
+        )}
+        {kind === 'no-match' && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="bg-ink text-paper h-9 rounded-md px-3 text-sm font-semibold"
+          >
+            Quitar filtros
+          </button>
+        )}
+        {kind !== 'no-match' && (
+          <Link
+            to="/new"
+            className="bg-ink text-paper inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-semibold"
+          >
+            <Plus aria-hidden className="size-4" /> Registrar solicitud
+          </Link>
+        )}
+      </div>
+    </div>
   )
 }

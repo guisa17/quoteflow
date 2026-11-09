@@ -164,7 +164,7 @@ Estrategia: neutros de papel y tinta, más cinco tintes de copia que hacen el tr
 
 ## Layout
 
-Columna máxima de 88rem con margen de 16–24px. La bandeja es una franja de conteos que filtra y una tabla densa de filas de 40px. El detalle es un folio en dos columnas desde 1024px: contenido a la izquierda y panel de decisión fijo de 22rem a la derecha. En móvil, el panel va primero, debajo del encabezado, y las tablas se desplazan en horizontal dentro de su borde.
+Columna máxima de 88rem con margen de 16–24px. La bandeja sigue el patrón de las colas de aprobación (Ramp, HubSpot Quotes): dos pestañas, **Por decidir** (la cola de trabajo, vista por defecto cuando hay pendientes, con su conteo en canario) y **Todas** (el archivo). En "Todas", un desplegable **Estado** con conteos filtra junto al buscador y se quita con una ×. La vista y el estado viven en la URL (`?vista=todas&estado=BLOCKED`). Debajo, una tabla densa con lomo de color por fila. No hay tablero de métricas: los conteos están en las pestañas y en el desplegable. El detalle es un folio en dos columnas desde 1024px: contenido a la izquierda y panel de decisión fijo de 22rem a la derecha. En móvil, el panel va primero, debajo del encabezado, y las tablas se desplazan en horizontal dentro de su borde.
 
 **The Registered Stages Rule.** El recorrido siempre muestra las doce etapas en la misma posición (12 columnas, o 6 × 2 en móvil): la que no se recorrió queda atenuada, nunca se oculta.
 
@@ -197,7 +197,7 @@ Esquinas de cartulina: suaves sin llegar a burbuja. 6–8px en campos y botones,
 - **Selector de tema:** dos botones (sol y luna) en una píldora; el activo va relleno. Un clic cambia el tema. Mientras no se elige nada sigue al sistema, y elegir el mismo tema que el sistema vuelve a seguirlo.
 
 ### Rastro de decisiones
-- Al decidir, el folio se anota en la sesión. De vuelta en la bandeja aparece un aviso ("Aprobaste el folio Nº …, ahora está en …"), la fila destella en azul de sello, queda con un fondo tenue y se desplaza a la vista. Debajo de su resultado se lee "Aprobada por ti · recién". Las demás filas decididas en la sesión conservan la línea "… por ti".
+- Al decidir, el folio se anota en la sesión. De vuelta en la bandeja, el folio ya salió de "Por decidir" y un aviso lo confirma ("Aprobaste el folio Nº …, ahora está en … Te quedan N por decidir.") con "Ver en Todas" y "Abrir folio". En "Todas", la fila destella en azul de sello, queda con un fondo tenue y se desplaza a la vista. Debajo de su resultado se lee "Aprobada por ti · recién". Las demás filas decididas en la sesión conservan la línea "… por ti".
 
 ### Sello
 - Doble filete del color de su tinta, la palabra en mayúsculas extra negritas y espaciadas, y debajo la fecha y quien decidió. Se mezcla con el papel (multiply en claro, screen en oscuro). Al decidir, cae: entra grande y desenfocado y se asienta en 420ms con curva exponencial; sin animación si se pide movimiento reducido.
