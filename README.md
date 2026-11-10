@@ -16,7 +16,7 @@ Un LLM lee el pedido, reglas deterministas calculan y deciden, y una persona apr
 
 </div>
 
-> Proyecto de portfolio de **Guillermo Salcedo**. La empresa (Ferrocima Industrial), sus clientes y su catálogo son ficticios.
+> La empresa (Ferrocima Industrial), sus clientes y su catálogo son ficticios.
 
 ## Pruébalo en un minuto
 
@@ -108,35 +108,43 @@ Cada solicitud recorre un grafo de 12 pasos y termina en uno de cinco resultados
 
 ```mermaid
 flowchart LR
-    texto["<b>Texto del cliente</b><br/>entrada no confiable"]
+    texto[/"<b>Texto del cliente</b><br/>entrada no confiable"/]
 
-    subgraph llm["app/llm · no determinista"]
-        interpretar["Leer el pedido<br/>Gemini · respaldo con reglas"]
+    subgraph modelo["MODELO · no determinista"]
+        leer["<b>Leer el pedido</b><br/>Gemini, con respaldo de reglas"]
     end
 
-    subgraph dominio["app/domain · determinista"]
-        reglas["Catálogo · Stock · Precios<br/>Política · Enrutamiento<br/>Detección de manipulación"]
-        redactar["Borrador por plantilla"]
+    subgraph dominio["DOMINIO · determinista"]
+        calcular["<b>Calcular</b><br/>catálogo, stock y precios"]
+        evaluar["<b>Evaluar</b><br/>política y manipulación"]
+        redactar["<b>Redactar</b><br/>borrador por plantilla"]
     end
 
-    subgraph humano["Persona"]
-        decidir["Aprobar · Rechazar · Observar"]
+    subgraph persona["PERSONA"]
+        aprobar["<b>Decidir</b><br/>aprobar, rechazar u observar"]
     end
 
-    texto --> interpretar
-    interpretar -->|"ítems, cantidades, sede<br/>(precio, stock y nivel se descartan)"| reglas
-    reglas -->|"cotización + motivos"| decidir
-    decidir --> redactar
-    redactar --> borrador(["Borrador"])
+    texto --> leer
+    leer -->|"solo ítems,<br/>cantidades y sede"| calcular
+    calcular --> evaluar
+    evaluar -->|"dentro de política"| redactar
+    evaluar -->|"excepción"| aprobar
+    aprobar -->|"aprueba"| redactar
+    redactar --> borrador(["Borrador listo"])
 
-    classDef llmc fill:#fef3c7,stroke:#b45309,color:#451a03
-    classDef detc fill:#dbeafe,stroke:#1d4ed8,color:#172554
-    classDef humc fill:#ede9fe,stroke:#6d28d9,color:#2e1065
-    classDef outc fill:#dcfce7,stroke:#15803d,color:#052e16
-    class interpretar llmc
-    class reglas,redactar detc
-    class decidir humc
-    class borrador outc
+    classDef entrada fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03
+    classDef det fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#172554
+    classDef hum fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065
+    classDef ok fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16
+    class texto entrada
+    class leer llm
+    class calcular,evaluar,redactar det
+    class aprobar hum
+    class borrador ok
+    style modelo fill:transparent,stroke:#d97706,stroke-dasharray:5 4
+    style dominio fill:transparent,stroke:#2563eb,stroke-dasharray:5 4
+    style persona fill:transparent,stroke:#7c3aed,stroke-dasharray:5 4
 ```
 
 Ninguna flecha vuelve del dominio hacia el modelo: el LLM nunca ve el inventario ni la política, y cualquier precio, stock o nivel de cliente que intente devolver se descarta al validar su salida. Si el proveedor no responde, la solicitud se lee con un extractor de reglas y el folio lo dice: **el sistema se degrada, pero no se vuelve incorrecto** ([ADR-002](docs/adr/ADR-002-frontera-determinista.md), [ADR-004](docs/adr/ADR-004-extractor-gemini-con-respaldo.md)). Graphify lo confirma sobre el código real: no hay ciclos de import ni dependencias de `llm/` hacia las reglas ([docs/graphify/](docs/graphify/README.md)).
@@ -146,62 +154,70 @@ Ninguna flecha vuelve del dominio hacia el modelo: el LLM nunca ve el inventario
 
 ```mermaid
 flowchart TD
-    START(["Solicitud<br/>customer_id + texto libre"]) --> ingest
+    inicio(["<b>Solicitud</b><br/>cliente + texto libre"])
 
-    ingest["<b>ingest</b><br/>normaliza · abre thread_id"] --> extract
-    extract["<b>extract</b><br/>salida estructurada validada<br/>+ detección de manipulación"]
-    extract -->|"extracción válida"| resolve_customer
-    extract -->|"falla · quedan reintentos"| extract
-    extract -->|"falla · sin reintentos"| finalize
+    ingest["<b>ingest</b><br/>normaliza y abre el hilo"]
+    extract["<b>extract</b><br/>salida validada · manipulación"]
 
-    resolve_customer["<b>resolve_customer</b><br/>BR-08 · desconocido ⇒ STANDARD"] --> validate_request
-
+    resolve_customer["<b>resolve_customer</b><br/>BR-08 · nivel del cliente"]
     validate_request["<b>validate_request</b><br/>BR-10/11 · completitud"]
-    validate_request -->|"falta info esencial"| finalize
-    validate_request -->|"completa"| resolve_catalog
-
     resolve_catalog["<b>resolve_catalog</b><br/>BR-02 · coincidencia exacta"]
-    resolve_catalog -->|"SKU desconocido"| finalize
-    resolve_catalog -->|"resuelto"| check_inventory
-
     check_inventory["<b>check_inventory</b><br/>BR-13 · on_hand − reserved"]
-    check_inventory -->|"sin stock"| finalize
-    check_inventory -->|"disponible"| price_quote
 
-    price_quote["<b>price_quote</b><br/>RF-06 · Decimal · ROUND_HALF_UP"] --> evaluate_policy
+    price_quote["<b>price_quote</b><br/>RF-06 · Decimal"]
+    evaluate_policy["<b>evaluate_policy</b><br/>BR-05 a BR-09 · BR-18"]
 
-    evaluate_policy["<b>evaluate_policy</b><br/>BR-05…BR-09 · BR-18"]
-    evaluate_policy -->|"descuento > techo duro"| finalize
+    human_approval["<b>human_approval</b><br/>RF-07 · interrupt() durable"]
+    apply_decision["<b>apply_decision</b><br/>BR-15 · idempotente"]
+
+    compose_draft["<b>compose_draft</b><br/>plantilla determinista"]
+
+    clar(["NEEDS_CLARIFICATION"])
+    blocked(["BLOCKED"])
+    rejected(["REJECTED_BY_POLICY"])
+    pending(["PENDING_APPROVAL"])
+    draft(["DRAFT_READY"])
+
+    inicio --> ingest --> extract
+    extract -->|"reintento"| extract
+    extract --> resolve_customer --> validate_request --> resolve_catalog --> check_inventory
+    check_inventory --> price_quote --> evaluate_policy
     evaluate_policy -->|"requiere aprobación"| human_approval
+    human_approval --> apply_decision
+    apply_decision -->|"OBSERVE"| human_approval
     evaluate_policy -->|"dentro de política"| compose_draft
-
-    human_approval["<b>human_approval</b><br/>RF-07 · interrupt() · pausa durable"] --> apply_decision
-
-    apply_decision["<b>apply_decision</b><br/>BR-15 · idempotente por decision_id"]
     apply_decision -->|"APPROVE"| compose_draft
-    apply_decision -->|"REJECT"| finalize
-    apply_decision -->|"OBSERVE · sigue en pausa"| human_approval
+    compose_draft --> draft
 
-    compose_draft["<b>compose_draft</b><br/>plantilla determinista"] --> finalize
-    finalize["<b>finalize</b><br/>fija outcome + reason_code"]
+    extract -.->|"falla dos veces"| clar
+    validate_request -.->|"falta información"| clar
+    resolve_catalog -.->|"SKU desconocido"| blocked
+    check_inventory -.->|"sin stock"| blocked
+    evaluate_policy -.->|"sobre el techo duro"| rejected
+    apply_decision -.->|"REJECT"| rejected
+    human_approval -.->|"mientras espera"| pending
 
-    finalize --> R1(["NEEDS_CLARIFICATION"])
-    finalize --> R2(["BLOCKED"])
-    finalize --> R3(["REJECTED_BY_POLICY"])
-    finalize --> R4(["DRAFT_READY"])
-    human_approval -.->|"mientras espera"| R5(["PENDING_APPROVAL"])
-
-    classDef llm fill:#fef3c7,stroke:#b45309,color:#451a03
-    classDef det fill:#dbeafe,stroke:#1d4ed8,color:#172554
-    classDef human fill:#ede9fe,stroke:#6d28d9,color:#2e1065
-    classDef out fill:#dcfce7,stroke:#15803d,color:#052e16
+    classDef entrada fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef llm fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03
+    classDef det fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+    classDef hum fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065
+    classDef r_ok fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16
+    classDef r_wait fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065
+    classDef r_ask fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03
+    classDef r_stop fill:#e2e8f0,stroke:#475569,stroke-width:2px,color:#0f172a
+    classDef r_no fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a
+    class inicio entrada
     class extract llm
-    class ingest,resolve_customer,validate_request,resolve_catalog,check_inventory,price_quote,evaluate_policy,apply_decision,compose_draft,finalize det
-    class human_approval human
-    class R1,R2,R3,R4,R5 out
+    class ingest,resolve_customer,validate_request,resolve_catalog,check_inventory,price_quote,evaluate_policy,apply_decision,compose_draft det
+    class human_approval hum
+    class draft r_ok
+    class pending r_wait
+    class clar r_ask
+    class blocked r_stop
+    class rejected r_no
 ```
 
-🟡 el modelo · 🔵 dominio determinista · 🟣 decisión humana · 🟢 resultados. Cada regla citada (`BR-xx`, `RF-xx`) está definida en [REQUIREMENTS.md](docs/REQUIREMENTS.md) y referenciada desde el código y las pruebas. `PENDING_APPROVAL` cuelga de `human_approval` y no de `finalize` porque es un estado *observado* (el grafo está pausado), no uno que se escriba.
+Amarillo: el modelo. Azul: dominio determinista. Violeta: decisión humana. Las flechas punteadas son las salidas anticipadas; todas pasan por `finalize`, que fija el `outcome` y el `reason_code`, y se omite en el dibujo para que las flechas no se crucen. `PENDING_APPROVAL` no lo escribe `finalize`: es el estado *observado* mientras el grafo está pausado. Cada regla citada (`BR-xx`, `RF-xx`) está definida en [REQUIREMENTS.md](docs/REQUIREMENTS.md) y referenciada desde el código y las pruebas.
 
 </details>
 
@@ -393,4 +409,4 @@ Declaradas, no ocultas:
 
 ## Licencia
 
-[MIT](LICENSE) © 2026 Guillermo Ronie Salcedo Alvarez
+[MIT](LICENSE) © 2026 Guillermo Salcedo
