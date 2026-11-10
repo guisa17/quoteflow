@@ -1,6 +1,6 @@
 # ROADMAP — QuoteFlow
 
-Cuatro fases. Cada una entrega algo verificable por sí mismo; ninguna deja trabajo a medias que la siguiente deba terminar.
+Cinco fases. Cada una entrega algo verificable por sí mismo; ninguna deja trabajo a medias que la siguiente deba terminar.
 
 El orden responde a una regla: **lo que no se puede improvisar al final va primero.** El dominio determinista y la persistencia sostienen los criterios del Definition of Done; la interfaz es la capa más recortable.
 
@@ -15,7 +15,7 @@ El orden responde a una regla: **lo que no se puede improvisar al final va prime
 | Seed de dominio ficticio calibrado (`backend/app/data/`) | ✅ |
 | `BUSINESS_CASE.md`, `PROJECT.md`, `REQUIREMENTS.md` | ✅ |
 | `ADR-001` (datos ficticios), `ADR-002` (frontera determinista) | ✅ |
-| `CLAUDE.md`, `AI_USE.md`, `LOOP.md`, `STATE.md` | ✅ |
+| `CLAUDE.md`, `AI_USE.md`, `LOOP.md`, `STATE.md` (los tres últimos, hoy en [proceso/](proceso/README.md)) | ✅ |
 | Andamiaje: `.gitignore`, `.env.example`, `docker-compose.yml`, `README.md` | ✅ |
 
 **Definition of Done:** los 8 escenarios del seed alcanzan su `expected_outcome` por cálculo manual, y cada regla de negocio tiene un identificador citable desde el código.
@@ -26,18 +26,18 @@ El orden responde a una regla: **lo que no se puede improvisar al final va prime
 
 **Objetivo:** que una solicitud recorra el flujo completo hasta un estado terminal, incluyendo pausa y reanudación durable, verificado por pruebas automatizadas.
 
-Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01.md](PHASE_01.md).
+Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01.md](proceso/PHASE_01.md).
 
 | Entregable | Sostiene | Estado |
 |------------|----------|--------|
 | `app/domain/` — modelos, repositorios, precios, política, validación | RF-06, BR-01…13 | ✅ |
 | `app/graph/` — estado tipado, nodos, routing, checkpointer Postgres | RF-07, RNF-01, RNF-02 | ✅ |
-| `app/llm/` — extractor determinista para pruebas (extractor real: [LOOP.md](LOOP.md), fuera de esta fase) | RF-05, RF-10 | ✅ |
+| `app/llm/` — extractor determinista para pruebas (el extractor real llegó en la Fase 4) | RF-05, RF-10 | ✅ |
 | `tests/unit` + `tests/integration` | AC-01…AC-11 | ✅ 130 tests |
 
-**Definition of Done:** ✅ `uv run pytest` en verde sin acceso a un modelo externo (130/130), incluyendo interrupción, reanudación tras reinicio *real* del proceso e idempotencia. Evidencia completa en [EVIDENCE.md](EVIDENCE.md) E-06…E-09.
+**Definition of Done:** ✅ `uv run pytest` en verde sin acceso a un modelo externo (130/130), incluyendo interrupción, reanudación tras reinicio *real* del proceso e idempotencia. Evidencia completa en [EVIDENCE.md](proceso/EVIDENCE.md) E-06…E-09.
 
-**Riesgo que se materializó:** una caída real de Docker Desktop durante T11 (motor sin CPUs asignados) — resuelta con un reinicio del sistema, sin pérdida de trabajo. Detalle en EVIDENCE.md E-08. El riesgo original de la extracción (único componente no determinista) sigue acotado por el ciclo de [LOOP.md](LOOP.md), todavía no ejecutado — el extractor de pruebas (`FakeExtractor`) ya resuelve los 8 escenarios sin necesitarlo.
+**Riesgo que se materializó:** una caída real de Docker Desktop durante T11 (motor sin CPUs asignados) — resuelta con un reinicio del sistema, sin pérdida de trabajo. Detalle en EVIDENCE.md E-08. El riesgo de la extracción (único componente no determinista) quedó acotado por el contrato `Extractor` y los 8 escenarios como verifier; se cerró en la Fase 4.
 
 ---
 
@@ -73,6 +73,26 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 
 ---
 
+## Fase 4 — LLM real, endurecimiento e interfaz ✅
+
+**Objetivo:** que el sistema lea pedidos reales escritos por personas, que un intento de manipulación nunca pase desapercibido, y que la interfaz sea cómoda para el trabajo diario.
+
+| Entregable | Sostiene | Estado |
+|------------|----------|--------|
+| `app/llm/gemini_extractor.py` — Gemini con salida JSON forzada por esquema; respaldo explícito al extractor de reglas si el proveedor no responde | RF-05, RF-10, ADR-002 | ✅ 8 escenarios + lenguaje natural ("dos docenas" = 24) |
+| Procedencia de la lectura visible en el folio y en la auditoría | RF-08 | ✅ |
+| `app/domain/manipulation.py` — detección determinista + señal del LLM; el caso va a revisión humana | BR-17, BR-18 | ✅ sin falsos positivos en los escenarios legítimos |
+| Bandeja con pestañas "Por decidir" / "Todas", filtro de estado y rastro de la última decisión | RF-02, RF-09 | ✅ |
+| Rediseño visual (serif + Inter, tarjetas, tema claro/oscuro) — ver [DESIGN.md](../DESIGN.md) | RF-09 | ✅ |
+| Pruebas | — | ✅ 205 backend + 24 frontend |
+
+**Hallazgos:**
+- El alias "último Flash" de Gemini y `gemini-3.8-flash` no respondían ni en 60 s; `gemini-2.5-flash` ya no está disponible para cuentas nuevas. Se fijó `gemini-3.5-flash-lite` (~2 s), suficiente para extraer datos estructurados.
+- La primera versión del prompt devolvía "cascos modelo HX-200" en lugar del código. Como el catálogo exige coincidencia exacta (BR-02), eso habría producido un falso "SKU desconocido". Se corrigió precisando el prompt y el esquema, no relajando el catálogo.
+- Un intento de manipulación dentro de política salía como "Borrador listo" sin ninguna marca: el ataque no funcionaba (precio y nivel intactos), pero pasaba desapercibido. BR-18 ahora lo detecta, lo registra y exige revisión humana.
+
+---
+
 ## Pendientes conocidos
 
 Problemas detectados probando el extractor real (Gemini), registrados para volver a ellos.
@@ -102,4 +122,4 @@ No son fases pendientes: son decisiones de no hacer, registradas en [BUSINESS_CA
 
 ---
 
-**Relacionados:** [PHASE_01.md](PHASE_01.md) · [STATE.md](STATE.md) · [PROJECT.md](PROJECT.md) · [LOOP.md](LOOP.md)
+**Relacionados:** [PROJECT.md](PROJECT.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [bitácora de construcción](proceso/README.md)

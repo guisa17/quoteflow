@@ -66,7 +66,7 @@ Especificación verificable. Cada regla tiene identificador estable (`BR-xx`, `R
 
 ## 3. Requisitos funcionales
 
-> RF-01…RF-04 son el contrato entre `frontend/` y `app/api/`. Su forma exacta de intercambio (shapes JSON, tipos, convenciones de serialización) está fijada en [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) — es la fuente de verdad para construir ambos lados en paralelo sin deriva.
+> RF-01…RF-04 son el contrato entre `frontend/` y `app/api/`. Su forma exacta de intercambio (shapes JSON, tipos, convenciones de serialización) está fijada en [`docs/API_CONTRACT.md`](API_CONTRACT.md) — es la fuente de verdad para construir ambos lados en paralelo sin deriva.
 
 | ID | Requisito |
 |----|-----------|
@@ -95,7 +95,7 @@ Especificación verificable. Cada regla tiene identificador estable (`BR-xx`, `R
 
 ## 5. Criterios de aceptación
 
-Cada criterio se verifica con el escenario del seed indicado ([`sample_requests.json`](backend/app/data/sample_requests.json)) y queda registrado en `EVIDENCE.md`.
+Cada criterio se verifica con el escenario del seed indicado ([`sample_requests.json`](../backend/app/data/sample_requests.json)) y queda registrado en `EVIDENCE.md`.
 
 | ID | Criterio | Escenario | Resultado esperado | Reglas |
 |----|----------|-----------|--------------------|--------|
@@ -118,7 +118,7 @@ Cada criterio se verifica con el escenario del seed indicado ([`sample_requests.
 
 ## 6. Trazabilidad de datos
 
-Seed versionado en [`backend/app/data/`](backend/app/data/) — [ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md):
+Seed versionado en [`backend/app/data/`](../backend/app/data) — [ADR-001](adr/ADR-001-datos-ficticios-propios.md):
 
 | Archivo | Contenido |
 |---------|-----------|
@@ -130,4 +130,4 @@ Seed versionado en [`backend/app/data/`](backend/app/data/) — [ADR-001](docs/a
 
 ---
 
-**Relacionados:** [PROJECT.md](PROJECT.md) · [BUSINESS_CASE.md](BUSINESS_CASE.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md)
+**Relacionados:** [PROJECT.md](PROJECT.md) · [BUSINESS_CASE.md](BUSINESS_CASE.md) · [ADR-002](adr/ADR-002-frontera-determinista.md)

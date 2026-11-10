@@ -64,7 +64,7 @@ Declarado en [BUSINESS_CASE.md §4](BUSINESS_CASE.md). Resumen: envío automáti
 
 ## 4. Arquitectura
 
-### 4.1 Frontera de responsabilidad (decisión central — [ADR-002](docs/adr/ADR-002-frontera-determinista.md))
+### 4.1 Frontera de responsabilidad (decisión central — [ADR-002](adr/ADR-002-frontera-determinista.md))
 
 ```
   Texto libre del cliente  ──►  [ LLM ]  ──►  Extracción estructurada validada
@@ -109,7 +109,7 @@ Rutas condicionales tras `validate_request`, `check_inventory`, `evaluate_policy
 
 El flujo consulta cinco herramientas locales: clientes, catálogo, inventario, precios y política comercial.
 
-Esas cinco herramientas existen en `app/domain/tools.py` y **las invocan los nodos del grafo, no el modelo**. La distinción es deliberada: exponerlas al LLM como herramientas enlazadas le daría acceso a inventario y política, lo que contradice [ADR-002](docs/adr/ADR-002-frontera-determinista.md). Así el flujo usa herramientas sin ceder la decisión.
+Esas cinco herramientas existen en `app/domain/tools.py` y **las invocan los nodos del grafo, no el modelo**. La distinción es deliberada: exponerlas al LLM como herramientas enlazadas le daría acceso a inventario y política, lo que contradice [ADR-002](adr/ADR-002-frontera-determinista.md). Así el flujo usa herramientas sin ceder la decisión.
 
 | Herramienta | Devuelve | Usada por |
 |-------------|----------|-----------|
@@ -130,11 +130,13 @@ El sistema nunca cotiza sobre una extracción no validada: ante la duda, pregunt
 ```
 quoteflow/
 ├── README.md                    # ejecutar app + tests desde entorno limpio
-├── AGENTS.md                    # instrucciones persistentes para asistentes
-├── BUSINESS_CASE.md  PROJECT.md  REQUIREMENTS.md
-├── ROADMAP.md  PHASE_01.md  STATE.md  EVIDENCE.md  IMPACT.md
-├── AI_USE.md  LOOP.md
-├── docs/adr/                    # ADR-001 …
+├── CLAUDE.md  AGENTS.md         # instrucciones persistentes para asistentes
+├── DESIGN.md  PRODUCT.md        # sistema de diseño y contexto de producto de la interfaz
+├── docs/
+│   ├── BUSINESS_CASE.md  PROJECT.md  REQUIREMENTS.md  ROADMAP.md  IMPACT.md
+│   ├── API_CONTRACT.md  REFERENCES.md
+│   ├── adr/                     # ADR-001 …
+│   └── proceso/                 # bitácora: fases, evidencia, uso de IA
 ├── docker-compose.yml           # solo Postgres
 ├── backend/
 │   ├── pyproject.toml  .env.example
@@ -143,7 +145,7 @@ quoteflow/
 │   │   ├── api/                 # rutas HTTP
 │   │   ├── domain/              # funciones deterministas + repositorios + herramientas locales
 │   │   ├── graph/               # state.py · nodes.py · build.py
-│   │   ├── llm/                 # extractor real + extractor fake (tests)
+│   │   ├── llm/                 # extractor Gemini + respaldo + extractor de reglas (tests)
 │   │   └── data/*.json          # seed ficticio versionado
 │   └── tests/                   # unitarias + integración
 └── frontend/                    # React + Vite
@@ -168,8 +170,8 @@ El detalle verificable está en [REQUIREMENTS.md §4](REQUIREMENTS.md). A nivel 
 | A4 | Ninguna cotización usa un precio, stock, cliente o descuento ausente del seed |
 | A5 | `pytest` pasa completo sin acceso a un LLM externo |
 | A6 | Reenviar la misma decisión humana no produce efecto duplicado |
-| A7 | `STATE.md`, `EVIDENCE.md` y los ADR coinciden con el código en cada versión |
+| A7 | `ROADMAP.md`, `EVIDENCE.md` y los ADR coinciden con el código en cada versión |
 
 ---
 
-**Relacionados:** [BUSINESS_CASE.md](BUSINESS_CASE.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [STATE.md](STATE.md) · [AI_USE.md](AI_USE.md)
+**Relacionados:** [BUSINESS_CASE.md](BUSINESS_CASE.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [ROADMAP.md](ROADMAP.md) · [AI_USE.md](proceso/AI_USE.md)

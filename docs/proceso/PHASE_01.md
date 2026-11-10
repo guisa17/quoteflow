@@ -1,7 +1,9 @@
 # PHASE_01 — Vertical funcional
 
+> **Documento histórico.** Plan de tareas (T0–T14) de la Fase 1, completada. Se conserva como registro del método de trabajo; los pendientes actuales están en [ROADMAP.md](../ROADMAP.md).
+
 > Este documento se lee de forma autónoma: no depende de conversaciones previas.
-> Contexto mínimo necesario: [REQUIREMENTS.md](REQUIREMENTS.md) §2 (reglas) y [CLAUDE.md](CLAUDE.md) §2-3 (frontera y reglas de código).
+> Contexto mínimo necesario: [REQUIREMENTS.md](../REQUIREMENTS.md) §2 (reglas) y [CLAUDE.md](../../CLAUDE.md) §2-3 (frontera y reglas de código).
 
 **Objetivo de la fase:** que una solicitud recorra el flujo completo hasta un estado terminal, incluyendo pausa por decisión humana y reanudación tras reiniciar el proceso, verificado por pruebas que corren sin acceso a un modelo externo.
 
@@ -13,11 +15,11 @@ QuoteFlow recibe `customer_id` + texto libre y produce uno de cinco resultados: 
 
 Tres invariantes gobiernan toda esta fase:
 
-1. **El modelo no decide.** Interpreta el texto y redacta prosa; precios, stock, política, routing y aprobaciones viven en `app/domain/` ([ADR-002](docs/adr/ADR-002-frontera-determinista.md)).
+1. **El modelo no decide.** Interpreta el texto y redacta prosa; precios, stock, política, routing y aprobaciones viven en `app/domain/` ([ADR-002](../adr/ADR-002-frontera-determinista.md)).
 2. **Ningún valor de dominio se codifica.** Todo sale de `app/data/*.json` mediante repositorios.
 3. **`Decimal`, nunca `float`,** en cualquier cálculo monetario.
 
-Los datos y los ocho escenarios de referencia ya existen en [`backend/app/data/`](backend/app/data/).
+Los datos y los ocho escenarios de referencia ya existen en [`backend/app/data/`](../../backend/app/data).
 
 ## Orden de ejecución
 
@@ -48,7 +50,7 @@ El dominio se completa y se prueba **antes** de tocar LangGraph. Un grafo constr
 | **T8** ✅ | Frontera del LLM y extractor determinista | `app/llm/base.py`, `app/llm/fake_extractor.py`, `app/llm/prompts.py` | `tests/unit/test_extraction_sanitization.py` | `Protocol` de extractor; el fake resuelve los 8 escenarios; una extracción que trae precio, nivel o aprobación queda saneada (BR-03, ADR-002 §2) |
 | **T9** ✅ | Nodos del grafo | `app/graph/nodes.py`, `app/domain/tools.py` | `tests/unit/test_nodes.py` | Los 12 nodos de `PROJECT.md` §4.2, cada uno probado en aislamiento. Las consultas de dominio se exponen como herramientas locales invocadas por los nodos |
 | **T10** ✅ | Routing condicional | `app/graph/routing.py` | `tests/unit/test_routing.py` | Los 6 casos de enrutamiento, incluido **fallo recuperable**: error de extracción ⇒ 1 reintento ⇒ `NEEDS_CLARIFICATION` con `EXTRACTION_FAILED` (RF-05) |
-| **T11** ✅ | Checkpointer y compilación | `app/graph/checkpointer.py`, `app/graph/build.py` | `tests/integration/test_checkpointer.py` | `AsyncPostgresSaver` con `setup()` en el arranque; el grafo compila e interrumpe en `human_approval` ([ADR-003](docs/adr/ADR-003-persistencia-checkpointer.md)) |
+| **T11** ✅ | Checkpointer y compilación | `app/graph/checkpointer.py`, `app/graph/build.py` | `tests/integration/test_checkpointer.py` | `AsyncPostgresSaver` con `setup()` en el arranque; el grafo compila e interrumpe en `human_approval` ([ADR-003](../adr/ADR-003-persistencia-checkpointer.md)) |
 | **T12** ✅ | Integración: los 8 escenarios | `tests/integration/test_scenarios.py` | ella misma | AC-01…AC-08 en verde con `LLM_MODE=fake`, comparando `outcome` **y** `reason_code` |
 | **T13** ✅ | Integración: reanudación durable | `tests/integration/test_interrupt_resume.py` | ella misma | AC-09: interrumpir, **descartar la instancia del grafo y reconstruirla** simulando reinicio, reanudar con el mismo `thread_id`, llegar a `DRAFT_READY` |
 | **T14** ✅ | Integración: idempotencia | `tests/integration/test_idempotency.py` | ella misma | AC-10: el mismo `decision_id` dos veces produce un solo efecto y la misma respuesta. AC-11: `REJECT` ⇒ `REJECTED_BY_POLICY` con actor y motivo auditados |
@@ -80,10 +82,10 @@ Un commit atómico por tarea. La fase no se cierra con criterios en rojo: si alg
 | Riesgo | Señal temprana | Respuesta |
 |--------|----------------|-----------|
 | La extracción real no acierta en los 8 escenarios | T12 falla solo con `LLM_MODE=real` | Ejecutar el ciclo de [LOOP.md](LOOP.md): 3 iteraciones, y si persiste, degradar a `NEEDS_CLARIFICATION` y documentarlo |
-| `AsyncPostgresSaver` no reanuda tras reinicio | T13 falla | Verificar que el `thread_id` se persiste junto a la solicitud y no se regenera ([CLAUDE.md](CLAUDE.md) §7) |
+| `AsyncPostgresSaver` no reanuda tras reinicio | T13 falla | Verificar que el `thread_id` se persiste junto a la solicitud y no se regenera ([CLAUDE.md](../../CLAUDE.md) §7) |
 | Los nodos tienen efectos secundarios antes del `interrupt()` | T14 detecta efecto duplicado | Mover los efectos después de `apply_decision`; el reintento del nodo debe ser inocuo |
 | Hay que recortar alcance antes de llegar a T12 | — | T12-T14 son innegociables: sostienen el Definition of Done. Se recorta la Fase 2, no esta |
 
 ---
 
-**Relacionados:** [ROADMAP.md](ROADMAP.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [CLAUDE.md](CLAUDE.md) · [LOOP.md](LOOP.md)
+**Relacionados:** [ROADMAP.md](../ROADMAP.md) · [REQUIREMENTS.md](../REQUIREMENTS.md) · [CLAUDE.md](../../CLAUDE.md) · [LOOP.md](LOOP.md)

@@ -675,7 +675,7 @@ Lo siguiente **no** está verificado. Se declara aquí en lugar de presentarse c
 | ~~L-02~~ | ~~Reanudación solo demostrada dentro del mismo proceso~~ — **resuelto**: T13 descarta y reconstruye grafo y checkpointer entre interrumpir y reanudar (E-09) |
 | ~~L-03~~ | ~~El `README.md` no se ha validado desde un clon limpio~~ — **resuelto en E-12**: validado desde un `git clone` real, con un bug de `.env` encontrado y corregido en el proceso |
 | ~~L-04~~ | ~~El mapa de `IMPACT.md` es de diseño~~ — **resuelto**: contrastado contra el reporte Graphify real (E-09) y ampliado con `app/api/` tras la Fase 2 |
-| L-05 | **La calidad de la extracción con un modelo real es desconocida**: todo el sistema corre con `LLM_MODE=fake`. El extractor real aún no existe; el modo de test sin modelo externo sí. El ciclo para cerrarlo está definido y listo en [LOOP.md](LOOP.md) |
+| L-05 | ~~**La calidad de la extracción con un modelo real es desconocida**~~ **Cerrada:** el extractor con Gemini (`gemini-3.5-flash-lite`) resuelve los 8 escenarios y casos en lenguaje natural ("dos docenas" = 24). Ver [ROADMAP.md](../ROADMAP.md) Fase 4. Las pruebas siguen sin depender del modelo (`httpx.MockTransport`) |
 | ~~L-06~~ | ~~El repositorio aún no está bajo control de versiones~~ — **resuelto**: remoto en `github.com/guisa17/quoteflow` |
 | L-07 | El backend tiene andamiaje (`config.py`, paquetes vacíos) pero ningún módulo de dominio, grafo ni API con lógica real |
 | L-08 | **Sin autenticación:** cualquiera con acceso a la API puede aprobar, y `actor` es texto que declara el cliente, así que la auditoría no prueba quién decidió |

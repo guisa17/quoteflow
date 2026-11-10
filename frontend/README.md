@@ -4,7 +4,7 @@ Consola de operador para RF-09: crear una solicitud, verla en la bandeja con
 su `outcome`, abrir el detalle con trazabilidad completa, decidir
 (aprobar/rechazar/observar) y ver el borrador final. Contrato fijo en
 [`../docs/API_CONTRACT.md`](../docs/API_CONTRACT.md); vocabulario y reglas en
-[`../REQUIREMENTS.md`](../REQUIREMENTS.md).
+[`../REQUIREMENTS.md`](../docs/REQUIREMENTS.md).
 
 ## Ejecutar
 
@@ -71,7 +71,7 @@ reglas de texto: SKU `XX-000`, cantidad más cercana, `N%`, sede).
 
 Se verificó corriendo los 8 escenarios de `sample_requests.json` contra el
 motor y comparando `outcome`/`reason_code`/cifras con
-[`REQUIREMENTS.md` §5](../REQUIREMENTS.md) (AC-01…AC-08) — los 8 coinciden,
+[`REQUIREMENTS.md` §5](../docs/REQUIREMENTS.md) (AC-01…AC-08) — los 8 coinciden,
 incluidas las cifras exactas de AC-01 (900.00 → 828.00 neto → 977.04 total)
 y AC-03 (neto 12 900.00). Una solicitud nueva escrita en `/new` corre por
 las mismas reglas, no por datos inventados — con la salvedad de que la

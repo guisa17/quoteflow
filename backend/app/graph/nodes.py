@@ -79,8 +79,8 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
     en cada paso del grafo, asi que cada llamada aqui ya es "un intento".
 
     Factory en vez de funcion plana porque el extractor es una dependencia
-    externa (fake en pruebas, real fuera del alcance de T7-T11, ver
-    LOOP.md) que `app/graph/build.py` (T11) decide segun `settings.llm_mode`.
+    externa (reglas en pruebas, Gemini con respaldo en modo real) que
+    `app/graph/build.py` (T11) decide segun `settings.llm_mode`.
     """
 
     async def extract(state: QuoteState) -> dict[str, Any]:
@@ -472,12 +472,12 @@ async def apply_decision(state: QuoteState) -> dict[str, Any]:
 
 
 async def compose_draft(state: QuoteState) -> dict[str, Any]:
-    """Redaccion del borrador. En modo test (RF-10) es una plantilla
-    determinista, nunca un LLM -- ADR-002 regla 5: "la redaccion no puede
+    """Redaccion del borrador. Es una plantilla determinista en todos los
+    modos, nunca un LLM -- ADR-002 regla 5: "la redaccion no puede
     introducir cifras" que el dominio no haya calculado ya. El borrador
-    unicamente reordena valores que ya existen en `state.quote`; un
-    extractor real de redaccion (analogo al de LOOP.md) queda fuera del
-    alcance de T7-T11."""
+    unicamente reordena valores que ya existen en `state.quote`. Una
+    redaccion con LLM (tono, idioma) seria una extension futura y tendria
+    que respetar la misma regla."""
     if state.quote is None:
         raise ValueError("compose_draft requiere una cotizacion ya calculada")
 

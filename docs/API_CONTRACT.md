@@ -183,4 +183,4 @@ En el status HTTP correspondiente (`404`, `409`, `422`, `500`, `503`). `503` ind
 
 ---
 
-**Relacionados:** [REQUIREMENTS.md §3](../REQUIREMENTS.md) (RF-01…RF-04) · [PROJECT.md §4](../PROJECT.md) (arquitectura del grafo)
+**Relacionados:** [REQUIREMENTS.md §3](REQUIREMENTS.md) (RF-01…RF-04) · [PROJECT.md §4](PROJECT.md) (arquitectura del grafo)

@@ -11,8 +11,8 @@ Válido también como guía para una persona que retome el proyecto.
 
 QuoteFlow convierte una solicitud de cotización en texto libre en uno de **cinco resultados auditables**, mediante un grafo LangGraph con estado tipado, cálculo determinista y pausa real para decisión humana.
 
-**Antes de tocar nada, leer en este orden:** [STATE.md](STATE.md) → [PHASE_01.md](PHASE_01.md) → [REQUIREMENTS.md](REQUIREMENTS.md) §2.
-`STATE.md` dice dónde estamos; `REQUIREMENTS.md` dice qué es correcto.
+**Antes de tocar nada, leer en este orden:** [README.md](README.md) → [ROADMAP.md](docs/ROADMAP.md) (pendientes conocidos) → [REQUIREMENTS.md](docs/REQUIREMENTS.md) §2.
+`ROADMAP.md` dice qué falta; `REQUIREMENTS.md` dice qué es correcto. La bitácora de construcción (fases, tareas T0–T14, evidencia) está en [docs/proceso/](docs/proceso/README.md) y es histórica.
 
 ## 2. Regla número uno: la frontera determinista
 
@@ -41,10 +41,10 @@ Verificación rápida: `app/domain/` **no importa nada de `app/llm/`**. Si esa l
 
 `discutir → planificar → ejecutar → verificar → handoff`
 
-1. **Planificar** — la tarea existe en `PHASE_01.md` con archivos afectados, prueba asociada y Definition of Done. Si no existe, se agrega antes de escribir código.
-2. **Ejecutar** — un cambio acotado por vez, con su prueba en el mismo paso.
+1. **Planificar** — la tarea está descrita (en `docs/ROADMAP.md` → "Pendientes conocidos", o en la conversación) con archivos afectados, prueba asociada y criterio de terminado.
+2. **Ejecutar** — **en una rama propia**, nunca directo en `main`; un cambio acotado por vez, con su prueba en el mismo paso.
 3. **Verificar** — comandos abajo. **Un cambio sin prueba ejecutada no está hecho.**
-4. **Handoff** — actualizar `STATE.md` (estado + siguiente paso) y `EVIDENCE.md` (comando + salida **real**).
+4. **Handoff** — merge `--no-ff` a `main` solo con la suite en verde; actualizar `docs/ROADMAP.md` si cambia un pendiente y `docs/proceso/EVIDENCE.md` si hay una verificación nueva que registrar (comando + salida **real**).
 
 ### Comandos de verificación
 
@@ -54,6 +54,9 @@ uv run pytest                                  # suite completa (LLM_MODE=fake)
 uv run pytest tests/unit                       # reglas, sin Postgres
 uv run ruff check . && uv run ruff format --check .
 uv run mypy app/domain app/graph/state.py
+
+cd ../frontend
+pnpm typecheck && pnpm test && pnpm build
 ```
 
 ## 5. Honestidad de la evidencia
@@ -65,7 +68,7 @@ uv run mypy app/domain app/graph/state.py
 
 ## 6. Gobierno
 
-- **Un solo hilo de gobierno.** La cantidad de agentes no es el objetivo: sí lo son las tareas acotadas, el contexto persistente, el aislamiento cuando haya trabajo paralelo y la verificación independiente — el detalle de cómo se cumple cada uno está en [AI_USE.md](AI_USE.md) §1. Si en algún momento se justifica trabajo paralelo, exige aislamiento por worktree y verificación independiente del resultado.
+- **Un solo hilo de gobierno.** La cantidad de agentes no es el objetivo: sí lo son las tareas acotadas, el contexto persistente, el aislamiento cuando haya trabajo paralelo y la verificación independiente — el detalle de cómo se cumple cada uno está en [AI_USE.md](docs/proceso/AI_USE.md) §1. Si en algún momento se justifica trabajo paralelo, exige aislamiento por worktree y verificación independiente del resultado.
 - **La documentación es fuente de verdad, no decoración.** Si el código y un documento discrepan, uno de los dos está mal y se corrige en el mismo ciclo — no en el siguiente.
 - **Fuera de alcance es una decisión, no un olvido.** Antes de agregar una funcionalidad no listada, revisar `PROJECT.md` §2.3 (no alcance).
 

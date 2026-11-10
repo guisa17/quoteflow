@@ -36,7 +36,7 @@ El cuello de botella no es redactar: es **reconstruir el contexto** (paso 2–5)
 
 > Si un sistema interpreta la solicitud y **precalcula** la cotización contra los datos vigentes de catálogo, inventario y política —dejando la decisión final en manos humanas—, el ejecutivo pasa de **redactar desde cero** a **revisar y confirmar**, reduciendo el tiempo por cotización y eliminando los descuentos fuera de política aplicados sin registro.
 
-El sistema no reemplaza el criterio comercial: reparte el trabajo en tres capas con responsabilidades separadas —el modelo interpreta el texto, el dominio calcula, la persona decide—. El valor depende de que esa frontera esté delimitada con precisión, y por eso es el objeto de [ADR-002](docs/adr/ADR-002-frontera-determinista.md).
+El sistema no reemplaza el criterio comercial: reparte el trabajo en tres capas con responsabilidades separadas —el modelo interpreta el texto, el dominio calcula, la persona decide—. El valor depende de que esa frontera esté delimitada con precisión, y por eso es el objeto de [ADR-002](adr/ADR-002-frontera-determinista.md).
 
 ## 4. MVP
 
@@ -89,12 +89,12 @@ Nota de diseño: es preferible un falso bloqueo que una cotización errónea. La
 
 | Riesgo | Impacto | Mitigación en el MVP |
 |--------|---------|----------------------|
-| El LLM alucina SKU, precio o stock | Alto | El LLM **solo extrae y redacta**. Todo cálculo y validación vive en funciones deterministas del dominio; un SKU no presente en catálogo bloquea el caso ([ADR-002](docs/adr/ADR-002-frontera-determinista.md)) |
+| El LLM alucina SKU, precio o stock | Alto | El LLM **solo extrae y redacta**. Todo cálculo y validación vive en funciones deterministas del dominio; un SKU no presente en catálogo bloquea el caso ([ADR-002](adr/ADR-002-frontera-determinista.md)) |
 | Inyección de prompt en el texto del cliente | Alto | El texto se trata como dato, nunca como instrucción. Las políticas se leen de configuración del sistema, no del mensaje. Caso de prueba dedicado (`S8`) |
 | Doble efecto de una misma aprobación | Medio | Decisión humana idempotente por `(thread_id, decision_id)`; reintentos convergen al mismo estado |
 | Pérdida de estado ante reinicio | Medio | Checkpointer persistente en PostgreSQL; una ejecución interrumpida se reanuda tras reiniciar la app |
 | Exceso de confianza del ejecutivo ("automation bias") | Medio | La UI muestra la trazabilidad (qué se extrajo, qué regla se aplicó) junto al borrador, no solo el resultado |
-| Datos de dominio ficticios ≠ realidad de Ferrocima | Medio | Documentado como supuesto ([ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md)); las fuentes de datos están tras una interfaz reemplazable |
+| Datos de dominio ficticios ≠ realidad de Ferrocima | Medio | Documentado como supuesto ([ADR-001](adr/ADR-001-datos-ficticios-propios.md)); las fuentes de datos están tras una interfaz reemplazable |
 
 ## 7. Nivel de autonomía recomendado
 
@@ -121,4 +121,4 @@ Razón: el costo de un error es asimétrico. Un descuento mal aplicado o un comp
 
 ---
 
-**Documentos relacionados:** [PROJECT.md](PROJECT.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md) · [STATE.md](STATE.md)
+**Documentos relacionados:** [PROJECT.md](PROJECT.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [ADR-001](adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](adr/ADR-002-frontera-determinista.md) · [STATE.md](proceso/STATE.md)

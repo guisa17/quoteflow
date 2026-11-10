@@ -1,12 +1,14 @@
 # LOOP — Ciclo acotado de mejora
 
+> **Documento histórico.** Este ciclo se diseñó para construir el extractor real y nunca llegó a ejecutarse tal cual. El extractor se construyó después con Gemini (`backend/app/llm/gemini_extractor.py`), sobre el mismo contrato y con el mismo verifier (los 8 escenarios), más casos en lenguaje natural. El resultado y los hallazgos están en [ROADMAP.md](../ROADMAP.md) (Fase 4).
+
 Un solo loop, con presupuesto y condición de salida explícitos. No es un plan de trabajo general (eso vive en `ROADMAP.md` / `PHASE_01.md`): es el ciclo de **corrección iterativa** sobre el punto más frágil del sistema.
 
 ---
 
 ## Por qué este loop y no otro
 
-La arquitectura ([ADR-002](docs/adr/ADR-002-frontera-determinista.md)) concentra deliberadamente toda la incertidumbre en un solo lugar: **la extracción**. El dominio es determinista y se prueba con aserciones exactas; el routing es comparación de valores tipados. Si algo va a fallar de forma no reproducible, falla en el paso texto libre → `Extraction`.
+La arquitectura ([ADR-002](../adr/ADR-002-frontera-determinista.md)) concentra deliberadamente toda la incertidumbre en un solo lugar: **la extracción**. El dominio es determinista y se prueba con aserciones exactas; el routing es comparación de valores tipados. Si algo va a fallar de forma no reproducible, falla en el paso texto libre → `Extraction`.
 
 Por eso el único loop que merece presupuesto es el que endurece esa frontera. El resto del trabajo es lineal y no necesita iterar.
 
@@ -16,7 +18,7 @@ Por eso el único loop que merece presupuesto es el que endurece esa frontera. E
 
 ### Objetivo
 
-Que los **8 escenarios** de [`sample_requests.json`](backend/app/data/sample_requests.json) alcancen su `expected_outcome` y `expected_reason`, ejecutando el grafo completo con el extractor real (`LLM_MODE=real`), sin relajar ninguna regla de `REQUIREMENTS.md` §2 para conseguirlo.
+Que los **8 escenarios** de [`sample_requests.json`](../../backend/app/data/sample_requests.json) alcancen su `expected_outcome` y `expected_reason`, ejecutando el grafo completo con el extractor real (`LLM_MODE=real`), sin relajar ninguna regla de `REQUIREMENTS.md` §2 para conseguirlo.
 
 Medida única y binaria: **8/8 en verde**.
 
@@ -107,4 +109,4 @@ Si en algún momento se decide ejecutarlo (por ejemplo, para tener un camino con
 
 ---
 
-**Relacionados:** [EVIDENCE.md](EVIDENCE.md) · [AI_USE.md](AI_USE.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md) · [CLAUDE.md](CLAUDE.md)
+**Relacionados:** [EVIDENCE.md](EVIDENCE.md) · [AI_USE.md](AI_USE.md) · [ADR-002](../adr/ADR-002-frontera-determinista.md) · [CLAUDE.md](../../CLAUDE.md)

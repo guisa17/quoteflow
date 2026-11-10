@@ -26,10 +26,10 @@ La cantidad de agentes o comandos no es un objetivo. El proyecto se organizó co
 
 | Criterio | Cómo se cumple aquí |
 |---|---|
-| Un solo hilo de gobierno | Una sesión de trabajo, con [CLAUDE.md](CLAUDE.md) como única fuente de reglas cargada en cada turno |
+| Un solo hilo de gobierno | Una sesión de trabajo, con [CLAUDE.md](../../CLAUDE.md) como única fuente de reglas cargada en cada turno |
 | Tareas acotadas | Cada unidad de trabajo tiene identificador y Definition of Done propio: `T0-T14` en [PHASE_01.md](PHASE_01.md), el ciclo de [LOOP.md](LOOP.md) |
 | Contexto persistente | [STATE.md](STATE.md) y [EVIDENCE.md](EVIDENCE.md) permiten retomar el trabajo sin reconstruir la conversación previa |
-| Aislamiento cuando haya trabajo paralelo | El dominio (T2-T6) se construyó en un solo hilo, sin paralelismo: sus módulos comparten un mismo estado tipado ([IMPACT.md](IMPACT.md) §1) y ejecutarlos a la vez habría producido colisiones sin ganancia. Una vez que el dominio y el contrato de API quedaron fijos y probados, se abrió trabajo paralelo real — una sesión para el grafo (`backend/`), otra para el frontend (`frontend/`) — con aislamiento por **disjunción de archivos**: ninguna de las dos sesiones delegadas tocó `STATE.md`, `EVIDENCE.md` ni `PHASE_01.md`. Se sostuvo en la práctica: ambas sesiones corrieron a la vez (backend T7-T11 y frontend simultáneamente), sin un solo conflicto de archivos ni de commit al consolidar |
+| Aislamiento cuando haya trabajo paralelo | El dominio (T2-T6) se construyó en un solo hilo, sin paralelismo: sus módulos comparten un mismo estado tipado ([IMPACT.md](../IMPACT.md) §1) y ejecutarlos a la vez habría producido colisiones sin ganancia. Una vez que el dominio y el contrato de API quedaron fijos y probados, se abrió trabajo paralelo real — una sesión para el grafo (`backend/`), otra para el frontend (`frontend/`) — con aislamiento por **disjunción de archivos**: ninguna de las dos sesiones delegadas tocó `STATE.md`, `EVIDENCE.md` ni `PHASE_01.md`. Se sostuvo en la práctica: ambas sesiones corrieron a la vez (backend T7-T11 y frontend simultáneamente), sin un solo conflicto de archivos ni de commit al consolidar |
 | Verificación independiente | [LOOP.md](LOOP.md) separa worker de verifier para el ciclo de extracción. El mismo patrón se aplicó al grafo delegado: la sesión de Sonnet comiteó T7-T10, y la sesión principal corrió `pytest`/`ruff`/`mypy` de forma independiente antes de aceptar el resultado y continuar con T11 |
 
 Intentar aislamiento por *worktree* de verdad (una copia de árbol de trabajo separada por sesión) falló en este entorno: la herramienta lo requiere en la raíz del directorio de trabajo primario, que no es la raíz del repositorio Git aquí. El aislamiento efectivo terminó siendo por convención (qué archivos toca cada sesión), no por mecanismo — una limitación de la herramienta, no de la decisión de diseño.
@@ -70,4 +70,4 @@ Intentar aislamiento por *worktree* de verdad (una copia de árbol de trabajo se
 
 ---
 
-**Relacionados:** [ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md) · [STATE.md](STATE.md) · [EVIDENCE.md](EVIDENCE.md) · [docs/REFERENCES.md](docs/REFERENCES.md)
+**Relacionados:** [ADR-001](../adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](../adr/ADR-002-frontera-determinista.md) · [STATE.md](STATE.md) · [EVIDENCE.md](EVIDENCE.md) · [docs/REFERENCES.md](../REFERENCES.md)

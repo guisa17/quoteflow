@@ -54,7 +54,7 @@ Detalles operativos que se derivan:
 - **Docker pasa a ser requisito para ejecutar la aplicación completa.** Se acota manteniendo `tests/unit` ejecutable sin base de datos, de modo que las reglas de negocio se pueden verificar en cualquier entorno.
 - Un `setup()` mal ubicado (por request, o ausente) produce fallos confusos en el primer uso. Queda registrado como riesgo técnico conocido en [CLAUDE.md](../../CLAUDE.md) §7.
 - Al reanudar, LangGraph re-ejecuta el nodo interrumpido desde su inicio. Los nodos deben ser inocuos antes del `interrupt()`; los efectos van después de `apply_decision`. Es también la base de la idempotencia exigida por BR-15.
-- No se configura alta disponibilidad, replicación ni respaldos: infraestructura productiva está fuera de alcance por decisión ([PROJECT.md](../../PROJECT.md) §2.3).
+- No se configura alta disponibilidad, replicación ni respaldos: infraestructura productiva está fuera de alcance por decisión ([PROJECT.md](../PROJECT.md) §2.3).
 - **En Windows**, `psycopg` en modo asíncrono requiere `SelectorEventLoop`. En pruebas (`pytest`), fijar la política de `asyncio` a nivel de módulo (`tests/conftest.py`) basta. **En el servidor real no** — `uvicorn` >=0.36 pasa un `loop_factory` explícito a `asyncio.run()` que ignora la política del todo, y su factory por defecto en Windows construye `ProactorEventLoop` sin consultarla. El fix correcto es un `loop_factory` propio pasado a `uvicorn --loop` (`app/main.py`), verificado arrancando el servidor real, no solo la suite de tests — la analogía con el fix de `pytest` no se sostenía y hubiera quedado sin detectar de no probarse el proceso real. No afecta despliegues en Linux/macOS — registrado en [CLAUDE.md](../../CLAUDE.md) §7.
 
 ## Verificación
