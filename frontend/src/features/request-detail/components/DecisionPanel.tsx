@@ -1,4 +1,4 @@
-import { Check, Eye, Loader2, X } from 'lucide-react'
+import { Check, Eye, LoaderCircle, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -154,7 +154,7 @@ export function DecisionPanel({
           disabled={busy}
           className="bg-plate-ink text-plate col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-md text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          {pendingAction === 'APPROVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Check aria-hidden className="size-4 stroke-[2.5]" />}
+          {pendingAction === 'APPROVE' ? <LoaderCircle aria-hidden className="size-4 animate-spin" /> : <Check aria-hidden className="size-4 stroke-[2.5]" />}
           Aprobar y generar borrador
         </button>
         <button
@@ -163,7 +163,7 @@ export function DecisionPanel({
           disabled={busy}
           className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-md border text-sm font-semibold transition-colors disabled:opacity-50"
         >
-          {pendingAction === 'REJECT' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <X aria-hidden className="size-4" />}
+          {pendingAction === 'REJECT' ? <LoaderCircle aria-hidden className="size-4 animate-spin" /> : <X aria-hidden className="size-4" />}
           Rechazar
         </button>
         <button
@@ -172,7 +172,7 @@ export function DecisionPanel({
           disabled={busy}
           className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-md border text-sm font-semibold transition-colors disabled:opacity-50"
         >
-          {pendingAction === 'OBSERVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Eye aria-hidden className="size-4" />}
+          {pendingAction === 'OBSERVE' ? <LoaderCircle aria-hidden className="size-4 animate-spin" /> : <Eye aria-hidden className="size-4" />}
           Observar
         </button>
       </div>

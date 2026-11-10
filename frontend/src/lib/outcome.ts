@@ -1,4 +1,4 @@
-import { CircleCheck, CircleHelp, CircleSlash, Clock3, OctagonX, type LucideIcon } from 'lucide-react'
+import { CircleCheck, CircleQuestionMark, CircleSlash, Clock3, OctagonX, type LucideIcon } from 'lucide-react'
 
 import type { Outcome, ReasonCode } from '@/types/api'
 
@@ -21,7 +21,7 @@ export const OUTCOME_META: Record<
     label: 'Necesita aclaración',
     short: 'Aclaración',
     tint: 'sky',
-    icon: CircleHelp,
+    icon: CircleQuestionMark,
     description: 'Falta información esencial para poder cotizar.',
   },
   DRAFT_READY: {
