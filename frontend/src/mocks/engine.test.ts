@@ -117,9 +117,14 @@ describe('motor mock -- paridad con las regresiones del backend', () => {
     ['Quiero 8.5% de descuento en HX-200', [['HX-200', null]]],
     ['Quiero 8 % de descuento en HX-200', [['HX-200', null]]],
     ['Necesito 20 cascos, con 8% de descuento, HX-200', [['HX-200', 20]]],
+    ['Quiero 7,5% de descuento en HX-200', [['HX-200', null]]],
   ])('BR-01: "%s" no inventa cantidades', (rawText, expected) => {
     const extraction = fakeExtract(rawText)
     expect(extraction.items.map((i) => [i.product_reference, i.quantity])).toEqual(expected)
+  })
+
+  it('descuento con coma decimal: "7,5%" es 7.5, no 5', () => {
+    expect(fakeExtract('40 lentes LN-120 con un descuento del 7,5% para Lima').requested_discount_pct).toBe('7.5')
   })
 })
 

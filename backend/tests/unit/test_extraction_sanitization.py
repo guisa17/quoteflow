@@ -64,6 +64,8 @@ async def test_fake_extractor_resolves_each_seed_scenario(
         ("Quiero 8.5% de descuento en HX-200", [("HX-200", None)]),
         ("Quiero 8 % de descuento en HX-200", [("HX-200", None)]),
         ("Necesito 20 cascos, con 8% de descuento, HX-200", [("HX-200", 20)]),
+        # Coma decimal (encontrado por evals/): el 7 de "7,5%" no es cantidad.
+        ("Quiero 7,5% de descuento en HX-200", [("HX-200", None)]),
     ],
 )
 async def test_br01_fake_extractor_never_invents_a_quantity(
@@ -71,6 +73,24 @@ async def test_br01_fake_extractor_never_invents_a_quantity(
 ) -> None:
     extraction = await FakeExtractor().extract(raw_text)
     assert [(i.product_reference, i.quantity) for i in extraction.items] == expected
+
+
+@pytest.mark.parametrize(
+    ("raw_text", "expected"),
+    [
+        ("40 lentes LN-120 con un descuento del 7,5% para Lima", Decimal("7.5")),
+        ("40 lentes LN-120 con un descuento del 7.5% para Lima", Decimal("7.5")),
+        ("40 lentes LN-120 con 8 % de descuento", Decimal("8")),
+    ],
+)
+async def test_fake_extractor_reads_decimal_comma_discount(
+    raw_text: str, expected: Decimal
+) -> None:
+    """Encontrado por evals/ (N7): "7,5%" se leia como 5 %. El extractor de
+    reglas tambien es el respaldo en produccion (ADR-004), asi que un
+    descuento mal leido llegaria a la cotizacion sin aviso."""
+    extraction = await FakeExtractor().extract(raw_text)
+    assert extraction.requested_discount_pct == expected
 
 
 async def test_s8_prompt_injection_is_extracted_as_ordinary_discount_text() -> None:
