@@ -30,7 +30,7 @@ def check_completeness(extraction: Extraction) -> ValidationResult:
             ok=False,
             blocking_reason=ApprovalReason(
                 reason_code=ReasonCode.MISSING_PRODUCT_REFERENCE,
-                detail="No se identifico ningun producto en la solicitud.",
+                detail="No se identificó ningún producto en la solicitud.",
             ),
         )
 
@@ -48,7 +48,7 @@ def check_completeness(extraction: Extraction) -> ValidationResult:
                 ok=False,
                 blocking_reason=ApprovalReason(
                     reason_code=ReasonCode.MISSING_QUANTITY,
-                    detail=f"Falta una cantidad valida para '{item.product_reference}'.",
+                    detail=f"Falta una cantidad válida para '{item.product_reference}'.",
                 ),
             )
 
@@ -72,7 +72,7 @@ def resolve_and_check_stock(
         if product is None:
             return [], ApprovalReason(
                 reason_code=ReasonCode.UNKNOWN_SKU,
-                detail=f"'{item.product_reference}' no existe en el catalogo o esta inactivo.",
+                detail=f"'{item.product_reference}' no existe en el catálogo o está inactivo.",
             )
 
         available = inventory.available(product.sku)

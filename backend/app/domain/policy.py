@@ -96,7 +96,7 @@ def evaluate_policy(
                 reason_code=ReasonCode.DISCOUNT_EXCEPTION,
                 detail=(
                     f"Descuento solicitado {requested_discount_pct}% supera el "
-                    f"maximo de {tier.value} ({max_discount}%)."
+                    f"máximo de {tier.value} ({max_discount}%)."
                 ),
             )
         )
@@ -107,7 +107,7 @@ def evaluate_policy(
             ApprovalReason(
                 reason_code=ReasonCode.THRESHOLD_EXCEEDED,
                 detail=(
-                    f"Neto {net} supera el umbral de aprobacion de {policy.approval_threshold_usd}."
+                    f"Neto {net} supera el umbral de aprobación de {policy.approval_threshold_usd}."
                 ),
             )
         )

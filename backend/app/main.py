@@ -105,7 +105,7 @@ async def database_unavailable(_request: Request, _exc: psycopg.OperationalError
     return JSONResponse(
         status_code=503,
         content={
-            "detail": "La base de datos no esta disponible. Intenta de nuevo en unos segundos."
+            "detail": "La base de datos no está disponible. Intenta de nuevo en unos segundos."
         },
     )
 

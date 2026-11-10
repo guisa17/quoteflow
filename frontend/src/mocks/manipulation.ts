@@ -7,7 +7,7 @@
  */
 
 const PATTERNS: [label: string, pattern: RegExp][] = [
-  ['ignorar instrucciones o politicas', /\bignor\w*\b.{0,40}\b(politic|instruc|regla|indicac)\w*/],
+  ['ignorar instrucciones o políticas', /\bignor\w*\b.{0,40}\b(politic|instruc|regla|indicac)\w*/],
   ['ignore instructions', /\bignore\b.{0,30}\b(previous|prior|above|all)\b/],
   ['nota o mensaje del sistema', /\b(nota|mensaje|instruccion|aviso)\w* (del|para el) (sistema|asistente|modelo)\b/],
   ['se dirige al asistente o modelo', /\b(asistente|system prompt|prompt del sistema|modelo de lenguaje|ia)\s*[:,]/],
