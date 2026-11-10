@@ -76,7 +76,17 @@ Refs: BR-18, ADR-005
 - **Ramas:** `tipo/descripcion-corta`, por ejemplo `feat/evals-extractor` o `docs/adr-fase-4`. Se unen a `main` con `--no-ff` y el mensaje `Merge rama 'tipo/descripcion-corta'`.
 - **Versiones:** [SemVer](https://semver.org/lang/es/) con tags anotados (`v0.5.0`). Antes de `v1.0.0`, `feat` sube la versión menor y `fix` la de parche.
 
-El historial anterior a `v0.5.0` no sigue esta convención y no se reescribe: ya está publicado.
+Todo el historial sigue esta convención: los commits anteriores se renombraron el 2026-11-09 con `git filter-branch --msg-filter`, sin cambiar su contenido.
+
+**Corregir el mensaje de un commit:**
+
+| Caso | Comando |
+|------|---------|
+| El último commit, aún sin publicar | `git commit --amend -m "tipo(ámbito): descripción"` |
+| Un commit anterior, aún sin publicar | `git rebase -i <commit>~1` y marcar la línea con `reword` (aplana los merges; para historial con merges, usar `--rebase-merges`) |
+| Muchos commits a la vez, conservando merges | `git filter-branch --msg-filter '<script>' -- main` (o `git filter-repo --message-callback`) |
+
+Si el commit **ya está publicado**, cualquiera de estos cambia los hashes y exige `git push --force-with-lease`. Antes, crear una rama de respaldo, y avisar a quien tenga clones, porque sus copias quedan desincronizadas.
 
 ### Comandos de verificación
 
