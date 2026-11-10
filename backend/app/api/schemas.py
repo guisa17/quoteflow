@@ -36,6 +36,8 @@ class ExtractionOut(BaseModel):
     site: str | None
     requested_date: str | None
     requested_discount_pct: str | None
+    # Quien leyo el texto: modelo de Gemini o "reglas locales (respaldo: ...)".
+    source: str | None = None
 
 
 class QuoteLineOut(BaseModel):

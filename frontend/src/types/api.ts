@@ -47,6 +47,8 @@ export interface Extraction {
   site: string | null
   requested_date: string | null
   requested_discount_pct: string | null // string decimal o null
+  /** Quién leyó el texto: modelo de Gemini o "reglas locales (respaldo: …)". */
+  source?: string | null
 }
 
 export interface QuoteLine {

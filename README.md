@@ -191,13 +191,22 @@ pnpm install
 pnpm dev                              # http://localhost:5173
 ```
 
+## Lectura con un LLM real (Gemini)
+
+Por defecto el texto del cliente se lee con un extractor de reglas, sin red (`LLM_MODE=fake`). Para usar un LLM:
+
+1. Crea una key gratuita en [Google AI Studio](https://aistudio.google.com).
+2. En `backend/.env`, define `LLM_MODE=real` y `GEMINI_API_KEY=...`. El modelo por defecto es `gemini-3.5-flash-lite` y se cambia con `GEMINI_MODEL`.
+
+El modelo solo convierte el texto en ítems, cantidades, sede, fecha y descuento pedido, con salida JSON forzada por esquema. Precio, stock y política se siguen calculando con reglas deterministas. Si Gemini no responde (cuota agotada, error 5xx, red o key ausente), la solicitud se lee con el extractor de reglas y el folio lo indica en "Lo que se entendió del texto" y en la auditoría.
+
 ## Pruebas
 
-La suite del backend corre **sin acceso a un LLM externo** (`LLM_MODE=fake`), según el requisito RF-10.
+La suite del backend corre **sin acceso a un LLM externo** (`LLM_MODE=fake`), según el requisito RF-10. Las pruebas del extractor de Gemini simulan las respuestas del proveedor con `httpx.MockTransport`.
 
 ```bash
 cd backend
-uv run pytest                 # 178 tests: unitarias + integración + API
+uv run pytest                 # 190 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
 uv run mypy app/domain app/graph/state.py

@@ -28,6 +28,15 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://quoteflow:quoteflow@localhost:5432/quoteflow"
 
     llm_mode: Literal["fake", "real"] = "fake"
+    # Proveedor del extractor real. Gemini primero: su plan gratuito basta
+    # para una demo; si no responde, el grafo usa el extractor de reglas y lo
+    # deja anotado en la auditoria (ver app/llm/fallback.py).
+    llm_provider: Literal["gemini", "anthropic"] = "gemini"
+    gemini_api_key: str = ""
+    # Lite: la extraccion es corta y estructurada, y responde en ~2 s. En
+    # pruebas (nov. 2026) gemini-flash-latest / 3.8-flash superaban los 60 s.
+    gemini_model: str = "gemini-3.5-flash-lite"
+    llm_timeout_seconds: float = 20.0
     anthropic_api_key: str = ""
     llm_model: str = "claude-sonnet-5"
 

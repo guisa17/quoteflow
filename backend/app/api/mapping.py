@@ -113,6 +113,7 @@ def to_request_detail(
                 if state.extraction.requested_discount_pct is not None
                 else None
             ),
+            source=state.extraction.source,
         )
 
     quote_out = None
