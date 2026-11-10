@@ -33,6 +33,7 @@ from typing import Any
 from langgraph.types import interrupt
 
 from app.domain.enums import DecisionAction, Outcome, ReasonCode, Tier
+from app.domain.manipulation import detect_manipulation
 from app.domain.models import ApprovalReason, HumanDecision, ResolvedLine
 from app.domain.policy import evaluate_policy as evaluate_policy_rule
 from app.domain.pricing import calculate_quote
@@ -98,19 +99,38 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
                     )
                 ],
             }
+        audit = [
+            AuditEvent(
+                node="extract",
+                message=(
+                    f"Intento {attempts}: {len(extraction.items)} item(s) extraido(s)"
+                    + (f" con {extraction.source}." if extraction.source else ".")
+                ),
+            )
+        ]
+        # BR-18: el ataque ya no puede cambiar precio, nivel ni aprobacion
+        # (BR-17), pero tampoco debe pasar desapercibido.
+        signals = detect_manipulation(state.raw_text)
+        if extraction.injection_suspected:
+            signals.append("el modelo de lectura detecto instrucciones al sistema")
+        if signals:
+            audit.append(
+                AuditEvent(
+                    node="extract",
+                    message=(
+                        "Posible manipulacion en el texto del cliente: "
+                        + "; ".join(signals)
+                        + ". Las instrucciones se ignoraron (BR-17)."
+                    ),
+                    reason_code=ReasonCode.SUSPECTED_MANIPULATION,
+                )
+            )
         return {
             "extraction": extraction,
             "extraction_attempts": attempts,
             "extraction_error": None,
-            "audit_log": [
-                AuditEvent(
-                    node="extract",
-                    message=(
-                        f"Intento {attempts}: {len(extraction.items)} item(s) extraido(s)"
-                        + (f" con {extraction.source}." if extraction.source else ".")
-                    ),
-                )
-            ],
+            "manipulation_signals": signals,
+            "audit_log": audit,
         }
 
     return extract
@@ -341,6 +361,7 @@ async def evaluate_policy(state: QuoteState) -> dict[str, Any]:
         requested_discount_pct=discount_pct,
         net=state.quote.net,
         policy=policy,
+        manipulation_signals=state.manipulation_signals,
     )
 
     if result.is_rejected:

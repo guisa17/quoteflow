@@ -41,10 +41,16 @@ def evaluate_policy(
     requested_discount_pct: Decimal,
     net: Decimal,
     policy: Policy,
+    manipulation_signals: list[str] | None = None,
 ) -> PolicyEvaluation:
     """`tier` ya viene resuelto por el caller: BR-08 exige STANDARD provisional
     cuando el cliente es desconocido, así que aquí siempre se recibe un Tier
-    valido, nunca None."""
+    valido, nunca None.
+
+    `manipulation_signals` (BR-18): si el texto intento dar ordenes al
+    sistema, una persona revisa el folio. Va primero entre los motivos de
+    aprobacion porque es el que la bandeja debe mostrar. Un rechazo duro
+    (BR-07) sigue dominando (BR-09)."""
 
     if requested_discount_pct > policy.hard_discount_ceiling_pct:
         # BR-07: rechazo. Ningun humano puede aprobarlo desde el MVP.
@@ -59,6 +65,19 @@ def evaluate_policy(
         )
 
     reasons: list[ApprovalReason] = []
+
+    if manipulation_signals:
+        # BR-18
+        reasons.append(
+            ApprovalReason(
+                reason_code=ReasonCode.SUSPECTED_MANIPULATION,
+                detail=(
+                    "El texto intenta dar instrucciones al sistema ("
+                    + "; ".join(manipulation_signals)
+                    + "). Se ignoraron; revisa el pedido antes de aprobar."
+                ),
+            )
+        )
 
     if not customer_is_known:
         # BR-08

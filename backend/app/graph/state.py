@@ -61,6 +61,8 @@ class QuoteState(BaseModel):
     extraction: Extraction | None = None
     extraction_attempts: int = 0
     extraction_error: str | None = None
+    # BR-18: senales de manipulacion en el texto (detector determinista + LLM).
+    manipulation_signals: list[str] = []
 
     # --- resolve_customer: cliente + tier (BR-08) ---
     customer: Customer | None = None

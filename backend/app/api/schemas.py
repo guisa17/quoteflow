@@ -63,6 +63,7 @@ class AuditEventOut(BaseModel):
     node: str
     timestamp: str
     note: str
+    reason_code: str | None = None
 
 
 class HumanDecisionOut(BaseModel):

@@ -73,6 +73,29 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 
 ---
 
+## Pendientes conocidos
+
+Problemas detectados probando el extractor real (Gemini), registrados para volver a ellos.
+
+### P-01 — Varias sedes de entrega en una sola solicitud
+
+**Caso:** "Para Arequipa: 10 cascos HX-200. Para Cusco: 12 arneses AR-450." El esquema de `Extraction` tiene un solo `site`, así que el modelo eligió Arequipa y la cotización salió como "Borrador listo" con todo hacia Arequipa. **Se perdió información sin avisar**: en una empresa real sería un despacho equivocado.
+
+**Principio:** el sistema puede no entender algo, pero nunca descartarlo en silencio. O lo representa, o se detiene y pregunta.
+
+**Plan por capas:**
+
+1. **Sede por línea:** `items[].site` en el esquema y en el prompt; cotización y borrador agrupados por destino.
+2. **Regla determinista:** más de una sede, ítems sin sede junto a otros con sede, o texto condicional sobre el destino → motivo nuevo (p. ej. `MULTIPLE_SITES`) que manda el folio a revisión humana o a `NEEDS_CLARIFICATION`. La decisión es de las reglas, no del LLM.
+3. **Sedes registradas del cliente:** cruzar la sede extraída con las direcciones de despacho del padrón (como en un ERP); una sede no registrada va a revisión.
+4. **Corrección humana de la lectura:** editar "Lo que se entendió del texto" desde el folio, recotizar y auditar quién corrigió qué.
+5. **Dividir por sede (opcional):** una cotización por destino cuando cambian flete, plazos o facturación.
+6. **Caso de regresión:** añadir este texto al conjunto de evaluación del extractor.
+
+**Mínimo recomendado:** capas 1 y 2.
+
+---
+
 ## Fuera del roadmap
 
 No son fases pendientes: son decisiones de no hacer, registradas en [BUSINESS_CASE.md §4](BUSINESS_CASE.md) y [PROJECT.md §2.3](PROJECT.md). Envío automático al cliente, autenticación empresarial, integraciones reales, facturación, reserva efectiva de stock, escalas de precio por volumen, infraestructura productiva.

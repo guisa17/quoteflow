@@ -74,6 +74,7 @@ export const REASON_LABELS: Record<ReasonCode, string> = {
   UNKNOWN_CUSTOMER: 'Cliente desconocido',
   DISCOUNT_ABOVE_HARD_CEILING: 'Descuento sobre el techo duro',
   EXTRACTION_FAILED: 'Fallo de extracción',
+  SUSPECTED_MANIPULATION: 'Posible manipulación en el texto',
 }
 
 /** Qué hacer a continuación, por resultado: la línea que el operador lee primero. */
