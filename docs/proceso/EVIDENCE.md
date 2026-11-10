@@ -699,6 +699,7 @@ Activas solo con `LANGSMITH_TRACING=true` y una key. Lo que se verificó en la i
 | Protección de `main` | `! [remote rejected] HEAD -> main (push declined due to repository rule violations)` |
 | Dependabot | 8 PRs revisados. Las 3 versiones mayores del frontend (vite 8, vitest 5, react-router 8) se probaron juntas y con una prueba de humo en Chrome headless sobre el build de producción |
 | Seed único | La demo importa `backend/app/data/*.json`. Cambiar el techo GOLD a 5 % hace fallar S1 en las dos suites, y un precio `45.005` detiene la carga |
+| Playwright | 10/10 recorridos (5 × escritorio y móvil). Al quitar la ruta comodín, la prueba del 404 falla |
 | Graphify | 289 → 326 nodos, sin ciclos de import. La frontera de ADR-002 se sostiene ([docs/graphify/](../graphify/README.md)) |
 
 **Suites y auditorías** (backend en el CI con Postgres 16; frontend y auditorías en local):
@@ -732,7 +733,7 @@ Lo siguiente **no** está verificado. Se declara aquí en lugar de presentarse c
 | ~~L-06~~ | ~~El repositorio aún no está bajo control de versiones~~ — **resuelto**: remoto en `github.com/guisa17/quoteflow` |
 | L-07 | El backend tiene andamiaje (`config.py`, paquetes vacíos) pero ningún módulo de dominio, grafo ni API con lógica real |
 | L-08 | **Sin autenticación:** cualquiera con acceso a la API puede aprobar, y `actor` es texto que declara el cliente, así que la auditoría no prueba quién decidió |
-| L-09 | Los tests de frontend prueban el motor de la demo; no hay pruebas end-to-end en navegador |
+| ~~L-09~~ | ~~No hay pruebas end-to-end en navegador~~ — **resuelto**: Playwright recorre la bandeja, el registro, la aprobación humana, BR-18 y el 404, en escritorio y móvil, también en el CI |
 
 ## Deuda aceptada
 

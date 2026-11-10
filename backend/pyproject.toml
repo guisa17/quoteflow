@@ -3,6 +3,7 @@ name = "quoteflow-backend"
 version = "0.1.0"
 description = "QuoteFlow — motor de cotizacion con aprobacion humana"
 requires-python = ">=3.12"
+license = "MIT"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",

@@ -31,7 +31,7 @@ Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir 
 | **Extracción** | Gemini con salida forzada por esquema; respaldo explícito al extractor de reglas | ✅ |
 | **API HTTP** | `app/api/` — 4 endpoints + tabla `requests` | ✅ |
 | **Frontend** | React 19 + Vite 8 + Tailwind 4; modo demo (motor en el navegador sobre el mismo seed) y modo HTTP | ✅ |
-| **Calidad** | CI (GitHub Actions), pre-commit, Dependabot, evals locales, trazas en LangSmith | ✅ |
+| **Calidad** | CI (GitHub Actions), pre-commit, Dependabot, Playwright, evals locales, trazas en LangSmith | ✅ |
 
 ## Decisiones vigentes
 
@@ -53,6 +53,7 @@ Las decisiones de arquitectura están en los ADRs. Las de proceso, en [CLAUDE.md
 |-----|------|-----------|
 | Suite de backend | `pytest` en el CI, con Postgres 16 real | ✅ **214/214** |
 | Frontend | `pnpm test` · `typecheck` · `build` | ✅ **35/35**, limpio |
+| **End-to-end en navegador** | Playwright, 5 recorridos en escritorio y en móvil, también en el CI | ✅ **10/10**; la prueba del 404 falla si se quita la ruta comodín |
 | Lint, formato y tipos | `ruff` · `ruff format` · `mypy app` | ✅ limpios (31 archivos con mypy) |
 | **Extractor con el modelo real** | `python -m evals.run`, 22 casos en 4 categorías | ✅ **31/31 ítems (100 %), 22/22 casos.** Meta ≥ 90 % |
 | Extractor de reglas (el respaldo) | Los mismos 22 casos | 22/31 ítems (71 %): suficiente para los escenarios, no para el lenguaje natural |
@@ -70,7 +71,6 @@ Detalle completo en [EVIDENCE.md](EVIDENCE.md). Los hallazgos más importantes d
 | # | Limitación |
 |---|------------|
 | L-08 | **Sin autenticación:** cualquiera con acceso a la API puede aprobar, y `actor` es texto que declara el cliente. No exponer la API con datos reales antes de resolverlo |
-| L-09 | Sin pruebas end-to-end en navegador: los 35 tests del frontend prueban el motor de la demo |
 | P-01 | Una solicitud con varias sedes de entrega se cotiza hacia una sola ([ROADMAP.md](../ROADMAP.md)) |
 | D-01…D-04 | Sin escalas por volumen, sin paginación, sin reintentos con espera progresiva, borrador en un solo idioma — con su razón en EVIDENCE |
 
@@ -78,9 +78,9 @@ Detalle completo en [EVIDENCE.md](EVIDENCE.md). Los hallazgos más importantes d
 
 El siguiente incremento con más valor, en orden:
 
-1. **Pruebas end-to-end** (Playwright) del recorrido registrar → decidir → borrador. Cierra L-09.
-2. **P-01, varias sedes:** sede por línea y una regla que mande el caso a revisión. El plan por capas está en el ROADMAP.
-3. **Autenticación** antes de cualquier uso con datos reales (L-08).
+1. **P-01, varias sedes:** sede por línea y una regla que mande el caso a revisión. El plan por capas está en el ROADMAP.
+2. **Autenticación** antes de cualquier uso con datos reales (L-08).
+3. **Pruebas end-to-end contra la API real** (hoy corren en modo demo), con Postgres en el CI.
 
 Puerta de entrada: [CLAUDE.md](../../CLAUDE.md) (reglas) y este documento (estado). Ambos se leen de forma autónoma, sin depender de ninguna conversación previa.
 
