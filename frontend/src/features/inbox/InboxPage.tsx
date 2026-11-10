@@ -122,8 +122,7 @@ export function InboxPage() {
     <div className="mx-auto max-w-[88rem] px-4 pt-8 pb-16 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div>
-          <p className="eyebrow-tag">// Cola de aprobación</p>
-          <h1 className="type-title mt-3">Bandeja</h1>
+          <h1 className="type-title">Bandeja</h1>
           <p className="text-ink-soft mt-1.5 text-sm">
             {isPending
               ? 'Cargando folios…'
@@ -349,15 +348,7 @@ export function InboxPage() {
                         fresh ? 'row-fresh' : 'hover:bg-paper-ruled',
                       )}
                     >
-                      <td className="relative py-3 pl-4 align-top">
-                        {/* Lomo de color: el resultado se ve antes de leer la fila. */}
-                        <span
-                          aria-hidden
-                          className={cn(
-                            'absolute inset-y-2 left-1 w-1 rounded-full',
-                            TINT_CLASSES[OUTCOME_META[r.outcome].tint].dot,
-                          )}
-                        />
+                      <td className="py-3 pl-4 align-top">
                         <Link
                           to={href}
                           onClick={(e) => e.stopPropagation()}

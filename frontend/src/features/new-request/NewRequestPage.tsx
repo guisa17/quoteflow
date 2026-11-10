@@ -1,4 +1,4 @@
-﻿import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
@@ -71,7 +71,7 @@ export function NewRequestPage() {
 
       <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule shadow-card mt-3 rounded-xl border">
         <header className="border-rule border-b px-5 pt-5 pb-4">
-          <p className="field-label font-figures">// Folio Nº ——————</p>
+          <p className="font-figures text-ink-faint text-xs">Folio Nº ——————</p>
           <h1 className="type-title mt-1.5">Nueva solicitud</h1>
           <p className="text-ink-soft mt-1 text-sm">
             Pega el pedido tal como llegó. QuoteFlow lo lee, consulta catálogo, stock y política, y lo resuelve al

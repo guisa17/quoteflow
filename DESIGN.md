@@ -113,14 +113,14 @@ components:
 
 **Creative North Star: "El agente redacta, una persona decide"**
 
-QuoteFlow tiene un lenguaje editorial sobrio, el de los productos de IA B2B actuales. Usa tarjetas blancas sobre un fondo gris casi blanco, titulares en serif, texto en Inter, rótulos "// SECCIÓN" en mayúsculas pequeñas y botones de tinta casi negra. El sistema prepara la cotización y la persona la aprueba. La pantalla lo deja claro con una sola placa oscura: la decisión pendiente.
+QuoteFlow tiene un lenguaje editorial sobrio, el de los productos de IA B2B actuales. Usa tarjetas blancas sobre un fondo gris casi blanco, titulares en serif, texto en Inter, rótulos de sección en mayúsculas pequeñas y botones de tinta casi negra. El sistema prepara la cotización y la persona la aprueba. La pantalla lo deja claro con una sola placa oscura: la decisión pendiente.
 
 El razonamiento queda a la vista en un solo folio, de arriba abajo: el texto del cliente, el recorrido de doce etapas, la regla que actuó y las líneas cotizadas. El tema claro y el oscuro se diseñan juntos. En oscuro la placa se invierte y queda clara.
 
 **Key Characteristics:**
 - Tarjetas blancas con borde fino y una sombra amplia y muy tenue sobre un fondo gris frío.
 - Titulares en Source Serif 4. Todo lo demás va en Inter.
-- Rótulos de sección con el prefijo "// " y una etiqueta enmarcada sobre el título de página.
+- Rótulos de sección en mayúsculas pequeñas y espaciadas, sin adornos.
 - Los colores de estado son cinco tintes (canario, celeste, verde, violeta, rojo), siempre con ícono y texto.
 - Lila como único acento: selección de texto, aviso de decisión y fila recién decidida.
 
@@ -140,7 +140,7 @@ Estrategia: neutros casi acromáticos, cinco tintes de estado, un acento lila y 
 ### Tertiary
 - **Tintes de estado**: canario (pendiente de aprobación), celeste (necesita aclaración), verde (borrador listo), violeta (detenida) y rojo (rechazada).
   - Los cinco tonos están separados al menos 60° en el círculo cromático para distinguirse de un vistazo.
-  - Cada tinte tiene una tinta (`*-ink`) para el texto encima y una marca (`*-mark`), el tono puro, para puntos y para el lomo de color de cada fila.
+  - Cada tinte tiene una tinta (`*-ink`) para el texto encima y una marca (`*-mark`), el tono puro, para los puntos del filtro de estado. En la tabla, el estado se lee solo en su etiqueta; las filas no llevan barras de color.
 
 ### Neutral
 - **Fondo** (desk): gris con un matiz frío. **Tarjeta** (paper): blanco puro. **Gris de relleno** (paper-ruled): filas, campos de solo lectura y celdas del recorrido.
@@ -161,8 +161,7 @@ Estrategia: neutros casi acromáticos, cinco tintes de estado, un acento lila y 
 - **Title** (serif 550, 2rem, −0.02em): nombre del cliente y título de página.
 - **Reading** (400, 1rem, 1.6): el texto del cliente, con un máximo de 70ch.
 - **Body** (400, 0.875rem): texto general y celdas.
-- **Field label** (500, 0.6875rem, mayúsculas, 0.08em): rótulo de campo. Los títulos de sección (`h2`) llevan el prefijo "// ".
-- **Eyebrow tag** (450, 0.75rem, mayúsculas, 0.04em, recuadro de 1px): etiqueta sobre el título de página, por ejemplo "// COLA DE APROBACIÓN".
+- **Field label** (500, 0.6875rem, mayúsculas, 0.08em): rótulo de campo y título de sección.
 - **Meta** (400, 0.75rem): fechas, códigos de cliente y notas. Nada baja de 0.6875rem.
 - **Total** (700, 1.125rem, tabular): la única cifra que sube de tamaño.
 
@@ -178,7 +177,7 @@ La columna máxima es de 88rem, con un margen de 16 a 24px.
 - Dos pestañas: **Por decidir**, la cola de trabajo, y **Todas**, el archivo. "Por decidir" es la vista por defecto cuando hay pendientes y muestra su conteo en canario.
 - En "Todas", un desplegable **Estado** con conteos filtra junto al buscador y se quita con una ×.
 - La vista y el estado viven en la URL (`?vista=todas&estado=BLOCKED`).
-- Debajo va una tabla densa con un lomo de color por fila.
+- Debajo va una tabla densa. Las filas pendientes ponen al cliente en negrita; el estado va en su etiqueta.
 - No hay tablero de métricas: los conteos están en las pestañas y en el desplegable.
 
 **Detalle.** Es un folio en dos columnas desde 1024px: el contenido a la izquierda y el panel de decisión fijo de 22rem a la derecha. En móvil, el panel va primero, debajo del encabezado, y las tablas se desplazan en horizontal dentro de su borde.
@@ -212,7 +211,7 @@ No hay más niveles, degradados ni vidrio.
 - **Resultado:** píldora con tinte, tinta, ícono de 14px y texto en negrita. En el encabezado del folio va a tamaño mayor.
 
 ### Cards / Containers
-- **Folio:** tarjeta blanca de 16px con borde, `shadow-card` y un encabezado que contiene el rótulo "// FOLIO Nº …", el cliente en serif y el resultado.
+- **Folio:** tarjeta blanca de 16px con borde, `shadow-card` y un encabezado que contiene "Folio Nº …", el cliente en serif y el resultado.
 - **Campos:** grilla con rótulo de campo encima del valor.
 
 ### Inputs / Fields
@@ -226,7 +225,7 @@ No hay más niveles, degradados ni vidrio.
   - Elegir el mismo tema que el sistema vuelve a seguirlo.
 
 ### Placa de decisión
-- **Contenido:** el rótulo "// HUMANO EN EL CICLO", el título "Tu decisión" en serif, los campos y las acciones.
+- **Contenido:** el título "Tu decisión" en serif, los campos y las acciones.
 - **Aspecto:** tinta casi negra en claro, gris muy claro en oscuro, con esquina de 16px y `shadow-card`.
 
 ### Rastro de decisiones
@@ -248,7 +247,7 @@ No hay más niveles, degradados ni vidrio.
 
 ### Do:
 - **Do** mostrar cada resultado con su tinte, su ícono y su palabra.
-- **Do** usar la serif solo en titulares y el "// " solo en rótulos de sección.
+- **Do** usar la serif solo en titulares.
 - **Do** dejar visibles las doce etapas del recorrido, aunque no se hayan recorrido.
 - **Do** reservar la placa oscura para la decisión pendiente.
 
@@ -256,4 +255,6 @@ No hay más niveles, degradados ni vidrio.
 - **Don't** apilar sombras ni inventar nuevas: solo existe `shadow-card`.
 - **Don't** usar degradados, ilustraciones de fondo ni vidrio dentro de la consola.
 - **Don't** usar el lila para estados: es acento de selección y de "recién decidido".
+- **Don't** añadir barras o bordes de color a las filas: duplican la etiqueta de estado y convierten la tabla en un arcoíris.
+- **Don't** usar prefijos decorativos como "//" en rótulos.
 - **Don't** poner sellos sin una decisión humana detrás: un resultado automático se muestra con su tinte, no con un sello.

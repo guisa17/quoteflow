@@ -1,4 +1,4 @@
-﻿import { Check, Eye, Loader2, X } from 'lucide-react'
+import { Check, Eye, Loader2, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -92,10 +92,7 @@ export function DecisionPanel({
 
   return (
     <section aria-labelledby="decision-title" className="bg-plate text-plate-ink shadow-card rounded-xl p-5">
-      <p className="text-plate-ink-soft text-[0.6875rem] font-medium tracking-[0.08em] uppercase">
-        // Humano en el ciclo
-      </p>
-      <h2 id="decision-title" className="font-display mt-1.5 text-[1.5rem] leading-tight font-[550] tracking-[-0.015em]">
+      <h2 id="decision-title" className="font-display text-[1.5rem] leading-tight font-[550] tracking-[-0.015em]">
         Tu decisión
       </h2>
       <p className="text-plate-ink-soft mt-1 text-sm">

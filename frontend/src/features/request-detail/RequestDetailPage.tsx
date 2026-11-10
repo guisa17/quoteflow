@@ -126,7 +126,7 @@ export function RequestDetailPage() {
       <article className="bg-paper border-rule shadow-card mt-3 rounded-xl border">
         <header className="border-rule flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b px-5 pt-5 pb-4">
           <div className="min-w-0">
-            <p className="field-label font-figures">// Folio Nº {folioNumber(detail.id)}</p>
+            <p className="font-figures text-ink-soft text-xs">Folio Nº {folioNumber(detail.id)}</p>
             <h1 className="type-title mt-1.5 truncate">
               {detail.customer_name || 'Cliente no registrado'}
             </h1>

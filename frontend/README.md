@@ -87,7 +87,7 @@ datos persisten en `localStorage` para sobrevivir a un refresh; el botón
 ## Decisiones de diseño
 
 - **Editorial sobrio**: tarjetas blancas con una sombra tenue sobre un fondo
-  gris frío, rótulos "// SECCIÓN" y una sola placa oscura para la decisión
+  gris frío, titulares en serif y una sola placa oscura para la decisión
   pendiente. Cada decisión humana queda como un sello con fecha y nombre. Los
   estados son cinco tintes (canario, celeste, verde, violeta, rojo), siempre
   con ícono y texto. Sistema completo en [`../DESIGN.md`](../DESIGN.md).

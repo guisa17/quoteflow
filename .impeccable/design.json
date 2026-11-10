@@ -12,7 +12,7 @@
     },
     "typographyMeta": {
       "title": { "displayName": "Titular", "purpose": "Título de página, cliente del folio, marca y placa de decisión, en Source Serif 4." },
-      "field-label": { "displayName": "Rótulo", "purpose": "Mayúsculas pequeñas y espaciadas; los títulos de sección llevan el prefijo // ." },
+      "field-label": { "displayName": "Rótulo", "purpose": "Mayúsculas pequeñas y espaciadas para campos y títulos de sección." },
       "figures": { "displayName": "Cifras", "purpose": "Montos, SKU, folios y horas en Inter con cifras tabulares." }
     },
     "shadows": [
@@ -39,12 +39,12 @@
       "css": ".ds-btn-primary { background: oklch(23.5% 0.004 286); color: #fff; height: 40px; padding: 0 20px; border: 0; border-radius: 8px; font: 500 14px/1 'Inter Variable', system-ui, sans-serif; cursor: pointer; transition: opacity .15s; } .ds-btn-primary:hover { opacity: .85; } .ds-btn-primary:focus-visible { outline: 2px solid oklch(49% 0.19 272); outline-offset: 2px; }"
     },
     {
-      "name": "Etiqueta de sección",
+      "name": "Título de página",
       "kind": "custom",
       "refersTo": "",
-      "description": "Etiqueta enmarcada sobre el título de página.",
-      "html": "<p class=\"ds-eyebrow\">// Cola de aprobación</p><h1 class=\"ds-title\">Bandeja</h1>",
-      "css": ".ds-eyebrow { display: inline-flex; align-items: center; height: 26px; padding: 0 8px; border: 1px solid oklch(23.5% 0.004 286 / 16%); border-radius: 6px; font: 450 12px 'Inter Variable', sans-serif; letter-spacing: .04em; text-transform: uppercase; color: oklch(46% 0.007 286); margin: 0; } .ds-title { margin: 12px 0 0; font: 550 32px/1.12 'Source Serif 4 Variable', Georgia, serif; letter-spacing: -.02em; color: oklch(23.5% 0.004 286); }"
+      "description": "Titular en serif con su línea de contexto.",
+      "html": "<h1 class=\"ds-title\">Bandeja</h1>",
+      "css": ".ds-title { margin: 0; font: 550 32px/1.12 'Source Serif 4 Variable', Georgia, serif; letter-spacing: -.02em; color: oklch(23.5% 0.004 286); }"
     },
     {
       "name": "Campo de texto",
@@ -83,17 +83,17 @@
       "kind": "card",
       "refersTo": "decision-plate",
       "description": "La única placa oscura: la decisión pendiente.",
-      "html": "<section class=\"ds-plate\"><p class=\"ds-plate-eyebrow\">// Humano en el ciclo</p><h3>Tu decisión</h3><p>Esta solicitud se detuvo para que alguien la apruebe.</p><button class=\"ds-plate-btn\">Aprobar y generar borrador</button></section>",
+      "html": "<section class=\"ds-plate\"><h3>Tu decisión</h3><p>Esta solicitud se detuvo para que alguien la apruebe.</p><button class=\"ds-plate-btn\">Aprobar y generar borrador</button></section>",
       "css": ".ds-plate { background: oklch(24% 0.004 286); color: oklch(98.5% 0 0); padding: 20px; border-radius: 16px; font: 14px 'Inter Variable', sans-serif; max-width: 320px; box-shadow: 0 1px 2px oklch(23.5% 0.01 286 / 4%), 0 18px 44px -20px oklch(23.5% 0.03 286 / 16%); } .ds-plate-eyebrow { margin: 0; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: oklch(77% 0.006 286); } .ds-plate h3 { margin: 6px 0 0; font: 550 24px/1.2 'Source Serif 4 Variable', Georgia, serif; } .ds-plate p { color: oklch(77% 0.006 286); } .ds-plate-btn { width: 100%; height: 40px; border: 0; border-radius: 8px; background: oklch(98.5% 0 0); color: oklch(24% 0.004 286); font-weight: 600; cursor: pointer; } .ds-plate-btn:hover { opacity: .9; }"
     }
   ],
   "narrative": {
     "northStar": "El agente redacta, una persona decide",
-    "overview": "QuoteFlow habla el lenguaje editorial sobrio de los productos de IA B2B actuales: tarjetas blancas sobre un fondo gris casi blanco, titulares en serif, texto en Inter, rótulos // SECCIÓN y botones de tinta. Una sola placa oscura marca la decisión pendiente.",
+    "overview": "QuoteFlow habla el lenguaje editorial sobrio de los productos de IA B2B actuales: tarjetas blancas sobre un fondo gris casi blanco, titulares en serif, texto en Inter, rótulos de sección y botones de tinta. Una sola placa oscura marca la decisión pendiente.",
     "keyCharacteristics": [
       "Tarjetas blancas con borde fino y una sombra amplia y tenue sobre un fondo gris frío.",
       "Titulares en Source Serif 4; todo lo demás en Inter.",
-      "Rótulos de sección con prefijo // y una etiqueta enmarcada sobre el título de página.",
+      "Rótulos de sección en mayúsculas pequeñas, sin adornos; filas sin barras de color.",
       "Cinco tintes de estado con ícono y texto; el lila es solo acento."
     ],
     "rules": [
@@ -105,7 +105,7 @@
     ],
     "dos": [
       "Do mostrar cada resultado con su tinte, su ícono y su palabra.",
-      "Do usar la serif solo en titulares y el // solo en rótulos de sección.",
+      "Do usar la serif solo en titulares.",
       "Do dejar visibles las doce etapas del recorrido.",
       "Do reservar la placa oscura para la decisión pendiente."
     ],

@@ -330,26 +330,6 @@
     text-transform: uppercase;
     color: var(--qf-ink-soft);
   }
-  /* Etiqueta enmarcada sobre el título de página: "// COLA DE APROBACIÓN". */
-  .eyebrow-tag {
-    display: inline-flex;
-    align-items: center;
-    height: 1.625rem;
-    padding-inline: 0.5rem;
-    border: 1px solid var(--qf-rule-strong);
-    border-radius: var(--radius-sm);
-    background-color: var(--qf-paper);
-    font-size: 0.75rem;
-    font-weight: 450;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--qf-ink-soft);
-  }
-  /* Los títulos de sección llevan el prefijo "// ". */
-  h2.field-label::before {
-    content: '// ';
-    color: var(--qf-ink-faint);
-  }
   /* Solo el sello: la palabra de goma, angosta y espaciada (Archivo). */
   .condensed {
     font-family: 'Archivo Variable', var(--font-sans);
