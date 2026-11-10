@@ -48,12 +48,14 @@ Verificación rápida: `app/domain/` **no importa nada de `app/llm/`**. Si esa l
 
 ### Comandos de verificación
 
+Son los mismos que corre el CI (`.github/workflows/ci.yml`) en cada push a `main` y en cada pull request.
+
 ```bash
 cd backend
 uv run pytest                                  # suite completa (LLM_MODE=fake)
 uv run pytest tests/unit                       # reglas, sin Postgres
 uv run ruff check . && uv run ruff format --check .
-uv run mypy app/domain app/graph/state.py
+uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
 
 cd ../frontend
 pnpm typecheck && pnpm test && pnpm build
