@@ -226,7 +226,7 @@ La suite del backend corre **sin acceso a un LLM externo** (`LLM_MODE=fake`), se
 
 ```bash
 cd backend
-uv run pytest                 # 213 tests: unitarias + integración + API
+uv run pytest                 # 214 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
 uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
@@ -236,6 +236,14 @@ uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
 cd frontend
 pnpm test                     # 26 tests del motor mock: escenarios, reanudación, decisiones y BR-18
 pnpm typecheck
+```
+
+Los hooks de pre-commit corren ruff y el formato antes de cada commit, y bloquean archivos `.env` y claves privadas. Se instalan una vez por clon:
+
+```bash
+cd backend
+uv run pre-commit install
+uv run pre-commit run --all-files   # opcional: revisar todo el repo a mano
 ```
 
 ## Datos de dominio
