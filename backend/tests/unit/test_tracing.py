@@ -92,6 +92,19 @@ async def test_fallback_trace_is_tagged_with_reason() -> None:
     assert "429" in run.metadata["fallback_reason"]
 
 
+async def test_fallback_trace_shows_failed_llm_then_rules_step() -> None:
+    captured: list[RunTree] = []
+    extractor = FallbackExtractor(primary=_gemini(503, {}), fallback=FakeExtractor())
+    with tracing_context(enabled="local"):
+        await extractor.extract("20 cascos HX-200", langsmith_extra={"on_end": captured.append})
+
+    children = captured[0].child_runs
+    assert [c.name for c in children] == ["gemini.extract", "rules.extract"]
+    assert children[0].error is not None
+    assert children[1].error is None
+    assert children[1].outputs is not None
+
+
 def test_configure_tracing_requires_flag_and_key(monkeypatch: pytest.MonkeyPatch) -> None:
     # setenv antes de delenv: asi monkeypatch registra el estado original y lo
     # restaura al terminar, aunque configure_tracing escriba en os.environ.
