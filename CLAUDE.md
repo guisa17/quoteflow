@@ -106,7 +106,9 @@ pnpm typecheck && pnpm test && pnpm build
 pnpm test:e2e                                  # Playwright, escritorio y móvil (modo demo)
 ```
 
-**Si el cambio altera la interfaz**, regenera las capturas del README con `cd frontend && pnpm capturas` (escribe en `docs/img/`) y revísalas antes de hacer commit.
+**Si el cambio altera la interfaz**, regenera las capturas del README con `cd frontend && pnpm capturas` (escribe en `docs/img/`) y revísalas antes de hacer commit. El GIF del README sale del video que graba esa misma corrida; el comando de ffmpeg que lo convierte está en `e2e/capturas.shots.ts`.
+
+**El README existe en dos idiomas:** [README.md](README.md) (inglés) y [README.es.md](README.es.md) (español) dicen lo mismo y se actualizan juntos. Son cortos a propósito: el detalle va en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) y [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md), no en el README. Si cambia una cifra (pruebas, evals), se actualiza en los cuatro.
 
 **Hooks de pre-commit** (`.pre-commit-config.yaml`): ruff con correcciones, formato, bloqueo de `.env` y de claves privadas. Se instalan una vez por clon con `cd backend && uv run pre-commit install`. Si un hook corrige un archivo, el commit se aborta: hay que revisar el cambio, volver a hacer `git add` y repetir el commit. **Nunca se saltan con `--no-verify`.**
 

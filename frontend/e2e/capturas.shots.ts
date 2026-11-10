@@ -68,6 +68,41 @@ test('folio con intento de manipulación', async ({ page }) => {
   await page.screenshot({ path: `${OUT}/folio-manipulacion.png`, fullPage: true })
 })
 
+// Video del flujo de aprobación para el GIF del README. Playwright graba en
+// .webm y ffmpeg lo convierte (desde frontend/). Con estos valores queda bajo
+// los 500 KB que permite el hook de pre-commit:
+//   ffmpeg -i test-results/video/flujo-aprobacion.webm -vf "fps=5,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=32:stats_mode=diff[p];[s1][p]paletteuse=dither=none:diff_mode=rectangle" ../docs/img/flujo-aprobacion.gif
+test('video del flujo de aprobación', async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    recordVideo: { dir: path.resolve(import.meta.dirname, '../test-results/video'), size: { width: 1280, height: 800 } },
+    locale: 'es-PE',
+    timezoneId: 'America/Lima',
+  })
+  const page = await context.newPage()
+  const pausa = (ms: number) => page.waitForTimeout(ms)
+
+  await page.goto('/new')
+  await preparar(page)
+  await pausa(900)
+  await page.getByRole('button', { name: 'Supera USD 10 000' }).click()
+  await pausa(1600)
+  await page.getByRole('button', { name: 'Registrar y resolver' }).click()
+  await expect(page.getByText('Pendiente de aprobación').first()).toBeVisible()
+  await preparar(page)
+  await pausa(2200)
+  await page.getByLabel('Quién decide').pressSequentially('jefa.comercial', { delay: 45 })
+  await pausa(700)
+  await page.getByRole('button', { name: 'Aprobar y generar borrador' }).click()
+  await expect(page.getByText('Borrador listo').first()).toBeVisible()
+  await page.evaluate('window.scrollTo({ top: 0, behavior: "smooth" })')
+  await pausa(2600)
+
+  const video = page.video()
+  await context.close()
+  if (video) await video.saveAs(path.resolve(import.meta.dirname, '../test-results/video/flujo-aprobacion.webm'))
+})
+
 test('folio en el móvil', async ({ browser }) => {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
