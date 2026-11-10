@@ -12,6 +12,7 @@ docs/BUSINESS_CASE.md). Termina con codigo 1 si no se alcanza.
 import argparse
 import asyncio
 import json
+import os
 import sys
 import time
 import unicodedata
@@ -23,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from langsmith import traceable
+from langsmith.run_trees import get_cached_client
 
 from app.config import configure_tracing, get_settings
 from app.domain.manipulation import detect_manipulation
@@ -211,6 +213,11 @@ async def run(args: argparse.Namespace) -> int:
     print(f"  Errores:          {errors}")
     if latencies:
         print(f"  Latencia media:   {sum(latencies) // len(latencies)} ms")
+
+    # La SDK envia las trazas en segundo plano; el proceso es corto, asi que
+    # se vacia la cola explicitamente antes de salir.
+    if os.environ.get("LANGSMITH_TRACING") == "true":
+        get_cached_client().flush(timeout=15)
 
     out_dir = EVALS_DIR / "results"
     out_dir.mkdir(exist_ok=True)

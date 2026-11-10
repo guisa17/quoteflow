@@ -38,7 +38,8 @@ from app.db import create_pool, maintain_pools
 from app.graph.build import build_graph
 from app.graph.checkpointer import checkpointer_context
 
-logger = logging.getLogger("quoteflow")
+# El logger de uvicorn ya esta configurado: sus mensajes INFO se ven en consola.
+logger = logging.getLogger("uvicorn.error")
 
 _HEALTH_ACQUIRE_TIMEOUT_SECONDS = 2.0
 
