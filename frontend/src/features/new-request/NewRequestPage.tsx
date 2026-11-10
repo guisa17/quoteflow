@@ -69,10 +69,10 @@ export function NewRequestPage() {
         Bandeja
       </Link>
 
-      <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule-strong mt-3 rounded-xl border">
-        <header className="border-rule-strong border-b px-5 pt-4 pb-3.5">
+      <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule shadow-card mt-3 rounded-xl border">
+        <header className="border-rule border-b px-5 pt-5 pb-4">
           <p className="font-figures text-ink-faint text-xs">Folio Nº ——————</p>
-          <h1 className="type-title mt-0.5">Nueva solicitud</h1>
+          <h1 className="type-title mt-1.5">Nueva solicitud</h1>
           <p className="text-ink-soft mt-1 text-sm">
             Pega el pedido tal como llegó. QuoteFlow lo lee, consulta catálogo, stock y política, y lo resuelve al
             instante.
@@ -86,7 +86,7 @@ export function NewRequestPage() {
                 Cliente
               </label>
               <Select value={customerChoice} onValueChange={setCustomerChoice}>
-                <SelectTrigger id="customer-select" className="bg-paper border-rule-strong mt-1 rounded-sm">
+                <SelectTrigger id="customer-select" className="bg-paper border-rule-strong mt-1 rounded-md">
                   <SelectValue placeholder="Elige un cliente" />
                 </SelectTrigger>
                 <SelectContent className="bg-paper border-rule-strong">
@@ -112,7 +112,7 @@ export function NewRequestPage() {
                 placeholder="FER-9999"
                 aria-invalid={touched && !customerIdValid}
                 className={cn(
-                  'font-figures border-rule-strong mt-1 h-9 w-full rounded-sm border px-3 text-sm outline-none',
+                  'font-figures border-rule-strong mt-1 h-9 w-full rounded-md border px-3 text-sm outline-none',
                   customerChoice === OTHER_CUSTOMER ? 'bg-paper focus-visible:border-stamp-blue' : 'bg-paper-ruled text-ink-soft',
                   touched && !customerIdValid && 'border-stamp-red',
                 )}
@@ -136,7 +136,7 @@ export function NewRequestPage() {
               aria-invalid={touched && !rawTextValid}
               placeholder="Necesito 20 cascos modelo HX-200 para la planta de Arequipa…"
               className={cn(
-                'bg-paper border-rule-strong placeholder:text-ink-faint focus-visible:border-stamp-blue mt-1 w-full resize-y rounded-sm border px-3 py-2.5 text-base leading-relaxed outline-none',
+                'bg-paper border-rule-strong placeholder:text-ink-faint focus-visible:border-stamp-blue mt-1 w-full resize-y rounded-md border px-3 py-2.5 text-base leading-relaxed outline-none',
                 touched && !rawTextValid && 'border-stamp-red',
               )}
             />
@@ -169,7 +169,7 @@ export function NewRequestPage() {
           </fieldset>
         </div>
 
-        <footer className="border-rule-strong bg-paper-ruled flex flex-wrap items-center justify-between gap-3 rounded-b-md border-t px-5 py-3">
+        <footer className="border-rule bg-paper-ruled flex flex-wrap items-center justify-between gap-3 rounded-b-xl border-t px-5 py-3">
           <p className="text-ink-soft text-xs">
             {API_MODE === 'mock'
               ? 'Demo: las reglas corren en tu navegador, con datos ficticios.'
@@ -178,7 +178,7 @@ export function NewRequestPage() {
           <button
             type="submit"
             disabled={createRequest.isPending}
-            className="bg-ink text-paper inline-flex h-9 items-center gap-2 rounded-sm px-4 text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="bg-ink text-paper inline-flex h-10 items-center gap-2 rounded-md px-5 text-sm font-medium transition-opacity hover:opacity-85 disabled:opacity-50"
           >
             {createRequest.isPending && <Loader2 aria-hidden className="size-4 animate-spin" />}
             Registrar y resolver

@@ -12,31 +12,27 @@ const THEMES: { value: Theme; icon: typeof Sun; label: string }[] = [
 
 function navClass({ isActive }: { isActive: boolean }) {
   return cn(
-    'relative flex h-12 items-center px-3 text-sm font-medium transition-colors',
-    'after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:transition-colors',
+    'relative flex h-14 items-center px-2 text-sm font-medium transition-colors sm:px-3',
+    'after:absolute after:inset-x-2 sm:after:inset-x-3 after:bottom-0 after:h-0.5 after:transition-colors',
     isActive
       ? 'text-bar-ink after:bg-bar-ink'
       : 'text-bar-ink-soft hover:text-bar-ink after:bg-transparent',
   )
 }
 
-/** Barra de tinta azul con la marca, la navegación y el tema. Debajo, el
- * escritorio sobre el que se apoyan los folios. */
+/** Encabezado blanco con la marca en serif, la navegación y el tema. Debajo,
+ * el fondo sobre el que se apoyan las tarjetas. */
 export function AppShell() {
   const { theme, setTheme } = useTheme()
 
   return (
     <div className="bg-desk text-ink flex min-h-dvh flex-col">
-      <header className="bg-bar text-bar-ink sticky top-0 z-30">
-        <div className="mx-auto flex h-12 max-w-[88rem] items-center gap-2 px-4 sm:px-6">
-          <NavLink to="/" className="mr-3 flex items-center gap-2" aria-label="QuoteFlow, ir a la bandeja">
-            <span
-              aria-hidden
-              className="border-bar-ink/70 font-code flex h-6 items-center rounded-[5px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
-            >
-              QF
+      <header className="bg-bar text-bar-ink border-rule sticky top-0 z-30 border-b">
+        <div className="mx-auto flex h-14 max-w-[88rem] items-center gap-2 px-4 sm:px-6">
+          <NavLink to="/" className="mr-1 flex items-baseline sm:mr-4" aria-label="QuoteFlow, ir a la bandeja">
+            <span className="font-display text-[1.25rem] leading-none font-[560] tracking-[-0.02em] sm:text-[1.375rem]">
+              QuoteFlow
             </span>
-            <span className="text-[0.9375rem] font-semibold tracking-[-0.01em]">QuoteFlow</span>
           </NavLink>
 
           <nav aria-label="Navegación principal" className="flex items-center">
@@ -54,7 +50,7 @@ export function AppShell() {
             <div
               role="group"
               aria-label="Tema"
-              className="bg-bar-ink/10 flex h-8 items-center gap-0.5 rounded-full p-0.5"
+              className="border-rule-strong flex h-9 items-center gap-0.5 rounded-md border p-0.5"
             >
               {THEMES.map(({ value, icon: Icon, label }) => {
                 const active = theme === value
@@ -67,7 +63,7 @@ export function AppShell() {
                     title={label}
                     onClick={() => setTheme(value)}
                     className={cn(
-                      'flex size-7 items-center justify-center rounded-full transition-colors',
+                      'flex size-7 items-center justify-center rounded-[5px] transition-colors',
                       active ? 'bg-bar-ink text-bar' : 'text-bar-ink-soft hover:text-bar-ink',
                     )}
                   >
@@ -78,7 +74,7 @@ export function AppShell() {
             </div>
             <NavLink
               to="/new"
-              className="bg-bar-ink text-bar hover:bg-bar-ink/90 inline-flex h-8 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold transition-colors"
+              className="bg-bar-ink text-bar hover:bg-bar-ink/85 inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors sm:px-4"
             >
               <Plus aria-hidden className="size-4 stroke-[2.5]" />
               <span className="sm:hidden">Nueva</span>

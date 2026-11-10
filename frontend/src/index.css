@@ -1,11 +1,14 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/source-serif-4/opsz.css';
 @import '@fontsource-variable/archivo/wdth.css';
 @import '@fontsource/jetbrains-mono/latin-500.css';
 
-/* ── QuoteFlow — talonario autocopiativo y sello ─────────────────────
-   Cada solicitud es un folio numerado; cada decisión humana, un sello.
-   Los colores de estado son los tintes de las copias de un talonario
-   (canario, violeta, verde, celeste, rojo) y las tintas de sello (azul, rojo).
+/* ── QuoteFlow — editorial sobrio ─────────────────────────────────────
+   Papel blanco sobre un fondo gris apenas frío, titulares en serif,
+   texto en Inter, rótulos "// SECCIÓN", botones de tinta casi negra y
+   tarjetas con una sombra amplia y tenue. Los cinco tintes de estado
+   se mantienen para que cada resultado se distinga de un vistazo.
    Ver DESIGN.md. */
 
 @custom-variant dark {
@@ -20,28 +23,33 @@
 }
 
 :root {
-  /* Papel y tinta */
-  --qf-desk: oklch(94.6% 0.006 85);
-  --qf-paper: oklch(98.9% 0.003 85);
-  --qf-paper-ruled: oklch(96.4% 0.005 85);
-  --qf-ink: oklch(24% 0.045 262);
-  --qf-ink-soft: oklch(45% 0.03 262);
-  --qf-ink-faint: oklch(62% 0.02 262);
-  --qf-rule: oklch(24% 0.045 262 / 13%);
-  --qf-rule-strong: oklch(24% 0.045 262 / 26%);
+  /* Fondo, papel y tinta: neutros con un matiz frío casi imperceptible */
+  --qf-desk: oklch(97.4% 0.004 286);
+  --qf-paper: oklch(100% 0 0);
+  --qf-paper-ruled: oklch(97.6% 0.003 286);
+  --qf-ink: oklch(23.5% 0.004 286);
+  --qf-ink-soft: oklch(46% 0.007 286);
+  --qf-ink-faint: oklch(57% 0.007 286);
+  --qf-rule: oklch(23.5% 0.004 286 / 9%);
+  --qf-rule-strong: oklch(23.5% 0.004 286 / 16%);
 
-  /* Barra superior y placa invertida: tinta azul de talonario */
-  --qf-bar: oklch(26% 0.075 263);
-  --qf-bar-ink: oklch(97% 0.005 85);
-  --qf-bar-ink-soft: oklch(80% 0.03 263);
-  --qf-plate: oklch(26% 0.075 263);
-  --qf-plate-ink: oklch(97% 0.005 85);
-  --qf-plate-ink-soft: oklch(81% 0.03 263);
-  --qf-plate-rule: oklch(97% 0.005 85 / 16%);
-  --qf-plate-field: oklch(31% 0.07 263);
+  /* Encabezado blanco y placa de decisión en tinta casi negra */
+  --qf-bar: oklch(100% 0 0);
+  --qf-bar-ink: oklch(23.5% 0.004 286);
+  --qf-bar-ink-soft: oklch(46% 0.007 286);
+  --qf-plate: oklch(24% 0.004 286);
+  --qf-plate-ink: oklch(98.5% 0 0);
+  --qf-plate-ink-soft: oklch(77% 0.006 286);
+  --qf-plate-rule: oklch(98.5% 0 0 / 14%);
+  --qf-plate-field: oklch(29% 0.005 286);
+
+  /* Acento lila (selección, resaltes) y sombra de tarjeta */
+  --qf-lilac: oklch(91% 0.055 300);
+  --qf-lilac-ink: oklch(36% 0.12 295);
+  --qf-shadow-card: 0 1px 2px oklch(23.5% 0.01 286 / 4%), 0 18px 44px -20px oklch(23.5% 0.03 286 / 16%);
 
   /* Tintas de sello */
-  --qf-stamp-blue: oklch(47% 0.17 263);
+  --qf-stamp-blue: oklch(49% 0.19 272);
   --qf-stamp-red: oklch(51% 0.19 27);
   --qf-stamp-ochre: oklch(52% 0.12 75);
 
@@ -71,23 +79,26 @@
    sistema salvo que el usuario elija tema claro. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --qf-desk: oklch(15% 0.014 262);
-    --qf-paper: oklch(19.5% 0.016 262);
-    --qf-paper-ruled: oklch(22.5% 0.018 262);
-    --qf-ink: oklch(93.5% 0.008 85);
-    --qf-ink-soft: oklch(75% 0.018 262);
-    --qf-ink-faint: oklch(60% 0.018 262);
-    --qf-rule: oklch(93.5% 0.008 85 / 11%);
-    --qf-rule-strong: oklch(93.5% 0.008 85 / 22%);
-    --qf-bar: oklch(12% 0.03 263);
-    --qf-bar-ink: oklch(94% 0.008 85);
-    --qf-bar-ink-soft: oklch(72% 0.03 263);
-    --qf-plate: oklch(88% 0.06 96);
-    --qf-plate-ink: oklch(20% 0.04 262);
-    --qf-plate-ink-soft: oklch(36% 0.05 262);
-    --qf-plate-rule: oklch(20% 0.04 262 / 18%);
-    --qf-plate-field: oklch(93% 0.05 96);
-    --qf-stamp-blue: oklch(72% 0.13 258);
+    --qf-desk: oklch(15.5% 0.003 286);
+    --qf-paper: oklch(19.5% 0.004 286);
+    --qf-paper-ruled: oklch(22.5% 0.005 286);
+    --qf-ink: oklch(95% 0.002 286);
+    --qf-ink-soft: oklch(75% 0.006 286);
+    --qf-ink-faint: oklch(62% 0.006 286);
+    --qf-rule: oklch(95% 0.002 286 / 10%);
+    --qf-rule-strong: oklch(95% 0.002 286 / 18%);
+    --qf-bar: oklch(17.5% 0.004 286);
+    --qf-bar-ink: oklch(95% 0.002 286);
+    --qf-bar-ink-soft: oklch(72% 0.006 286);
+    --qf-plate: oklch(95% 0.003 286);
+    --qf-plate-ink: oklch(21% 0.004 286);
+    --qf-plate-ink-soft: oklch(42% 0.007 286);
+    --qf-plate-rule: oklch(21% 0.004 286 / 16%);
+    --qf-plate-field: oklch(100% 0 0);
+    --qf-lilac: oklch(36% 0.08 300);
+    --qf-lilac-ink: oklch(90% 0.06 300);
+    --qf-shadow-card: 0 1px 2px oklch(0% 0 0 / 30%), 0 18px 44px -20px oklch(0% 0 0 / 55%);
+    --qf-stamp-blue: oklch(74% 0.12 275);
     --qf-stamp-red: oklch(70% 0.16 25);
     --qf-stamp-ochre: oklch(80% 0.12 85);
     --qf-canary: oklch(36% 0.08 85);
@@ -109,23 +120,26 @@
 }
 
 :root[data-theme='dark'] {
-  --qf-desk: oklch(15% 0.014 262);
-  --qf-paper: oklch(19.5% 0.016 262);
-  --qf-paper-ruled: oklch(22.5% 0.018 262);
-  --qf-ink: oklch(93.5% 0.008 85);
-  --qf-ink-soft: oklch(75% 0.018 262);
-  --qf-ink-faint: oklch(60% 0.018 262);
-  --qf-rule: oklch(93.5% 0.008 85 / 11%);
-  --qf-rule-strong: oklch(93.5% 0.008 85 / 22%);
-  --qf-bar: oklch(12% 0.03 263);
-  --qf-bar-ink: oklch(94% 0.008 85);
-  --qf-bar-ink-soft: oklch(72% 0.03 263);
-  --qf-plate: oklch(88% 0.06 96);
-  --qf-plate-ink: oklch(20% 0.04 262);
-  --qf-plate-ink-soft: oklch(36% 0.05 262);
-  --qf-plate-rule: oklch(20% 0.04 262 / 18%);
-  --qf-plate-field: oklch(93% 0.05 96);
-  --qf-stamp-blue: oklch(72% 0.13 258);
+  --qf-desk: oklch(15.5% 0.003 286);
+  --qf-paper: oklch(19.5% 0.004 286);
+  --qf-paper-ruled: oklch(22.5% 0.005 286);
+  --qf-ink: oklch(95% 0.002 286);
+  --qf-ink-soft: oklch(75% 0.006 286);
+  --qf-ink-faint: oklch(62% 0.006 286);
+  --qf-rule: oklch(95% 0.002 286 / 10%);
+  --qf-rule-strong: oklch(95% 0.002 286 / 18%);
+  --qf-bar: oklch(17.5% 0.004 286);
+  --qf-bar-ink: oklch(95% 0.002 286);
+  --qf-bar-ink-soft: oklch(72% 0.006 286);
+  --qf-plate: oklch(95% 0.003 286);
+  --qf-plate-ink: oklch(21% 0.004 286);
+  --qf-plate-ink-soft: oklch(42% 0.007 286);
+  --qf-plate-rule: oklch(21% 0.004 286 / 16%);
+  --qf-plate-field: oklch(100% 0 0);
+  --qf-lilac: oklch(36% 0.08 300);
+  --qf-lilac-ink: oklch(90% 0.06 300);
+  --qf-shadow-card: 0 1px 2px oklch(0% 0 0 / 30%), 0 18px 44px -20px oklch(0% 0 0 / 55%);
+  --qf-stamp-blue: oklch(74% 0.12 275);
   --qf-stamp-red: oklch(70% 0.16 25);
   --qf-stamp-ochre: oklch(80% 0.12 85);
   --qf-canary: oklch(36% 0.08 85);
@@ -146,13 +160,16 @@
 }
 
 @theme inline {
-  /* Esquinas de tarjeta de cartulina: suaves, no de burbuja. */
+  /* Esquinas: 6px en controles, 12–16px en tarjetas. */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
-  --radius-xl: 0.875rem;
+  --radius-xl: 1rem;
 
-  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --shadow-card: var(--qf-shadow-card);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Source Serif 4 Variable', ui-serif, Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
   /* Escala de roles: meta 12 · cuerpo 14 · lectura 16 · título 26 */
   --text-xs: 0.75rem;
@@ -196,6 +213,8 @@
   --color-green-mark: var(--qf-green-mark);
   --color-sky-mark: var(--qf-sky-mark);
   --color-red-mark: var(--qf-red-mark);
+  --color-lilac: var(--qf-lilac);
+  --color-lilac-ink: var(--qf-lilac-ink);
 
   /* Alias para los primitivos shadcn existentes */
   --color-background: var(--qf-desk);
@@ -249,8 +268,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: var(--qf-canary);
-    color: var(--qf-canary-ink);
+    background-color: var(--qf-lilac);
+    color: var(--qf-lilac-ink);
   }
   :focus-visible {
     outline: 2px solid var(--qf-stamp-blue);
@@ -276,11 +295,16 @@
 }
 
 @layer utilities {
-  /* Cifras, SKU y folios: la misma Archivo con cifras tabulares, para que
+  /* Cifras, SKU y folios: la misma Inter con cifras tabulares, para que
      las columnas alineen dígito a dígito sin cambiar de voz. */
   .font-figures {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
+  }
+  /* Titular editorial en serif. */
+  .font-display {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
   }
   /* Código literal (nombres de nodos del grafo): única función de la mono. */
   .font-code {
@@ -288,24 +312,27 @@
     font-weight: 500;
     letter-spacing: -0.01em;
   }
-  /* Título de página y de folio. */
+  /* Título de página y de folio: serif editorial. */
   .type-title {
-    font-size: 1.625rem;
-    line-height: 1.15;
-    font-weight: 600;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: 2rem;
+    line-height: 1.12;
+    font-weight: 550;
     letter-spacing: -0.02em;
   }
-  /* Rótulo de campo del formulario impreso. */
+  /* Rótulo de campo y de sección: mayúsculas pequeñas y espaciadas. */
   .field-label {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     line-height: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.055em;
+    font-weight: 500;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--qf-ink-soft);
   }
-  /* Solo el sello: la palabra de goma, angosta y espaciada. */
+  /* Solo el sello: la palabra de goma, angosta y espaciada (Archivo). */
   .condensed {
+    font-family: 'Archivo Variable', var(--font-sans);
     font-stretch: 78%;
   }
 }
@@ -336,15 +363,15 @@
 @keyframes row-flash {
   0%,
   35% {
-    background-color: color-mix(in oklch, var(--qf-stamp-blue) 28%, transparent);
+    background-color: color-mix(in oklch, var(--qf-lilac) 100%, transparent);
   }
   100% {
-    background-color: color-mix(in oklch, var(--qf-stamp-blue) 9%, transparent);
+    background-color: color-mix(in oklch, var(--qf-lilac) 45%, transparent);
   }
 }
 
 .row-fresh {
-  background-color: color-mix(in oklch, var(--qf-stamp-blue) 9%, transparent);
+  background-color: color-mix(in oklch, var(--qf-lilac) 45%, transparent);
   animation: row-flash 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 

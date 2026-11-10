@@ -91,8 +91,8 @@ export function DecisionPanel({
   const busy = submitDecision.isPending
 
   return (
-    <section aria-labelledby="decision-title" className="bg-plate text-plate-ink rounded-lg p-4">
-      <h2 id="decision-title" className="text-lg font-bold tracking-[-0.01em]">
+    <section aria-labelledby="decision-title" className="bg-plate text-plate-ink shadow-card rounded-xl p-5">
+      <h2 id="decision-title" className="font-display text-[1.5rem] leading-tight font-[550] tracking-[-0.015em]">
         Tu decisión
       </h2>
       <p className="text-plate-ink-soft mt-1 text-sm">
@@ -124,7 +124,7 @@ export function DecisionPanel({
             aria-describedby={actorMissing ? 'actor-error' : undefined}
             placeholder="jefe.comercial@ferrocima.example"
             className={cn(
-              'bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 mt-1 h-9 w-full rounded-sm border px-2.5 text-sm outline-none',
+              'bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 mt-1 h-9 w-full rounded-md border px-2.5 text-sm outline-none',
               actorMissing ? 'border-stamp-red' : 'border-plate-rule focus-visible:border-plate-ink',
             )}
           />
@@ -142,7 +142,7 @@ export function DecisionPanel({
             maxLength={2000}
             rows={3}
             placeholder="Condiciones o motivo, para la auditoría."
-            className="bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 border-plate-rule focus-visible:border-plate-ink mt-1 w-full resize-y rounded-sm border px-2.5 py-2 text-sm outline-none"
+            className="bg-plate-field text-plate-ink placeholder:text-plate-ink-soft/70 border-plate-rule focus-visible:border-plate-ink mt-1 w-full resize-y rounded-md border px-2.5 py-2 text-sm outline-none"
           />
         </label>
       </div>
@@ -152,7 +152,7 @@ export function DecisionPanel({
           type="button"
           onClick={() => handleDecide('APPROVE')}
           disabled={busy}
-          className="bg-plate-ink text-plate col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-sm text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="bg-plate-ink text-plate col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-md text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {pendingAction === 'APPROVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Check aria-hidden className="size-4 stroke-[2.5]" />}
           Aprobar y generar borrador
@@ -161,7 +161,7 @@ export function DecisionPanel({
           type="button"
           onClick={() => handleDecide('REJECT')}
           disabled={busy}
-          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-sm border text-sm font-semibold transition-colors disabled:opacity-50"
+          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-md border text-sm font-semibold transition-colors disabled:opacity-50"
         >
           {pendingAction === 'REJECT' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <X aria-hidden className="size-4" />}
           Rechazar
@@ -170,7 +170,7 @@ export function DecisionPanel({
           type="button"
           onClick={() => handleDecide('OBSERVE')}
           disabled={busy}
-          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-sm border text-sm font-semibold transition-colors disabled:opacity-50"
+          className="border-plate-rule hover:bg-plate-field inline-flex h-9 items-center justify-center gap-1.5 rounded-md border text-sm font-semibold transition-colors disabled:opacity-50"
         >
           {pendingAction === 'OBSERVE' ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Eye aria-hidden className="size-4" />}
           Observar

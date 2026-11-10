@@ -1,28 +1,32 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-09T12:30:00-05:00",
+  "generatedAt": "2026-11-09T15:00:00-05:00",
   "title": "Design System: QuoteFlow",
   "extensions": {
     "colorMeta": {
-      "ink": { "role": "primary", "displayName": "Tinta de talonario", "canonical": "oklch(24% 0.045 262)", "tonalRamp": ["oklch(15% 0.045 262)", "oklch(24% 0.045 262)", "oklch(35% 0.045 262)", "oklch(46% 0.045 262)", "oklch(58% 0.045 262)", "oklch(70% 0.045 262)", "oklch(83% 0.045 262)", "oklch(95% 0.02 262)"] },
-      "stamp-blue": { "role": "primary", "displayName": "Tinta de sello azul", "canonical": "oklch(47% 0.17 263)", "tonalRamp": ["oklch(15% 0.1 263)", "oklch(27% 0.15 263)", "oklch(38% 0.17 263)", "oklch(47% 0.17 263)", "oklch(60% 0.15 263)", "oklch(72% 0.12 263)", "oklch(84% 0.07 263)", "oklch(95% 0.02 263)"] },
-      "stamp-red": { "role": "secondary", "displayName": "Tinta de sello roja", "canonical": "oklch(51% 0.19 27)", "tonalRamp": ["oklch(15% 0.1 27)", "oklch(28% 0.15 27)", "oklch(40% 0.18 27)", "oklch(51% 0.19 27)", "oklch(62% 0.17 27)", "oklch(73% 0.13 27)", "oklch(85% 0.07 27)", "oklch(95% 0.02 27)"] },
-      "canary": { "role": "tertiary", "displayName": "Copia canario", "canonical": "oklch(93.5% 0.085 96)", "tonalRamp": ["oklch(20% 0.05 90)", "oklch(33% 0.06 90)", "oklch(45% 0.09 80)", "oklch(58% 0.11 85)", "oklch(70% 0.12 90)", "oklch(82% 0.11 94)", "oklch(89% 0.1 96)", "oklch(96% 0.05 96)"] },
-      "paper": { "role": "neutral", "displayName": "Papel", "canonical": "oklch(98.9% 0.003 85)", "tonalRamp": ["oklch(15% 0.014 262)", "oklch(19.5% 0.016 262)", "oklch(40% 0.006 85)", "oklch(60% 0.006 85)", "oklch(80% 0.006 85)", "oklch(94.6% 0.006 85)", "oklch(96.4% 0.005 85)", "oklch(98.9% 0.003 85)"] }
+      "ink": { "role": "primary", "displayName": "Tinta", "canonical": "oklch(23.5% 0.004 286)", "tonalRamp": ["oklch(15% 0.004 286)", "oklch(23.5% 0.004 286)", "oklch(35% 0.006 286)", "oklch(46% 0.007 286)", "oklch(57% 0.007 286)", "oklch(70% 0.006 286)", "oklch(84% 0.004 286)", "oklch(97% 0.003 286)"] },
+      "stamp-blue": { "role": "primary", "displayName": "Azul de foco", "canonical": "oklch(49% 0.19 272)", "tonalRamp": ["oklch(16% 0.1 272)", "oklch(28% 0.15 272)", "oklch(39% 0.18 272)", "oklch(49% 0.19 272)", "oklch(61% 0.16 272)", "oklch(73% 0.12 272)", "oklch(85% 0.07 272)", "oklch(95% 0.02 272)"] },
+      "lilac": { "role": "secondary", "displayName": "Lila", "canonical": "oklch(91% 0.055 300)", "tonalRamp": ["oklch(22% 0.06 295)", "oklch(36% 0.12 295)", "oklch(48% 0.14 298)", "oklch(60% 0.13 300)", "oklch(72% 0.1 300)", "oklch(84% 0.07 300)", "oklch(91% 0.055 300)", "oklch(97% 0.02 300)"] },
+      "canary": { "role": "tertiary", "displayName": "Canario", "canonical": "oklch(91% 0.12 88)", "tonalRamp": ["oklch(22% 0.05 80)", "oklch(34% 0.07 70)", "oklch(44% 0.11 65)", "oklch(58% 0.13 75)", "oklch(70% 0.15 80)", "oklch(78% 0.16 82)", "oklch(91% 0.12 88)", "oklch(97% 0.05 90)"] },
+      "paper": { "role": "neutral", "displayName": "Tarjeta", "canonical": "oklch(100% 0 0)", "tonalRamp": ["oklch(15.5% 0.003 286)", "oklch(19.5% 0.004 286)", "oklch(22.5% 0.005 286)", "oklch(60% 0.006 286)", "oklch(85% 0.004 286)", "oklch(97.4% 0.004 286)", "oklch(97.6% 0.003 286)", "oklch(100% 0 0)"] }
     },
     "typographyMeta": {
-      "title": { "displayName": "Título", "purpose": "Cliente del folio y título de página, en ancho condensado." },
-      "field-label": { "displayName": "Rótulo de campo", "purpose": "Encabeza cada sección o campo, como en un formulario impreso." },
-      "figures": { "displayName": "Cifras", "purpose": "Montos, SKU, folios y horas, en columnas tabulares." }
+      "title": { "displayName": "Titular", "purpose": "Título de página, cliente del folio, marca y placa de decisión, en Source Serif 4." },
+      "field-label": { "displayName": "Rótulo", "purpose": "Mayúsculas pequeñas y espaciadas para campos y títulos de sección." },
+      "figures": { "displayName": "Cifras", "purpose": "Montos, SKU, folios y horas en Inter con cifras tabulares." }
     },
-    "shadows": [],
+    "shadows": [
+      { "name": "shadow-card", "value": "0 1px 2px oklch(23.5% 0.01 286 / 4%), 0 18px 44px -20px oklch(23.5% 0.03 286 / 16%)", "purpose": "Única elevación: tarjetas principales, aviso de decisión y placa." }
+    ],
     "motion": [
-      { "name": "stamp-land", "value": "420ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "El sello cae sobre el papel al registrar una decisión; desactivado con movimiento reducido." }
+      { "name": "stamp-land", "value": "420ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "El sello cae al registrar una decisión; desactivado con movimiento reducido." },
+      { "name": "row-flash", "value": "1.8s cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "La fila recién decidida destella en lila al volver a la bandeja." }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
       { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
     ]
   },
   "components": [
@@ -30,33 +34,41 @@
       "name": "Botón principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal de un formulario: registrar y resolver.",
+      "description": "Acción principal: registrar y resolver.",
       "html": "<button class=\"ds-btn-primary\">Registrar y resolver</button>",
-      "css": ".ds-btn-primary { background: oklch(24% 0.045 262); color: oklch(98.9% 0.003 85); height: 36px; padding: 0 16px; border: 0; border-radius: 3px; font: 700 13px/1 'Archivo Variable', system-ui, sans-serif; cursor: pointer; transition: opacity .15s; } .ds-btn-primary:hover { opacity: .9; } .ds-btn-primary:focus-visible { outline: 2px solid oklch(47% 0.17 263); outline-offset: 2px; }"
+      "css": ".ds-btn-primary { background: oklch(23.5% 0.004 286); color: #fff; height: 40px; padding: 0 20px; border: 0; border-radius: 8px; font: 500 14px/1 'Inter Variable', system-ui, sans-serif; cursor: pointer; transition: opacity .15s; } .ds-btn-primary:hover { opacity: .85; } .ds-btn-primary:focus-visible { outline: 2px solid oklch(49% 0.19 272); outline-offset: 2px; }"
+    },
+    {
+      "name": "Título de página",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Titular en serif con su línea de contexto.",
+      "html": "<h1 class=\"ds-title\">Bandeja</h1>",
+      "css": ".ds-title { margin: 0; font: 550 32px/1.12 'Source Serif 4 Variable', Georgia, serif; letter-spacing: -.02em; color: oklch(23.5% 0.004 286); }"
     },
     {
       "name": "Campo de texto",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "Campo reglado del folio.",
+      "description": "Campo con rótulo encima.",
       "html": "<label class=\"ds-field\"><span class=\"ds-label\">Código de cliente</span><input class=\"ds-input\" placeholder=\"FER-9999\"></label>",
-      "css": ".ds-field { display: block; } .ds-label { display: block; font: 600 11px/16px 'Archivo Variable', sans-serif; font-stretch: 82%; letter-spacing: .07em; text-transform: uppercase; color: oklch(45% 0.03 262); } .ds-input { margin-top: 4px; width: 100%; height: 36px; padding: 0 12px; background: oklch(98.9% 0.003 85); color: oklch(24% 0.045 262); border: 1px solid oklch(24% 0.045 262 / 26%); border-radius: 3px; font: 13px 'JetBrains Mono', monospace; outline: none; } .ds-input:focus-visible { border-color: oklch(47% 0.17 263); }"
+      "css": ".ds-field { display: block; } .ds-label { display: block; font: 500 11px/16px 'Inter Variable', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: oklch(46% 0.007 286); } .ds-input { margin-top: 4px; width: 100%; height: 36px; padding: 0 12px; background: #fff; color: oklch(23.5% 0.004 286); border: 1px solid oklch(23.5% 0.004 286 / 16%); border-radius: 8px; font: 14px 'Inter Variable', sans-serif; outline: none; } .ds-input:focus-visible { border-color: oklch(49% 0.19 272); }"
     },
     {
       "name": "Resultado pendiente",
       "kind": "chip",
       "refersTo": "outcome-chip-pending",
-      "description": "Estado como tinte de copia con ícono y palabra.",
+      "description": "Estado como tinte con ícono y palabra.",
       "html": "<span class=\"ds-chip\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/></svg>Pendiente de aprobación</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 3px; background: oklch(93.5% 0.085 96); color: oklch(40% 0.09 75); font: 600 12px/16px 'Archivo Variable', sans-serif; }"
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px 2px 6px; border-radius: 9999px; background: oklch(91% 0.12 88); color: oklch(44% 0.11 65); font: 600 12px/16px 'Inter Variable', sans-serif; }"
     },
     {
       "name": "Navegación",
       "kind": "nav",
       "refersTo": "",
-      "description": "Barra de tinta con marca, bandeja y registrar.",
-      "html": "<nav class=\"ds-nav\"><span class=\"ds-mark\">QF</span><b>QuoteFlow</b><a class=\"ds-nav-link\" aria-current=\"page\">Bandeja</a><a class=\"ds-nav-cta\">Registrar solicitud</a></nav>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 24px; background: oklch(26% 0.075 263); color: oklch(97% 0.005 85); font: 500 13px 'Archivo Variable', sans-serif; } .ds-mark { font: 600 11px 'JetBrains Mono', monospace; border: 1.5px solid currentColor; outline: 1px solid oklch(97% 0.005 85 / 35%); outline-offset: 1.5px; border-radius: 3px; padding: 2px 4px; } .ds-nav-link { padding: 15px 4px; border-bottom: 2px solid currentColor; } .ds-nav-cta { margin-left: auto; background: oklch(97% 0.005 85); color: oklch(26% 0.075 263); padding: 8px 12px; border-radius: 4px; font-weight: 600; }"
+      "description": "Encabezado blanco con marca en serif, bandeja y registrar.",
+      "html": "<nav class=\"ds-nav\"><b class=\"ds-brand\">QuoteFlow</b><a class=\"ds-nav-link\" aria-current=\"page\">Bandeja</a><a class=\"ds-nav-cta\">Registrar solicitud</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 24px; background: #fff; color: oklch(23.5% 0.004 286); border-bottom: 1px solid oklch(23.5% 0.004 286 / 9%); font: 500 14px 'Inter Variable', sans-serif; } .ds-brand { font: 560 22px/1 'Source Serif 4 Variable', Georgia, serif; letter-spacing: -.02em; } .ds-nav-link { padding: 18px 4px; border-bottom: 2px solid currentColor; } .ds-nav-cta { margin-left: auto; background: oklch(23.5% 0.004 286); color: #fff; padding: 9px 16px; border-radius: 8px; }"
     },
     {
       "name": "Sello",
@@ -64,42 +76,44 @@
       "refersTo": "",
       "description": "La decisión humana: palabra, fecha y quien decidió.",
       "html": "<div class=\"ds-stamp\"><span class=\"ds-stamp-word\">Aprobado</span><span class=\"ds-stamp-meta\">09 nov. 2026, 12:20</span><span class=\"ds-stamp-meta\">Lucía Paredes</span></div>",
-      "css": ".ds-stamp { display: inline-flex; flex-direction: column; align-items: center; padding: 6px 14px 4px; color: oklch(47% 0.17 263); border: 3px solid currentColor; outline: 2px solid currentColor; outline-offset: 3px; border-radius: 6px; transform: rotate(-7deg); mix-blend-mode: multiply; } .ds-stamp-word { font: 800 22px/1 'Archivo Variable', sans-serif; font-stretch: 80%; letter-spacing: .12em; text-transform: uppercase; } .ds-stamp-meta { font: 600 10px 'JetBrains Mono', monospace; margin-top: 2px; }"
+      "css": ".ds-stamp { display: inline-flex; flex-direction: column; align-items: center; padding: 6px 14px 4px; color: oklch(49% 0.19 272); border: 3px solid currentColor; outline: 2px solid currentColor; outline-offset: 3px; border-radius: 6px; transform: rotate(-7deg); mix-blend-mode: multiply; } .ds-stamp-word { font: 800 22px/1 'Archivo Variable', sans-serif; font-stretch: 78%; letter-spacing: .12em; text-transform: uppercase; } .ds-stamp-meta { font: 600 10px 'Inter Variable', sans-serif; margin-top: 2px; }"
     },
     {
       "name": "Placa de decisión",
       "kind": "card",
       "refersTo": "decision-plate",
-      "description": "La única placa invertida: la decisión pendiente.",
+      "description": "La única placa oscura: la decisión pendiente.",
       "html": "<section class=\"ds-plate\"><h3>Tu decisión</h3><p>Esta solicitud se detuvo para que alguien la apruebe.</p><button class=\"ds-plate-btn\">Aprobar y generar borrador</button></section>",
-      "css": ".ds-plate { background: oklch(26% 0.075 263); color: oklch(97% 0.005 85); padding: 16px; border-radius: 6px; font: 13px 'Archivo Variable', sans-serif; max-width: 320px; } .ds-plate h3 { margin: 0; font-size: 18px; font-weight: 700; font-stretch: 80%; } .ds-plate p { color: oklch(81% 0.03 263); } .ds-plate-btn { width: 100%; height: 40px; border: 0; border-radius: 3px; background: oklch(97% 0.005 85); color: oklch(26% 0.075 263); font-weight: 700; cursor: pointer; } .ds-plate-btn:hover { opacity: .9; }"
+      "css": ".ds-plate { background: oklch(24% 0.004 286); color: oklch(98.5% 0 0); padding: 20px; border-radius: 16px; font: 14px 'Inter Variable', sans-serif; max-width: 320px; box-shadow: 0 1px 2px oklch(23.5% 0.01 286 / 4%), 0 18px 44px -20px oklch(23.5% 0.03 286 / 16%); } .ds-plate-eyebrow { margin: 0; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: oklch(77% 0.006 286); } .ds-plate h3 { margin: 6px 0 0; font: 550 24px/1.2 'Source Serif 4 Variable', Georgia, serif; } .ds-plate p { color: oklch(77% 0.006 286); } .ds-plate-btn { width: 100%; height: 40px; border: 0; border-radius: 8px; background: oklch(98.5% 0 0); color: oklch(24% 0.004 286); font-weight: 600; cursor: pointer; } .ds-plate-btn:hover { opacity: .9; }"
     }
   ],
   "narrative": {
-    "northStar": "El talonario y el sello",
-    "overview": "QuoteFlow se ve como el talonario de cotización numerado que usa una oficina comercial: papel con campos reglados, copias de colores y un sello de goma cuando alguien decide. El mundo solo aporta tipografía, paleta, densidad y un gesto propio; la navegación, las tablas y los controles son los estándar de una aplicación web.",
+    "northStar": "El agente redacta, una persona decide",
+    "overview": "QuoteFlow habla el lenguaje editorial sobrio de los productos de IA B2B actuales: tarjetas blancas sobre un fondo gris casi blanco, titulares en serif, texto en Inter, rótulos de sección y botones de tinta. Una sola placa oscura marca la decisión pendiente.",
     "keyCharacteristics": [
-      "Folios sobre un escritorio: una hoja de papel con borde fino sobre un fondo apenas más oscuro, sin sombras.",
-      "Los colores de estado son tintes de copia: canario, celeste, verde, violeta y rojo, siempre con ícono y texto.",
-      "Una sola placa invertida por pantalla: la decisión pendiente.",
-      "La decisión humana queda como un sello con palabra, fecha y nombre."
+      "Tarjetas blancas con borde fino y una sombra amplia y tenue sobre un fondo gris frío.",
+      "Titulares en Source Serif 4; todo lo demás en Inter.",
+      "Rótulos de sección en mayúsculas pequeñas, sin adornos; filas sin barras de color.",
+      "Cinco tintes de estado con ícono y texto; el lila es solo acento."
     ],
     "rules": [
-      { "name": "The Copy Tint Rule", "body": "Un estado se reconoce por tinte, ícono y palabra a la vez; el color nunca va solo.", "section": "colors" },
-      { "name": "The One Plate Rule", "body": "Cada pantalla tiene como máximo una placa invertida, y es la acción que espera a una persona.", "section": "colors" },
-      { "name": "The Weight Not Size Rule", "body": "Dentro de tablas, el rango se marca con peso y mayúsculas: una fila pendiente pone al cliente en negrita, no en un tamaño mayor.", "section": "typography" },
-      { "name": "The Registered Stages Rule", "body": "El recorrido siempre muestra las doce etapas en la misma posición (12 columnas, o 6 × 2 en móvil): la que no se recorrió queda atenuada, nunca se oculta.", "section": "elevation" }
+      { "name": "The Tint Rule", "body": "Un estado se reconoce por tinte, ícono y palabra a la vez; el color nunca va solo.", "section": "colors" },
+      { "name": "The One Plate Rule", "body": "Cada pantalla tiene como máximo una placa oscura, y es la acción que espera a una persona.", "section": "colors" },
+      { "name": "The Serif Is a Headline Rule", "body": "La serif solo aparece en titulares; tablas, controles y cifras van en Inter.", "section": "typography" },
+      { "name": "The Weight Not Size Rule", "body": "Dentro de tablas, el rango se marca con peso y mayúsculas, no con tamaño.", "section": "typography" },
+      { "name": "The Registered Stages Rule", "body": "El recorrido siempre muestra las doce etapas en la misma posición; la que no se recorrió queda atenuada, nunca se oculta.", "section": "layout" }
     ],
     "dos": [
       "Do mostrar cada resultado con su tinte, su ícono y su palabra.",
-      "Do dejar visibles las doce etapas del recorrido, aunque no se hayan recorrido.",
-      "Do escribir cifras, SKU y folios en la mono tabular.",
-      "Do reservar la placa invertida para la decisión pendiente."
+      "Do usar la serif solo en titulares.",
+      "Do dejar visibles las doce etapas del recorrido.",
+      "Do reservar la placa oscura para la decisión pendiente."
     ],
     "donts": [
-      "Don't usar sombras, degradados ni vidrio: la profundidad es papel sobre papel.",
-      "Don't convertir el talonario en disfraz: nada de texturas de papel, renglones falsos ni tipografía de máquina de escribir en los controles.",
-      "Don't poner sellos sin una decisión humana detrás: un resultado automático se muestra con su tinte, no con un sello."
+      "Don't apilar sombras ni inventar nuevas: solo existe shadow-card.",
+      "Don't usar degradados, ilustraciones de fondo ni vidrio dentro de la consola.",
+      "Don't usar el lila para estados.",
+      "Don't poner sellos sin una decisión humana detrás."
     ]
   }
 }
