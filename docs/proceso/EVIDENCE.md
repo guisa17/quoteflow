@@ -715,7 +715,45 @@ pnpm audit --prod             # No known vulnerabilities found
 uvx pip-audit                 # No known vulnerabilities found
 ```
 
-**No verificado en local:** la suite de integración del backend, porque Docker Desktop no arrancó durante esta sesión ("Docker Desktop is unable to start"), igual que en E-08. Las pruebas unitarias pasaron en local (161) y la suite completa pasó en el CI.
+**No verificado en local:** la suite de integración del backend, porque Docker Desktop no arrancó durante esta sesión ("Docker Desktop is unable to start"), igual que en E-08. Las pruebas unitarias pasaron en local (161) y la suite completa pasó en el CI. **Cerrado el 2026-11-10:** con Docker de vuelta, la suite completa pasó también en local (`214 passed, 1 warning in 63.14s`).
+
+---
+
+## E-15 · Proveedor de LLM intercambiable (ADR-006)
+
+**Objetivo:** que el extractor real acepte cualquier proveedor con `LLM_MODEL=proveedor:modelo`, sin cambiar la frontera de ADR-002 ni el respaldo de ADR-004, y medirlo con las mismas evals.
+
+**Evals con la key de Gemini, por tres caminos** (después de repetir los casos que el proveedor no respondió):
+
+```text
+gemini:gemini-3.5-flash-lite          31/31 ítems  22/22 casos   REST nativo, sin cambios de comportamiento
+google_genai:gemini-3.5-flash-lite    31/31 ítems  22/22 casos   LangChain + langchain-google-genai
+openai:gemini-3.5-flash-lite          31/31 ítems  22/22 casos   LangChain + endpoint compatible con OpenAI
+```
+
+En la primera pasada, Gemini estaba inestable: `503` o más de 20 s en 2, 4 y 2 casos, también por el camino nativo, que no cambió. Todos esos fallos se clasificaron como `ProviderUnavailable` y ningún caso respondido salió mal leído.
+
+**Arranque con una configuración imposible** (`uvicorn` real, `LLM_MODE=real`):
+
+```text
+LLM_MODEL=claude-sonnet-5     LLMConfigError: LLM_MODEL='claude-sonnet-5' no tiene la forma proveedor:modelo (...)
+LLM_MODEL=inventado:x         LLMConfigError: Unsupported provider='inventado'.
+LLM_MODEL=groq:llama-3.3-70b  LLMConfigError: Falta el paquete del proveedor 'groq': uv add langchain-groq
+```
+
+El primer valor es el que dejaba la plantilla antigua de `.env.example`; sin esta validación, el sistema habría intentado usar Anthropic sin key y habría caído en silencio al respaldo.
+
+**De punta a punta:** backend real con `LLM_MODEL=google_genai:gemini-3.5-flash-lite`. `POST /requests` con "mándennos dos docenas de cascos hx 200 para la planta de Arequipa" → `201`, `DRAFT_READY`, línea `HX-200 × 24`. La auditoría de `extract` dice `Intento 1: 1 item(s) extraído(s) con gemini-3.5-flash-lite`.
+
+**Suites:**
+
+```bash
+uv run pytest tests/unit      # 188 passed (27 nuevas en test_llm_providers.py)
+uv run ruff check .           # All checks passed!
+uv run mypy app               # Success: no issues found in 33 source files
+```
+
+**No verificado con un modelo real:** Anthropic, OpenAI y Ollama. Están probados con dobles (`tests/unit/test_llm_providers.py`) y quedan "soportados, no medidos" hasta correr las evals con una key de cada uno.
 
 ---
 

@@ -111,7 +111,7 @@ flowchart LR
     texto[/"<b>Texto del cliente</b><br/>entrada no confiable"/]
 
     subgraph modelo["MODELO · no determinista"]
-        leer["<b>Leer el pedido</b><br/>Gemini, con respaldo de reglas"]
+        leer["<b>Leer el pedido</b><br/>cualquier LLM, con respaldo de reglas"]
     end
 
     subgraph dominio["DOMINIO · determinista"]
@@ -228,7 +228,7 @@ Amarillo: el modelo. Azul: dominio determinista. Violeta: decisión humana. Las 
 | Orquestación | **LangGraph** (estado tipado con Pydantic, `interrupt()`) | La pausa humana tiene que sobrevivir a un reinicio del proceso |
 | Persistencia | **Postgres** + `AsyncPostgresSaver` | El checkpointer y la bandeja viven en una sola base ([ADR-003](docs/adr/ADR-003-persistencia-checkpointer.md)) |
 | API | **FastAPI**, psycopg 3 con pools | 4 endpoints; `409` ante decisiones contradictorias, `503` si cae la base |
-| Lectura del texto | **Gemini** (`gemini-3.5-flash-lite`) con salida JSON forzada por esquema | ~2 s por pedido; con respaldo a un extractor de reglas |
+| Lectura del texto | **Cualquier LLM** con `LLM_MODEL=proveedor:modelo`: Gemini por REST por defecto, y Claude, OpenAI, Ollama y los demás proveedores de LangChain | Salida forzada por esquema y la misma validación para todos; respaldo a un extractor de reglas ([ADR-006](docs/adr/ADR-006-proveedor-llm-intercambiable.md)) |
 | Frontend | **React 19**, Vite 8, Tailwind 4, TanStack Query, TypeScript 7 | Modo demo con el motor en el navegador, y modo HTTP contra la API |
 | Observabilidad | **LangSmith** (opcional) | Traza de cada solicitud nodo a nodo, con modelo, tokens y costo |
 | Calidad | pytest, Vitest, **Playwright**, ruff, mypy, pre-commit, Dependabot, GitHub Actions | Ver la sección siguiente |
@@ -239,7 +239,7 @@ Amarillo: el modelo. Azul: dominio determinista. Violeta: decisión humana. Las 
 
 | Qué | Resultado |
 |-----|-----------|
-| Backend: unitarias, integración con Postgres real y API | **214** pruebas, sin llamar a un LLM |
+| Backend: unitarias, integración con Postgres real y API | **241** pruebas, sin llamar a un LLM |
 | Frontend: motor de la demo y paridad con los datos del backend | **35** pruebas |
 | End-to-end en navegador (escritorio y móvil) | **10** recorridos con Playwright |
 | **Lectura con el modelo real**: 22 casos (escenarios, lenguaje natural, ambiguos, manipulación) | **31/31 ítems (100 %)**, 22/22 casos. Meta del negocio: ≥ 90 % |
@@ -288,6 +288,7 @@ Las evals contra el modelo real se corren a mano porque gastan cuota ([backend/e
 | [003](docs/adr/ADR-003-persistencia-checkpointer.md) | Postgres como checkpointer de LangGraph y como fuente de la bandeja |
 | [004](docs/adr/ADR-004-extractor-gemini-con-respaldo.md) | Gemini con salida forzada por esquema y respaldo explícito, nunca silencioso |
 | [005](docs/adr/ADR-005-manipulacion-a-revision-humana.md) | Un intento de manipulación manda el caso a revisión humana |
+| [006](docs/adr/ADR-006-proveedor-llm-intercambiable.md) | El proveedor de LLM se elige con `LLM_MODEL=proveedor:modelo`, con la misma frontera para todos |
 
 Cada ADR registra las alternativas descartadas y, cuando la implementación cambió algo, una sección de enmiendas.
 
@@ -328,12 +329,24 @@ VITE_API_MODE=http pnpm dev          # http://localhost:5173
 
 > **Por qué `--loop app.main:loop_factory`:** en Windows, `uvicorn` usa por defecto un `ProactorEventLoop`, incompatible con `psycopg` asíncrono. El factory propio fuerza `SelectorEventLoop`, que es el único loop en Linux y macOS, así que ahí no cambia nada ([app/main.py](backend/app/main.py)).
 
-**Con un LLM real.** Crea una key gratuita en [Google AI Studio](https://aistudio.google.com) y define en `.env` (un `backend/.env` opcional tiene prioridad sobre el de la raíz):
+**Con un LLM real.** Define el modo y el modelo en `.env` (un `backend/.env` opcional tiene prioridad sobre el de la raíz). Lo más rápido es Gemini, con una key gratuita de [Google AI Studio](https://aistudio.google.com):
 
 ```bash
 LLM_MODE=real
-GEMINI_API_KEY=...
+GEMINI_API_KEY=...                       # con LLM_MODEL vacío se usa Gemini
 ```
+
+Para otro proveedor, instala su paquete y cambia dos variables:
+
+| Proveedor | Instalación (en `backend/`) | `.env` |
+|-----------|-----------------------------|--------|
+| Anthropic | `uv sync --extra anthropic` | `LLM_MODEL=anthropic:claude-haiku-5-5` y `LLM_API_KEY` |
+| OpenAI | `uv sync --extra openai` | `LLM_MODEL=openai:gpt-5-mini` y `LLM_API_KEY` |
+| Ollama (local, sin key) | `uv sync --extra ollama` | `LLM_MODEL=ollama:llama3.2` |
+| Compatible con OpenAI (OpenRouter, vLLM, LM Studio...) | `uv sync --extra openai` | `LLM_MODEL=openai:<modelo>`, `LLM_BASE_URL` y `LLM_API_KEY` |
+| Otros de LangChain (Mistral, Groq, Bedrock...) | `uv add langchain-<proveedor>` | `LLM_MODEL=<proveedor>:<modelo>` y `LLM_API_KEY` |
+
+El prompt, el esquema y la validación son los mismos para todos. Antes de confiar en un modelo nuevo, mídelo con las evals: `uv run python -m evals.run --model proveedor:modelo`.
 
 **Con trazas en LangSmith (opcional).** Define `LANGSMITH_TRACING=true` y `LANGSMITH_API_KEY`. Cada solicitud queda como un árbol de pasos, con el modelo, los tokens y la latencia de la llamada al LLM. El registro y la decisión de una misma solicitud comparten hilo. Las pruebas nunca envían trazas.
 
@@ -341,10 +354,10 @@ GEMINI_API_KEY=...
 
 ```bash
 cd backend
-uv run pytest                 # 214 pruebas (las de integración requieren Postgres)
+uv run pytest                 # 241 pruebas (las de integración requieren Postgres)
 uv run pytest tests/unit      # solo reglas, sin Postgres
 uv run ruff check . && uv run mypy app
-uv run python -m evals.run    # evals contra el modelo real (requiere GEMINI_API_KEY)
+uv run python -m evals.run    # evals contra el modelo de LLM_MODEL (requiere su key)
 
 cd ../frontend
 pnpm test                     # 35 pruebas del motor de la demo
@@ -371,7 +384,7 @@ Los hooks de pre-commit (ruff, formato, bloqueo de `.env` y de claves privadas) 
 backend/
   app/domain/     reglas deterministas: precios, política, validación, manipulación
   app/graph/      grafo LangGraph: estado, nodos, rutas, checkpointer
-  app/llm/        extractor con Gemini, respaldo y extractor de reglas
+  app/llm/        extractores (Gemini, cualquier proveedor vía LangChain), respaldo y reglas
   app/api/        FastAPI: endpoints, esquemas, bandeja
   app/data/       datos de ejemplo, compartidos con la demo del frontend
   evals/          22 casos contra el modelo real

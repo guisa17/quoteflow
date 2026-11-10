@@ -15,8 +15,7 @@ from langsmith import traceable
 from langsmith.run_helpers import get_current_run_tree
 
 from app.domain.models import Extraction
-from app.llm.base import Extractor
-from app.llm.gemini_extractor import ProviderUnavailable
+from app.llm.base import Extractor, ProviderUnavailable
 
 RULES_SOURCE = "reglas locales"
 

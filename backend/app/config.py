@@ -29,17 +29,28 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://quoteflow:quoteflow@localhost:5432/quoteflow"
 
     llm_mode: Literal["fake", "real"] = "fake"
-    # Proveedor del extractor real. Gemini primero: su plan gratuito basta
-    # para una demo; si no responde, el grafo usa el extractor de reglas y lo
+    # Modelo del extractor real, como `proveedor:modelo` (ADR-006). Vacio =
+    # Gemini por REST con `gemini_model`, el camino medido en las evals.
+    #   gemini:gemini-3.5-flash-lite        Gemini por REST, sin dependencias
+    #   anthropic:claude-haiku-5-5          via LangChain (uv sync --extra anthropic)
+    #   openai:gpt-5-mini                   via LangChain (uv sync --extra openai)
+    #   ollama:llama3.2                     modelo local (uv sync --extra ollama)
+    # Si el proveedor no responde, el grafo usa el extractor de reglas y lo
     # deja anotado en la auditoria (ver app/llm/fallback.py).
-    llm_provider: Literal["gemini", "anthropic"] = "gemini"
+    llm_model: str = ""
+    # Key del proveedor elegido. Para Gemini tambien vale `GEMINI_API_KEY`.
+    llm_api_key: str = ""
+    # Servidor compatible con la API de OpenAI (OpenRouter, DeepSeek, vLLM,
+    # LM Studio...), con `LLM_MODEL=openai:<modelo>`; o la URL de Ollama.
+    llm_base_url: str = ""
+    # Como se fuerza la salida estructurada. Vacio = lo que el proveedor
+    # soporte mejor; algunos servidores compatibles solo aceptan uno.
+    llm_structured_output: Literal["", "json_schema", "function_calling", "json_mode"] = ""
     gemini_api_key: str = ""
     # Lite: la extraccion es corta y estructurada, y responde en ~2 s. En
     # pruebas (nov. 2026) gemini-flash-latest / 3.8-flash superaban los 60 s.
     gemini_model: str = "gemini-3.5-flash-lite"
     llm_timeout_seconds: float = 20.0
-    anthropic_api_key: str = ""
-    llm_model: str = "claude-sonnet-5"
 
     # Trazas en LangSmith (opcional). Apagadas por defecto: con ellas, el texto
     # del cliente sale hacia un servicio externo. Ver configure_tracing().

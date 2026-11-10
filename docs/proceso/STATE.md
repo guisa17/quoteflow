@@ -14,7 +14,7 @@ Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir 
 |---|---|
 | **Fases** | **0 a 4 completas** ([ROADMAP.md](../ROADMAP.md)). La Fase 4 agregó LLM real, detección de manipulación, CI, evals, trazas y la nueva interfaz |
 | **Repositorio** | [github.com/guisa17/quoteflow](https://github.com/guisa17/quoteflow), `main` protegida: solo entra por pull request con el CI en verde |
-| **Aplicación** | Backend (214 tests) + API HTTP + frontend (35 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas |
+| **Aplicación** | Backend (241 tests) + API HTTP + frontend (35 tests). Lee el texto con cualquier LLM (`LLM_MODEL=proveedor:modelo`, Gemini por defecto) o, sin key, con un extractor de reglas |
 | **Versiones** | `v0.4.0` (fases 0-3) · `v0.5.0` (Fase 4) · `v0.5.1` (endurecimiento del proceso). Releases en GitHub |
 
 ## Qué está construido
@@ -23,12 +23,12 @@ Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir 
 |------|-----------|--------|
 | **Negocio** | [BUSINESS_CASE.md](../BUSINESS_CASE.md) · [IMPACT.md](../IMPACT.md) | ✅ |
 | **Proyecto** | [PROJECT.md](../PROJECT.md) · [REQUIREMENTS.md](../REQUIREMENTS.md) · [ROADMAP.md](../ROADMAP.md) · [PHASE_01.md](PHASE_01.md) · [API_CONTRACT.md](../API_CONTRACT.md) | ✅ |
-| **Decisiones** | [ADR-001…005](../adr/) — datos ficticios, frontera determinista, checkpointer, Gemini con respaldo, manipulación a revisión humana | ✅ |
+| **Decisiones** | [ADR-001…006](../adr/) — datos ficticios, frontera determinista, checkpointer, Gemini con respaldo, manipulación a revisión humana, proveedor intercambiable | ✅ |
 | **Gobierno** | [CLAUDE.md](../../CLAUDE.md) · [AI_USE.md](AI_USE.md) · [LOOP.md](LOOP.md) · [REFERENCES.md](../REFERENCES.md) · [Graphify](../graphify/README.md) | ✅ |
 | **Verificación** | [EVIDENCE.md](EVIDENCE.md) — salidas reales, E-01…E-14 | ✅ |
 | **Dominio determinista** | `enums`, `models`, `repositories`, `pricing`, `policy`, `validation`, `tools`, `manipulation` | ✅ |
 | **Grafo LangGraph** | 12 nodos, interrupción humana, checkpointer en Postgres | ✅ |
-| **Extracción** | Gemini con salida forzada por esquema; respaldo explícito al extractor de reglas | ✅ |
+| **Extracción** | Gemini por REST, o cualquier proveedor de LangChain, con salida forzada por esquema; respaldo explícito al extractor de reglas. Medido: Gemini por tres caminos, 31/31 (E-15) | ✅ |
 | **API HTTP** | `app/api/` — 4 endpoints + tabla `requests` | ✅ |
 | **Frontend** | React 19 + Vite 8 + Tailwind 4; modo demo (motor en el navegador sobre el mismo seed) y modo HTTP | ✅ |
 | **Calidad** | CI (GitHub Actions), pre-commit, Dependabot, Playwright, evals locales, trazas en LangSmith | ✅ |
@@ -51,7 +51,7 @@ Las decisiones de arquitectura están en los ADRs. Las de proceso, en [CLAUDE.md
 
 | Qué | Cómo | Resultado |
 |-----|------|-----------|
-| Suite de backend | `pytest` en el CI, con Postgres 16 real | ✅ **214/214** |
+| Suite de backend | `pytest` en el CI, con Postgres 16 real | ✅ **241/241** (también en local, E-14 y E-15) |
 | Frontend | `pnpm test` · `typecheck` · `build` | ✅ **35/35**, limpio |
 | **End-to-end en navegador** | Playwright, 5 recorridos en escritorio y en móvil, también en el CI | ✅ **10/10**; la prueba del 404 falla si se quita la ruta comodín |
 | Lint, formato y tipos | `ruff` · `ruff format` · `mypy app` | ✅ limpios (31 archivos con mypy) |
