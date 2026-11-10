@@ -21,6 +21,17 @@ from app.llm.gemini_extractor import ProviderUnavailable
 RULES_SOURCE = "reglas locales"
 
 
+@traceable(
+    run_type="chain",
+    name="rules.extract",
+    process_inputs=lambda inputs: {"raw_text": inputs.get("raw_text")},
+)
+async def _read_with_rules(extractor: Extractor, raw_text: str) -> Extraction:
+    """Paso propio en la traza: el arbol muestra `gemini.extract` con error y,
+    a continuacion, quien leyo el texto en su lugar."""
+    return await extractor.extract(raw_text)
+
+
 class FallbackExtractor:
     def __init__(self, primary: Extractor, fallback: Extractor) -> None:
         self._primary = primary
@@ -41,5 +52,5 @@ class FallbackExtractor:
             if run is not None:
                 run.add_tags(["respaldo"])
                 run.add_metadata({"fallback_reason": str(exc)})
-            extraction = await self._fallback.extract(raw_text)
+            extraction = await _read_with_rules(self._fallback, raw_text)
             return extraction.model_copy(update={"source": f"{RULES_SOURCE} (respaldo: {exc})"})
