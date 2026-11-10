@@ -13,10 +13,13 @@ para probar interrupcion y reanudacion sin necesitar la API."""
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import cast
 
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-from psycopg.rows import dict_row
+from psycopg import AsyncConnection
+from psycopg.rows import DictRow, dict_row
+from psycopg_pool import AsyncConnectionPool
 
 from app.config import Settings, get_settings
 from app.db import create_pool
@@ -70,6 +73,9 @@ async def checkpointer_context(
     async with create_pool(
         settings.database_url, autocommit=True, prepare_threshold=0, row_factory=dict_row
     ) as pool:
-        checkpointer = AsyncPostgresSaver(conn=pool, serde=serde)
+        # `row_factory=dict_row` hace que las filas sean dicts, pero mypy no
+        # puede deducirlo de los kwargs: el cast solo declara lo que ya ocurre.
+        dict_pool = cast("AsyncConnectionPool[AsyncConnection[DictRow]]", pool)
+        checkpointer = AsyncPostgresSaver(conn=dict_pool, serde=serde)
         await checkpointer.setup()
         yield checkpointer

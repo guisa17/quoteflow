@@ -89,7 +89,7 @@ Especificación verificable. Cada regla tiene identificador estable (`BR-xx`, `R
 | **RNF-01** | Checkpointer persistente (PostgreSQL). La memoria en proceso solo se admite en pruebas. |
 | **RNF-02** | Reanudación durable: reiniciar el backend no pierde solicitudes en `PENDING_APPROVAL`. |
 | **RNF-03** | Sin secretos versionados; `.env.example` presente y suficiente. |
-| **RNF-04** | `ruff` limpio; `mypy` sin errores en `app/domain` y `app/graph/state.py`. |
+| **RNF-04** | `ruff` limpio; `mypy` sin errores en todo `app/` (al inicio solo se exigía en `app/domain` y `app/graph/state.py`; desde v0.5.1 el CI revisa el paquete completo). |
 | **RNF-05** | Suite completa reproducible offline. |
 | **RNF-06** | Errores previsibles (LLM caído, JSON inválido, SKU nulo, BD no disponible) manejados con mensaje accionable, sin traza cruda en la UI. |
 

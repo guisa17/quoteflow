@@ -99,7 +99,7 @@ cd backend
 uv run pytest                                  # suite completa (LLM_MODE=fake)
 uv run pytest tests/unit                       # reglas, sin Postgres
 uv run ruff check . && uv run ruff format --check .
-uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
+uv run mypy app
 
 cd ../frontend
 pnpm typecheck && pnpm test && pnpm build
