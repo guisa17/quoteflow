@@ -15,18 +15,29 @@ from app.graph import nodes, routing
 from app.graph.state import QuoteState
 from app.llm.base import Extractor
 from app.llm.fake_extractor import FakeExtractor
+from app.llm.fallback import FallbackExtractor
+from app.llm.gemini_extractor import GeminiExtractor
 
 
 def _resolve_extractor(settings: Settings) -> Extractor:
-    """El extractor real (`app/llm/anthropic_extractor.py`) esta fuera del
-    alcance de T7-T11 -- se construye en el ciclo acotado de `LOOP.md`. Si
-    `settings.llm_mode == "real"` llega aqui sin que ese modulo exista, se
-    falla explicito: nunca se degrada en silencio a un fake sin decirlo."""
+    """`fake`: extractor de reglas, sin red (tests y demo sin key).
+
+    `real` + `gemini`: Gemini con respaldo explicito al extractor de reglas
+    cuando el proveedor no responde; la procedencia queda en la auditoria.
+
+    `real` + `anthropic`: aun no construido. Falla explicito en vez de
+    degradar en silencio."""
     if settings.llm_mode == "fake":
         return FakeExtractor()
+    if settings.llm_provider == "gemini":
+        primary = GeminiExtractor(
+            api_key=settings.gemini_api_key,
+            model=settings.gemini_model,
+            timeout_seconds=settings.llm_timeout_seconds,
+        )
+        return FallbackExtractor(primary=primary, fallback=FakeExtractor())
     raise NotImplementedError(
-        "LLM_MODE=real requiere app/llm/anthropic_extractor.py, construido en "
-        "el ciclo acotado de LOOP.md -- fuera del alcance de T7-T11."
+        "LLM_PROVIDER=anthropic aun no tiene extractor; usa LLM_PROVIDER=gemini."
     )
 
 

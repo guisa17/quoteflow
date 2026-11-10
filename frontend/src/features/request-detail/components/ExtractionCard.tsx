@@ -7,15 +7,18 @@ import type { Extraction } from '@/types/api'
 export function ExtractionCard({ extraction }: { extraction: Extraction | null }) {
   return (
     <section aria-labelledby="extraction-title">
-      <h2 id="extraction-title" className="field-label">
-        Lo que se entendió del texto
-      </h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 id="extraction-title" className="field-label">
+          Lo que se entendió del texto
+        </h2>
+        {extraction?.source && <SourceNote source={extraction.source} />}
+      </div>
       {!extraction ? (
-        <p className="bg-sky text-sky-ink mt-2 rounded-sm px-3 py-2 text-sm">
+        <p className="bg-sky text-sky-ink mt-2 rounded-lg px-3 py-2 text-sm">
           La lectura falló dos veces y no produjo datos. No se cotizó nada.
         </p>
       ) : (
-        <div className="border-rule-strong mt-2 grid grid-cols-2 overflow-hidden rounded-sm border sm:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
+        <div className="border-rule-strong mt-2 grid grid-cols-2 overflow-hidden rounded-lg border sm:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
           <Field label="Ítems" className="col-span-2 sm:col-span-1">
             {extraction.items.length === 0 ? (
               <span className="text-ink-soft">Ninguno identificado</span>
@@ -52,6 +55,24 @@ function Field({ label, children, className = '' }: { label: string; children: R
       <div className="field-label !text-[0.6875rem]">{label}</div>
       <div className="mt-0.5 text-sm font-medium">{children}</div>
     </div>
+  )
+}
+
+/** Procedencia de la lectura. El respaldo con reglas se marca en canario:
+ * el modelo no respondió y conviene revisar la extracción con más cuidado. */
+function SourceNote({ source }: { source: string }) {
+  const fallback = source.startsWith('reglas locales')
+  const reason = fallback ? source.match(/\(respaldo: (.*)\)$/)?.[1] : null
+  return (
+    <p className={`text-xs ${fallback ? 'text-canary-ink font-semibold' : 'text-ink-faint'}`} title={source}>
+      {fallback ? (
+        <>Leído con reglas locales{reason ? ` · el modelo no respondió (${reason})` : ''}</>
+      ) : (
+        <>
+          Leído por <span className="font-figures text-ink-soft">{source}</span>
+        </>
+      )}
+    </p>
   )
 }
 

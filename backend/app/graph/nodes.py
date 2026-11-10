@@ -105,7 +105,10 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
             "audit_log": [
                 AuditEvent(
                     node="extract",
-                    message=f"Intento {attempts}: {len(extraction.items)} item(s) extraido(s).",
+                    message=(
+                        f"Intento {attempts}: {len(extraction.items)} item(s) extraido(s)"
+                        + (f" con {extraction.source}." if extraction.source else ".")
+                    ),
                 )
             ],
         }
