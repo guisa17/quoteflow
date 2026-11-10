@@ -25,6 +25,11 @@ updates:
     groups:
       frontend-menores:
         update-types: [minor, patch]
+    # Los tipos de Node deben coincidir con el Node que corre el código (22 en
+    # el CI). Una versión mayor de @types/node dejaría usar APIs que ahí no existen.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 5
 
   - package-ecosystem: github-actions
