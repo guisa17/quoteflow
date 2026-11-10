@@ -173,7 +173,7 @@ function evaluatePolicy(
     reasons.push(
       reason(
         'DISCOUNT_EXCEPTION',
-        `Descuento solicitado ${requestedDiscountPct}% supera el maximo de ${tier} (${POLICY.discount_by_tier[tier].max_discount_pct}%).`,
+        `Descuento solicitado ${requestedDiscountPct}% supera el máximo de ${tier} (${POLICY.discount_by_tier[tier].max_discount_pct}%).`,
       ),
     )
   }
@@ -184,7 +184,7 @@ function evaluatePolicy(
     reasons.push(
       reason(
         'THRESHOLD_EXCEEDED',
-        `Neto ${netDecimal} supera el umbral de aprobacion de ${POLICY.approval_threshold_usd}.`,
+        `Neto ${netDecimal} supera el umbral de aprobación de ${POLICY.approval_threshold_usd}.`,
       ),
     )
   }
@@ -197,7 +197,7 @@ function composeDraft(customerId: string, quote: Quote): string {
     .map((l) => `  - ${l.quantity} x ${l.product_name} (${l.sku}) @ ${l.unit_price} c/u`)
     .join('\n')
   return (
-    `Cotizacion para ${customerId}\n${linesText}\n` +
+    `Cotización para ${customerId}\n${linesText}\n` +
     `Subtotal: ${quote.subtotal} ${quote.currency}\n` +
     `Descuento (${quote.discount_pct}%): -${quote.discount_amount} ${quote.currency}\n` +
     `Neto: ${quote.net} ${quote.currency}\n` +
@@ -217,13 +217,13 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
   trail.push(event('ingest', `Solicitud registrada para ${customerId}.`, nowMs))
 
   const extraction = fakeExtract(rawText.trim())
-  trail.push(event('extract', `${extraction.items.length} item(s) extraido(s) del texto.`, nowMs))
+  trail.push(event('extract', `${extraction.items.length} item(s) extraído(s) del texto.`, nowMs))
   const manipulationSignals = detectManipulation(rawText)
   if (manipulationSignals.length > 0) {
     trail.push({
       ...event(
         'extract',
-        `Posible manipulacion en el texto del cliente: ${manipulationSignals.join('; ')}. Las instrucciones se ignoraron (BR-17).`,
+        `Posible manipulación en el texto del cliente: ${manipulationSignals.join('; ')}. Las instrucciones se ignoraron (BR-17).`,
         nowMs,
       ),
       reason_code: 'SUSPECTED_MANIPULATION',
@@ -269,7 +269,7 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
 
   // BR-10/BR-11: completitud sobre la extraccion cruda.
   if (extraction.items.length === 0) {
-    const r = reason('MISSING_PRODUCT_REFERENCE', 'No se identifico ningun producto en la solicitud.')
+    const r = reason('MISSING_PRODUCT_REFERENCE', 'No se identificó ningún producto en la solicitud.')
     trail.push(event('validate_request', r.detail, nowMs))
     return terminal('NEEDS_CLARIFICATION', r.reason_code, { blocking_reason: r })
   }
@@ -277,7 +277,7 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
     if (item.quantity === null || item.quantity <= 0) {
       const r = reason(
         'MISSING_QUANTITY',
-        `Falta una cantidad valida para '${item.product_reference}'.`,
+        `Falta una cantidad válida para '${item.product_reference}'.`,
       )
       trail.push(event('validate_request', r.detail, nowMs))
       return terminal('NEEDS_CLARIFICATION', r.reason_code, { blocking_reason: r })
@@ -290,14 +290,14 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
     if (lookupProduct(item.product_reference) === null) {
       const r = reason(
         'UNKNOWN_SKU',
-        `'${item.product_reference}' no existe en el catalogo o esta inactivo.`,
+        `'${item.product_reference}' no existe en el catálogo o está inactivo.`,
       )
       trail.push(event('resolve_catalog', r.detail, nowMs))
       return terminal('BLOCKED', r.reason_code, { blocking_reason: r })
     }
   }
   trail.push(
-    event('resolve_catalog', `${extraction.items.length} item(s) resuelto(s) contra el catalogo (BR-02).`, nowMs),
+    event('resolve_catalog', `${extraction.items.length} item(s) resuelto(s) contra el catálogo (BR-02).`, nowMs),
   )
 
   // BR-13: disponible = on_hand - reserved, comparado con la cantidad acumulada por SKU.
@@ -325,7 +325,7 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
       unit_price: product.list_price_usd,
     })
   }
-  trail.push(event('check_inventory', `Stock suficiente para ${resolvedLines.length} linea(s) (BR-13).`, nowMs))
+  trail.push(event('check_inventory', `Stock suficiente para ${resolvedLines.length} línea(s) (BR-13).`, nowMs))
 
   // RF-06/BR-04: BR-11 -- descuento ausente se trata como 0%.
   const discountPct = extraction.requested_discount_pct ?? '0'
@@ -346,9 +346,9 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
 
   if (policyResult.approvalReasons.length > 0) {
     trail.push(
-      event('evaluate_policy', `${policyResult.approvalReasons.length} motivo(s) de aprobacion (BR-09).`, nowMs),
+      event('evaluate_policy', `${policyResult.approvalReasons.length} motivo(s) de aprobación (BR-09).`, nowMs),
     )
-    trail.push(event('human_approval', 'Solicitud en pausa, esperando decision humana (RF-07).', nowMs))
+    trail.push(event('human_approval', 'Solicitud en pausa, esperando decisión humana (RF-07).', nowMs))
     return {
       customer_name: customer?.legal_name ?? '',
       extraction,
@@ -364,7 +364,7 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
     }
   }
 
-  trail.push(event('evaluate_policy', 'Dentro de politica, sin aprobacion requerida.', nowMs))
+  trail.push(event('evaluate_policy', 'Dentro de política, sin aprobación requerida.', nowMs))
   trail.push(event('compose_draft', 'Borrador generado por plantilla determinista.', nowMs))
   const draft = composeDraft(customerId, quote)
   return terminal('DRAFT_READY', null, { quote, draft })
@@ -391,7 +391,7 @@ export function applyDecision(
   trail.push(
     event(
       'apply_decision',
-      `Decision ${action} aplicada por ${actor}${comment ? `: "${comment}"` : ''}.`,
+      `Decisión ${action} aplicada por ${actor}${comment ? `: "${comment}"` : ''}.`,
       nowMs,
     ),
   )
@@ -419,7 +419,7 @@ export function applyDecision(
 
   // APPROVE
   if (!paused || detail.quote === null) {
-    throw new Error('applyDecision(APPROVE) requiere una cotizacion y estado en pausa.')
+    throw new Error('applyDecision(APPROVE) requiere una cotización y estado en pausa.')
   }
   trail.push(event('compose_draft', 'Borrador generado por plantilla determinista.', nowMs))
   const draft = composeDraft(detail.customer_id, detail.quote)

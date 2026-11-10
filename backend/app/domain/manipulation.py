@@ -24,7 +24,7 @@ _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     (label, re.compile(pattern))
     for label, pattern in [
         (
-            "ignorar instrucciones o politicas",
+            "ignorar instrucciones o políticas",
             r"\bignor\w*\b.{0,40}\b(politic|instruc|regla|indicac)\w*",
         ),
         ("ignore instructions", r"\bignore\b.{0,30}\b(previous|prior|above|all)\b"),

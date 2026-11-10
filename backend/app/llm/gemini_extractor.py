@@ -153,7 +153,7 @@ class GeminiExtractor:
         try:
             response = await self._post(body)
         except httpx.TimeoutException as exc:
-            raise ProviderUnavailable("el proveedor no respondio a tiempo") from exc
+            raise ProviderUnavailable("el proveedor no respondió a tiempo") from exc
         except httpx.HTTPError as exc:
             raise ProviderUnavailable(
                 f"fallo de red con el proveedor: {type(exc).__name__}"
@@ -199,4 +199,4 @@ class GeminiExtractor:
         except (KeyError, IndexError, TypeError) as exc:
             # Respuesta sin candidato: bloqueo de seguridad o salida vacia.
             reason = (data.get("promptFeedback") or {}).get("blockReason", "sin contenido")
-            raise ExtractionError(f"el modelo no devolvio contenido ({reason})") from exc
+            raise ExtractionError(f"el modelo no devolvió contenido ({reason})") from exc

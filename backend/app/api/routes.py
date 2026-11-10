@@ -195,7 +195,7 @@ async def decide_request(id_: str, body: DecisionBody, request: Request) -> Requ
         raise HTTPException(
             status_code=409,
             detail=(
-                "La decision contradice el estado actual de la solicitud y no se aplico. "
+                "La decisión contradice el estado actual de la solicitud y no se aplicó. "
                 "Recarga la solicitud para ver el resultado vigente."
             ),
         )

@@ -100,7 +100,7 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
                 "audit_log": [
                     AuditEvent(
                         node="extract",
-                        message=f"Intento {attempts}: fallo de extraccion -- {exc}",
+                        message=f"Intento {attempts}: fallo de extracción -- {exc}",
                         reason_code=ReasonCode.EXTRACTION_FAILED,
                     )
                 ],
@@ -109,7 +109,7 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
             AuditEvent(
                 node="extract",
                 message=(
-                    f"Intento {attempts}: {len(extraction.items)} item(s) extraido(s)"
+                    f"Intento {attempts}: {len(extraction.items)} item(s) extraído(s)"
                     + (f" con {extraction.source}." if extraction.source else ".")
                 ),
             )
@@ -118,13 +118,13 @@ def make_extract_node(extractor: Extractor) -> NodeFn:
         # (BR-17), pero tampoco debe pasar desapercibido.
         signals = detect_manipulation(state.raw_text)
         if extraction.injection_suspected:
-            signals.append("el modelo de lectura detecto instrucciones al sistema")
+            signals.append("el modelo de lectura detectó instrucciones al sistema")
         if signals:
             audit.append(
                 AuditEvent(
                     node="extract",
                     message=(
-                        "Posible manipulacion en el texto del cliente: "
+                        "Posible manipulación en el texto del cliente: "
                         + "; ".join(signals)
                         + ". Las instrucciones se ignoraron (BR-17)."
                     ),
@@ -181,7 +181,7 @@ async def validate_request(state: QuoteState) -> dict[str, Any]:
     resolver catalogo o inventario. Asume que `extract` ya corrio con exito;
     las rutas condicionales (T10) no llegan aqui si la extraccion fallo."""
     if state.extraction is None:
-        raise ValueError("validate_request requiere una extraccion ya establecida por 'extract'")
+        raise ValueError("validate_request requiere una extracción ya establecida por 'extract'")
 
     result = check_completeness(state.extraction)
     if not result.ok:
@@ -209,13 +209,13 @@ async def resolve_catalog(state: QuoteState) -> dict[str, Any]:
     BR-12 dice explicitamente "no se cotizan parcialmente los items
     restantes", asi que no se acumulan errores de varios items."""
     if state.extraction is None:
-        raise ValueError("resolve_catalog requiere una extraccion ya establecida por 'extract'")
+        raise ValueError("resolve_catalog requiere una extracción ya establecida por 'extract'")
 
     for item in state.extraction.items:
         if lookup_product(item.product_reference) is None:
             reason = ApprovalReason(
                 reason_code=ReasonCode.UNKNOWN_SKU,
-                detail=f"'{item.product_reference}' no existe en el catalogo o esta inactivo.",
+                detail=f"'{item.product_reference}' no existe en el catálogo o está inactivo.",
             )
             return {
                 "blocking_reason": reason,
@@ -234,7 +234,7 @@ async def resolve_catalog(state: QuoteState) -> dict[str, Any]:
             AuditEvent(
                 node="resolve_catalog",
                 message=(
-                    f"{len(state.extraction.items)} item(s) resuelto(s) contra el catalogo (BR-02)."
+                    f"{len(state.extraction.items)} item(s) resuelto(s) contra el catálogo (BR-02)."
                 ),
             )
         ],
@@ -251,7 +251,7 @@ async def check_inventory(state: QuoteState) -> dict[str, Any]:
     compara con la cantidad acumulada por SKU: repetir un SKU en varias lineas
     no permite superar el stock (BR-13)."""
     if state.extraction is None:
-        raise ValueError("check_inventory requiere una extraccion ya establecida por 'extract'")
+        raise ValueError("check_inventory requiere una extracción ya establecida por 'extract'")
 
     resolved: list[ResolvedLine] = []
     requested: Counter[str] = Counter()
@@ -263,7 +263,7 @@ async def check_inventory(state: QuoteState) -> dict[str, Any]:
             # antes de llegar aqui. No es un caso de negocio nuevo.
             reason = ApprovalReason(
                 reason_code=ReasonCode.UNKNOWN_SKU,
-                detail=f"'{item.product_reference}' no existe en el catalogo o esta inactivo.",
+                detail=f"'{item.product_reference}' no existe en el catálogo o está inactivo.",
             )
             return {
                 "blocking_reason": reason,
@@ -317,7 +317,7 @@ async def check_inventory(state: QuoteState) -> dict[str, Any]:
         "audit_log": [
             AuditEvent(
                 node="check_inventory",
-                message=f"Stock suficiente para {len(resolved)} linea(s) (BR-13).",
+                message=f"Stock suficiente para {len(resolved)} línea(s) (BR-13).",
             )
         ],
     }
@@ -355,7 +355,7 @@ async def evaluate_policy(state: QuoteState) -> dict[str, Any]:
     cual -- este nodo solo junta sus insumos desde el estado y traduce el
     resultado a los campos correspondientes."""
     if state.quote is None:
-        raise ValueError("evaluate_policy requiere una cotizacion ya calculada por 'price_quote'")
+        raise ValueError("evaluate_policy requiere una cotización ya calculada por 'price_quote'")
     if state.tier is None or state.customer_is_known is None:
         raise ValueError("evaluate_policy requiere tier/customer_is_known ya resueltos")
 
@@ -386,9 +386,9 @@ async def evaluate_policy(state: QuoteState) -> dict[str, Any]:
         }
 
     message = (
-        f"{len(result.approval_reasons)} motivo(s) de aprobacion (BR-09)."
+        f"{len(result.approval_reasons)} motivo(s) de aprobación (BR-09)."
         if result.approval_reasons
-        else "Dentro de politica, sin aprobacion requerida."
+        else "Dentro de política, sin aprobación requerida."
     )
     return {
         "rejection_reason": None,
@@ -428,7 +428,7 @@ async def human_approval(state: QuoteState) -> dict[str, Any]:
             AuditEvent(
                 node="human_approval",
                 message=(
-                    f"Decision humana recibida: {decision.action.value} "
+                    f"Decisión humana recibida: {decision.action.value} "
                     f"(decision_id={decision.decision_id})."
                 ),
             )
@@ -446,7 +446,7 @@ async def apply_decision(state: QuoteState) -> dict[str, Any]:
     volver a pausa por OBSERVE) lo decide `routing.py` (T10)."""
     if state.human_decision is None:
         raise ValueError(
-            "apply_decision requiere una decision humana ya registrada por 'human_approval'"
+            "apply_decision requiere una decisión humana ya registrada por 'human_approval'"
         )
 
     decision = state.human_decision
@@ -469,7 +469,7 @@ async def apply_decision(state: QuoteState) -> dict[str, Any]:
             AuditEvent(
                 node="apply_decision",
                 message=(
-                    f"Decision {decision.action.value} aplicada por {decision.actor} "
+                    f"Decisión {decision.action.value} aplicada por {decision.actor} "
                     f"(decision_id={decision.decision_id})."
                 ),
             )
@@ -485,14 +485,14 @@ async def compose_draft(state: QuoteState) -> dict[str, Any]:
     redaccion con LLM (tono, idioma) seria una extension futura y tendria
     que respetar la misma regla."""
     if state.quote is None:
-        raise ValueError("compose_draft requiere una cotizacion ya calculada")
+        raise ValueError("compose_draft requiere una cotización ya calculada")
 
     lines_text = "\n".join(
         f"  - {line.quantity} x {line.product_name} ({line.sku}) @ {line.unit_price} c/u"
         for line in state.quote.lines
     )
     draft = (
-        f"Cotizacion para {state.customer_id}\n"
+        f"Cotización para {state.customer_id}\n"
         f"{lines_text}\n"
         f"Subtotal: {state.quote.subtotal} {state.quote.currency}\n"
         f"Descuento ({state.quote.discount_pct}%): "
