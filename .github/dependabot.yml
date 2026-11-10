@@ -1,0 +1,38 @@
+# Dependabot: abre PRs de actualización. El CI corre en cada una y la
+# protección de main exige que pase antes de unirla.
+# Las versiones menores y los parches van agrupados en un solo PR por
+# ecosistema; las mayores llegan por separado, porque pueden romper algo.
+
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build(deps)
+    groups:
+      backend-menores:
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build(deps)
+    groups:
+      frontend-menores:
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci(deps)
+    groups:
+      acciones:
+        patterns: ["*"]
