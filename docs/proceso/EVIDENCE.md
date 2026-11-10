@@ -665,6 +665,59 @@ pip-audit                     # sin vulnerabilidades conocidas
 
 ---
 
+## E-14 · Fase 4: LLM real, evals, trazas y endurecimiento del proceso
+
+**Objetivo:** que el extractor con un modelo real se mida, no se suponga, y que el proceso de cambio (tipos, hooks, CI, protección de `main`, dependencias) sea verificable.
+
+### Evals contra el modelo real
+
+22 casos en cuatro categorías (`backend/evals/cases.json`), corridos a mano porque gastan cuota. La métrica principal es SKU + cantidad por ítem, con una meta de ≥ 90 % (BUSINESS_CASE).
+
+```text
+gemini-3.5-flash-lite  29/31 ítems  20/22 casos   escenario 7/7  lenguaje-natural 7/8  ambiguo 3/4  manipulacion 3/3
+gemini-3.5-flash-lite  31/31 ítems  22/22 casos   escenario 7/7  lenguaje-natural 8/8  ambiguo 4/4  manipulacion 3/3   (prompt corregido)
+reglas locales         22/31 ítems  16/22 casos   escenario 7/7  lenguaje-natural 3/8  ambiguo 4/4  manipulacion 2/3
+```
+
+Latencia media del modelo: unos 2 s por caso. **La primera corrida encontró tres errores que las pruebas a mano no vieron:** "bt 900" salía como `BT900` (el catálogo no lo encontraría), "si aprueban esta cotización" se marcaba como manipulación, y el extractor de reglas leía "7,5 %" como 5 %. Los tres se corrigieron. La segunda corrida no tuvo regresiones.
+
+### Trazas en LangSmith
+
+Activas solo con `LANGSMITH_TRACING=true` y una key. Lo que se verificó en la interfaz de LangSmith con tráfico real:
+
+- Cada solicitud es una traza `quoteflow.registro` con los 12 nodos. La llamada a `gemini.extract` aparece con modelo, tokens (≈ 800 por solicitud) y costo.
+- El registro y la decisión humana de una misma solicitud quedan en el mismo hilo, porque comparten el `thread_id` del checkpointer.
+- **Respaldo real:** durante la prueba, Gemini superó el timeout de 20 s. La traza muestra `gemini.extract` con `ProviderUnavailable('el proveedor no respondio a tiempo')` y, desde v0.5.1, el paso `rules.extract` que leyó el texto en su lugar.
+- Control negativo: con una key falsa, la SDK reporta `403`. Sin ese control, que no hubiera avisos no probaba que las trazas llegaran.
+
+### Endurecimiento del proceso (v0.5.1)
+
+| Qué | Verificación |
+|-----|--------------|
+| `mypy` sobre todo `app/` (antes, solo una parte) | `Success: no issues found in 31 source files` |
+| Hooks de pre-commit | Un archivo con un import sin usar se corrige y el commit se aborta (`HEAD` no cambia). Un `.env` forzado con `git add -f` se rechaza |
+| Protección de `main` | `! [remote rejected] HEAD -> main (push declined due to repository rule violations)` |
+| Dependabot | 8 PRs revisados. Las 3 versiones mayores del frontend (vite 8, vitest 5, react-router 8) se probaron juntas y con una prueba de humo en Chrome headless sobre el build de producción |
+| Seed único | La demo importa `backend/app/data/*.json`. Cambiar el techo GOLD a 5 % hace fallar S1 en las dos suites, y un precio `45.005` detiene la carga |
+| Graphify | 289 → 326 nodos, sin ciclos de import. La frontera de ADR-002 se sostiene ([docs/graphify/](../graphify/README.md)) |
+
+**Suites y auditorías** (backend en el CI con Postgres 16; frontend y auditorías en local):
+
+```bash
+uv run pytest                 # 214 passed, 1 warning in 12.56s
+uv run ruff check .           # All checks passed!
+uv run ruff format --check .  # 54 files already formatted
+uv run mypy app               # Success: no issues found in 31 source files
+pnpm test                     # Tests 35 passed (35)
+pnpm typecheck                # exit 0
+pnpm audit --prod             # No known vulnerabilities found
+uvx pip-audit                 # No known vulnerabilities found
+```
+
+**No verificado en local:** la suite de integración del backend, porque Docker Desktop no arrancó durante esta sesión ("Docker Desktop is unable to start"), igual que en E-08. Las pruebas unitarias pasaron en local (161) y la suite completa pasó en el CI.
+
+---
+
 ## Limitaciones de la Fase 0
 
 Lo siguiente **no** está verificado. Se declara aquí en lugar de presentarse como hecho:
@@ -679,7 +732,7 @@ Lo siguiente **no** está verificado. Se declara aquí en lugar de presentarse c
 | ~~L-06~~ | ~~El repositorio aún no está bajo control de versiones~~ — **resuelto**: remoto en `github.com/guisa17/quoteflow` |
 | L-07 | El backend tiene andamiaje (`config.py`, paquetes vacíos) pero ningún módulo de dominio, grafo ni API con lógica real |
 | L-08 | **Sin autenticación:** cualquiera con acceso a la API puede aprobar, y `actor` es texto que declara el cliente, así que la auditoría no prueba quién decidió |
-| L-09 | Los tests de frontend prueban el motor mock; no hay pruebas de componentes ni end-to-end en navegador |
+| L-09 | Los tests de frontend prueban el motor de la demo; no hay pruebas end-to-end en navegador |
 
 ## Deuda aceptada
 
@@ -691,13 +744,13 @@ Decisiones conscientes de no hacer, no descuidos. Se registran para que quien re
 | D-02 | Sin paginación en la bandeja | El volumen del MVP no la justifica |
 | D-03 | Sin reintentos con espera progresiva ante fallo del modelo | Un fallo de extracción degrada a `NEEDS_CLARIFICATION` con el error registrado, que es el comportamiento seguro (RF-05) |
 | D-04 | Borrador en un solo idioma | El caso de negocio es local; la internacionalización no aporta al criterio evaluado |
-| D-05 | `mypy` sin modo estricto, limitado a `app/domain` y `app/graph/state.py` | Tipado donde protege: el estado del grafo y las reglas. El modo estricto sobre toda la base no aporta garantías adicionales sobre lo que sostiene el Definition of Done |
+| D-05 | `mypy` sin modo estricto | Desde v0.5.1 revisa todo `app/` (antes, solo `app/domain` y `app/graph/state.py`). El modo estricto no aporta garantías adicionales sobre lo que sostiene el Definition of Done |
 
 ---
 
 ## Siguiente paso
 
-T0 y T1 completos. Continuar con T2 ([PHASE_01.md](PHASE_01.md)) — modelos y enumerados del dominio. Cada tarea cerrada añade su comando y salida real a este documento, en el mismo ciclo en que se implementa.
+El estado vigente y el siguiente incremento están en [STATE.md](STATE.md). Cada cambio relevante añade su comando y salida real a este documento, en el mismo ciclo en que se implementa.
 
 ---
 
