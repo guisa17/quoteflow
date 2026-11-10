@@ -16,9 +16,10 @@
 import type { Extraction } from '@/types/api'
 
 const SKU_RE = /\b[A-Za-z]{2}-\d{3}\b/g
-// Un número seguido de "%" (entero o con decimales) es un descuento, no una cantidad.
-const NUMBER_RE = /\b\d+\b(?![\d.]*\s*%)/g
-const DISCOUNT_RE = /(\d+(?:\.\d+)?)\s*%/
+// Un número seguido de "%" (entero o con decimales, con punto o coma) es un
+// descuento, no una cantidad. Paridad con backend/app/llm/fake_extractor.py.
+const NUMBER_RE = /\b\d+\b(?![\d.,]*\s*%)/g
+const DISCOUNT_RE = /(\d+(?:[.,]\d+)?)\s*%/
 const SITE_RE =
   /\bpara\s+(?:la\s+|el\s+)?(?:planta|obra|proyecto)?\s*(?:de\s+)?([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ]*(?:\s+[A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ]*)*)/
 
@@ -41,7 +42,7 @@ function extractSite(text: string): string | null {
 function extractDiscount(text: string): string | null {
   const match = DISCOUNT_RE.exec(text)
   if (match === null) return null
-  return match[1]
+  return match[1].replace(',', '.')
 }
 
 export function fakeExtract(rawText: string): Extraction {

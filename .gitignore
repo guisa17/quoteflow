@@ -37,6 +37,9 @@ desktop.ini
 # Material de trabajo personal: nunca se versiona
 _local/
 
+# Resultados de evals: cada corrida depende de la key y del modelo
+backend/evals/results/
+
 # Artefactos locales de revisión de diseño
 .impeccable/review/
 .impeccable/questions/

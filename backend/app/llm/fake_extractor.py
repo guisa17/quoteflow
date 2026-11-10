@@ -26,9 +26,11 @@ from app.domain.models import ExtractedLineItem, Extraction
 from app.llm.base import ExtractionError
 
 _SKU_RE = re.compile(r"\b[A-Za-z]{2}-\d{3}\b")
-# Un numero seguido de "%" (entero o con decimales) es un descuento, no una cantidad.
-_NUMBER_RE = re.compile(r"\b\d+\b(?![\d.]*\s*%)")
-_DISCOUNT_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
+# Un numero seguido de "%" (entero o con decimales, con punto o coma) es un
+# descuento, no una cantidad. La coma decimal es la habitual en espanol:
+# "7,5 %" leido como "5 %" seria un descuento equivocado sin aviso.
+_NUMBER_RE = re.compile(r"\b\d+\b(?![\d.,]*\s*%)")
+_DISCOUNT_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*%")
 _SITE_RE = re.compile(
     r"\bpara\s+(?:la\s+|el\s+)?(?:planta|obra|proyecto)?\s*(?:de\s+)?"
     r"([A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ]*(?:\s+[A-ZÁÉÍÓÚÑ][\wÁÉÍÓÚÑáéíóúñ]*)*)"
@@ -64,7 +66,7 @@ def _extract_discount(text: str) -> Decimal | None:
     match = _DISCOUNT_RE.search(text)
     if match is None:
         return None
-    return Decimal(match.group(1))
+    return Decimal(match.group(1).replace(",", "."))
 
 
 class FakeExtractor:

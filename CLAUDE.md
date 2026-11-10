@@ -82,6 +82,8 @@ El historial anterior a `v0.5.0` no sigue esta convención y no se reescribe: ya
 
 Son los mismos que corre el CI (`.github/workflows/ci.yml`) en cada push a `main` y en cada pull request.
 
+**Si el cambio toca el prompt, el esquema del extractor o el modelo**, además hay que correr las evaluaciones contra el modelo real (`uv run python -m evals.run`, ver [backend/evals/](backend/evals/README.md)) y registrar el resultado en su tabla. No van en el CI porque gastan cuota.
+
 ```bash
 cd backend
 uv run pytest                                  # suite completa (LLM_MODE=fake)
