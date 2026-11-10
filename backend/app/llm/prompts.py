@@ -2,10 +2,9 @@
 
 `app/llm/fake_extractor.py` (T8, modo por defecto de los tests, RF-10) no
 importa nada de este archivo -- resuelve los escenarios con reglas de texto,
-sin llamar a ningun modelo. Este modulo existe para que el extractor real
-(`app/llm/anthropic_extractor.py`, fuera del alcance de T7-T11 y construido
-en el ciclo acotado de `LOOP.md`) arranque sobre un prompt ya alineado con la
-frontera determinista, en vez de definirlo ahi mismo.
+sin llamar a ningun modelo. Este modulo lo usa el extractor real
+(`app/llm/gemini_extractor.py`), y lo usaria cualquier otro proveedor, para
+partir de un prompt ya alineado con la frontera determinista.
 
 BR-17 se cumple por construccion, no por disciplina: `build_messages` nunca
 concatena `raw_text` dentro de `EXTRACTION_SYSTEM_PROMPT`. El texto del

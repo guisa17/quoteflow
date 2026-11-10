@@ -2,7 +2,7 @@
 
 Responde a tres preguntas: qué participa en el flujo, qué se mueve al cambiar una política, y qué evidencia de este mapa condicionó el plan de trabajo.
 
-> **Origen del mapa.** Este documento es la lectura de negocio, curada a mano: qué participa en el flujo y qué se propaga al cambiar una política. El reporte generado por la herramienta en sí —extracción automática por AST, comunidades, nodos más conectados, ciclos de import— vive en [`docs/graphify/GRAPH_REPORT.md`](docs/graphify/GRAPH_REPORT.md) y está regenerado sobre el código final (incluye `app/api/`). Ambos se complementan, no se duplican: uno es análisis estructural, el otro es interpretación de negocio; la §3 de este documento los cruza.
+> **Origen del mapa.** Este documento es la lectura de negocio, curada a mano: qué participa en el flujo y qué se propaga al cambiar una política. El reporte generado por la herramienta en sí —extracción automática por AST, comunidades, nodos más conectados, ciclos de import— vive en [`docs/graphify/GRAPH_REPORT.md`](graphify/GRAPH_REPORT.md) y está regenerado sobre el código final (incluye `app/api/`). Ambos se complementan, no se duplican: uno es análisis estructural, el otro es interpretación de negocio; la §3 de este documento los cruza.
 
 ---
 
@@ -27,9 +27,9 @@ Responde a tres preguntas: qué participa en el flujo, qué se mueve al cambiar 
                ┌──────▼───────┐                    ┌──────▼───────┐
                │  app/domain  │                    │   app/llm    │
                │  DETERMINISTA│                    │  NO DETERM.  │
-               │  models · repositories            │  extractor fake
-               │  pricing · policy · validation    │  (real: LOOP.md,
-               │  tools                            │   no ejecutado)
+               │  models · repositories            │  extractor Gemini
+               │  pricing · policy · validation    │  + respaldo con
+               │  manipulation · tools             │  extractor de reglas
                └──────┬───────┘                    └──────────────┘
                       │                                   ▲
                ┌──────▼───────┐                           │
@@ -41,7 +41,7 @@ Responde a tres preguntas: qué participa en el flujo, qué se mueve al cambiar 
 
 **Las dos relaciones que sostienen la arquitectura**, ambas verificables de un vistazo:
 
-1. **`app/domain` no importa nada de `app/llm`.** La flecha nunca va en esa dirección — es lo que hace cumplir [ADR-002](docs/adr/ADR-002-frontera-determinista.md) y lo primero que hay que comprobar ante cualquier duda sobre si un cambio respeta la frontera.
+1. **`app/domain` no importa nada de `app/llm`.** La flecha nunca va en esa dirección — es lo que hace cumplir [ADR-002](adr/ADR-002-frontera-determinista.md) y lo primero que hay que comprobar ante cualquier duda sobre si un cambio respeta la frontera.
 2. **`app/api` no importa nada de `app/domain` salvo tipos y enums.** Traduce y serializa (`mapping.py`); toda decisión sigue viniendo del grafo. Si algún día `routes.py` empieza a comparar un monto contra un umbral, esa regla se escapó de `app/domain/policy.py`.
 
 **Sobre la tabla `requests`:** es un cache denormalizado para la bandeja (RF-02), no una segunda fuente de verdad. El estado real de cada ejecución vive en el checkpointer; esta tabla solo evita reconstruirlo N veces por cada listado. Si divergen, el checkpointer gana — la tabla se puede reconstruir, el checkpoint no.
@@ -104,11 +104,11 @@ El escenario `S1` —el caso de referencia— **cambia de resultado**:
 
 ### Lo que nunca cambia
 
-Prompts, estructura del grafo, contrato de la API, esquema de la base de datos. Una política es un dato, no código — es el resultado directo de [ADR-002](docs/adr/ADR-002-frontera-determinista.md), y es lo que permite responder en vivo a una modificación durante la presentación.
+Prompts, estructura del grafo, contrato de la API, esquema de la base de datos. Una política es un dato, no código — es el resultado directo de [ADR-002](adr/ADR-002-frontera-determinista.md), y es lo que permite responder en vivo a una modificación durante la presentación.
 
 ## 3. Qué evidencia del mapa influyó en el plan
 
-Cuatro observaciones del mapa se tradujeron en decisiones concretas de [PHASE_01.md](PHASE_01.md):
+Cuatro observaciones del mapa se tradujeron en decisiones concretas de [PHASE_01.md](proceso/PHASE_01.md):
 
 | Observación en el mapa | Efecto en el plan |
 |------------------------|-------------------|
@@ -119,7 +119,7 @@ Cuatro observaciones del mapa se tradujeron en decisiones concretas de [PHASE_01
 
 Y una quinta observación condicionó el diseño de datos: **`policies.json` es leído por un solo módulo** (`PolicyRepository`). Esa concentración es lo que hace posible la sección 2 de este documento. Si la política se leyera desde varios puntos, cambiarla dejaría de ser un cambio de un valor y pasaría a ser una refactorización.
 
-**Contraste contra el código real (proyecto completo):** el reporte de [`docs/graphify/GRAPH_REPORT.md`](docs/graphify/GRAPH_REPORT.md), regenerado sobre el código final (265 nodos, 588 aristas, 15 comunidades), confirma las cinco observaciones sin ajustes:
+**Contraste contra el código real (proyecto completo):** el reporte de [`docs/graphify/GRAPH_REPORT.md`](graphify/GRAPH_REPORT.md), regenerado sobre el código final (265 nodos, 588 aristas, 15 comunidades), confirma las cinco observaciones sin ajustes:
 
 - **`QuoteState` es el nodo más conectado** (38 aristas), seguido de los enumerados del dominio (`ReasonCode` 31, `DecisionAction` 26, `AuditEvent` 23). Coincide con la observación 2: es el punto por el que pasan todos los nodos, y por eso tiene `mypy` obligatorio.
 - **Las comunidades detectadas separan limpiamente las capas**: dominio (`PolicyEvaluation`, `calculate_quote`, `tools.py`), grafo (`build_graph`), LLM (`FakeExtractor`, `prompts.py`) y API (`decide_request`) aparecen como grupos distintos, sin mezclarse.
@@ -129,4 +129,4 @@ El mapa de esta sección deja de ser "de diseño" y pasa a estar verificado cont
 
 ---
 
-**Relacionados:** [PROJECT.md](PROJECT.md) · [PHASE_01.md](PHASE_01.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md) · [REQUIREMENTS.md](REQUIREMENTS.md)
+**Relacionados:** [PROJECT.md](PROJECT.md) · [PHASE_01.md](proceso/PHASE_01.md) · [ADR-002](adr/ADR-002-frontera-determinista.md) · [REQUIREMENTS.md](REQUIREMENTS.md)

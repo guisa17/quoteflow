@@ -15,7 +15,8 @@ Resuelve los 8 escenarios de `sample_requests.json` (ver
 `tests/unit/test_extraction_sanitization.py`) y cualquier texto con la misma
 forma general. No es un sustituto de un LLM real: es deliberadamente rigido,
 como cualquier test double -- la variedad real del lenguaje comercial es
-justo el problema que el extractor real (`LOOP.md`) tiene que resolver.
+justo el problema que resuelve el extractor real (`gemini_extractor.py`).
+Tambien es el respaldo cuando el proveedor no responde (`fallback.py`).
 """
 
 import re

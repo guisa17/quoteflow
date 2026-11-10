@@ -1,9 +1,9 @@
 """Frontera del LLM (ADR-002, T8).
 
 Protocolo minimo que cualquier extractor -- real o de pruebas -- debe cumplir.
-El extractor real (`app/llm/anthropic_extractor.py`) esta fuera del alcance de
-T7-T11: se construye en el ciclo acotado de `LOOP.md`, sobre este mismo
-Protocol. Aqui solo vive el contrato y el tipo de error que ambos comparten.
+Lo implementan `FakeExtractor` (reglas, sin red), `GeminiExtractor` (real) y
+`FallbackExtractor` (Gemini con respaldo explicito a reglas). Aqui solo vive
+el contrato y el tipo de error que comparten.
 
 Un extractor:
 - Recibe `raw_text`, el texto del cliente. Es entrada no confiable (BR-17):
@@ -38,7 +38,7 @@ class ExtractionError(Exception):
 
 @runtime_checkable
 class Extractor(Protocol):
-    """Contrato compartido por el extractor fake (T8) y el real (LOOP.md)."""
+    """Contrato compartido por el extractor de reglas (T8) y el de Gemini."""
 
     async def extract(self, raw_text: str) -> Extraction:
         """Interpreta `raw_text` y devuelve una `Extraction` validada.

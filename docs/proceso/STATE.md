@@ -1,5 +1,7 @@
 # STATE — QuoteFlow
 
+> **Documento histórico.** Refleja el estado al cerrar la Fase 3 (178 tests, sin LLM real). Después se añadieron el extractor con Gemini, la detección de manipulación (BR-18) y el rediseño de la interfaz. El estado vigente y los pendientes están en [ROADMAP.md](../ROADMAP.md).
+
 Estado real del proyecto: qué está construido, qué está verificado, qué está bloqueado y cuál es el siguiente paso.
 
 Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir el contexto.** Si este documento y el código discrepan, uno de los dos está mal y se corrige en el mismo ciclo.
@@ -21,10 +23,10 @@ Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir 
 
 | Área | Artefactos | Estado |
 |------|-----------|--------|
-| **Negocio** | [BUSINESS_CASE.md](BUSINESS_CASE.md) · [IMPACT.md](IMPACT.md) | ✅ |
-| **Proyecto** | [PROJECT.md](PROJECT.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [ROADMAP.md](ROADMAP.md) · [PHASE_01.md](PHASE_01.md) · [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | ✅ |
-| **Decisiones** | [ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](docs/adr/ADR-002-frontera-determinista.md) · [ADR-003](docs/adr/ADR-003-persistencia-checkpointer.md) | ✅ |
-| **Gobierno** | [CLAUDE.md](CLAUDE.md) · [AI_USE.md](AI_USE.md) · [LOOP.md](LOOP.md) · [docs/REFERENCES.md](docs/REFERENCES.md) · [docs/graphify/](docs/graphify/GRAPH_REPORT.md) | ✅ |
+| **Negocio** | [BUSINESS_CASE.md](../BUSINESS_CASE.md) · [IMPACT.md](../IMPACT.md) | ✅ |
+| **Proyecto** | [PROJECT.md](../PROJECT.md) · [REQUIREMENTS.md](../REQUIREMENTS.md) · [ROADMAP.md](../ROADMAP.md) · [PHASE_01.md](PHASE_01.md) · [docs/API_CONTRACT.md](../API_CONTRACT.md) | ✅ |
+| **Decisiones** | [ADR-001](../adr/ADR-001-datos-ficticios-propios.md) · [ADR-002](../adr/ADR-002-frontera-determinista.md) · [ADR-003](../adr/ADR-003-persistencia-checkpointer.md) | ✅ |
+| **Gobierno** | [CLAUDE.md](../../CLAUDE.md) · [AI_USE.md](AI_USE.md) · [LOOP.md](LOOP.md) · [docs/REFERENCES.md](../REFERENCES.md) · [docs/graphify/](../graphify/GRAPH_REPORT.md) | ✅ |
 | **Verificación** | [EVIDENCE.md](EVIDENCE.md) — 12 secciones con salida real (E-01…E-12) | ✅ |
 | **Dominio determinista** | `enums`, `models`, `repositories`, `pricing`, `policy`, `validation`, `tools` | ✅ T2-T6 |
 | **Grafo LangGraph** | `state`, `llm/`, `nodes`, `routing`, `checkpointer`, `build` | ✅ T7-T11 |
@@ -102,11 +104,11 @@ Declaradas, no ocultas — detalle y deuda aceptada en [EVIDENCE.md](EVIDENCE.md
 El siguiente incremento con más valor, en orden:
 
 1. **Ejecutar [LOOP.md](LOOP.md)** — construir `app/llm/anthropic_extractor.py` contra el `Protocol` ya definido y endurecerlo contra los 8 escenarios. Es el único componente no determinista del sistema y ya tiene worker, verifier, presupuesto y condición de bloqueo definidos.
-2. **Reemplazar el seed por una fuente real** — los cuatro repositorios de `app/domain/repositories.py` son la única frontera a tocar; ni el grafo ni las reglas cambian ([ADR-001](docs/adr/ADR-001-datos-ficticios-propios.md)).
+2. **Reemplazar el seed por una fuente real** — los cuatro repositorios de `app/domain/repositories.py` son la única frontera a tocar; ni el grafo ni las reglas cambian ([ADR-001](../adr/ADR-001-datos-ficticios-propios.md)).
 3. **Paginación en la bandeja** (D-02) cuando el volumen la justifique.
 
-Puerta de entrada: [CLAUDE.md](CLAUDE.md) (reglas) y este documento (estado). Ambos se leen de forma autónoma, sin depender de ninguna conversación previa.
+Puerta de entrada: [CLAUDE.md](../../CLAUDE.md) (reglas) y este documento (estado). Ambos se leen de forma autónoma, sin depender de ninguna conversación previa.
 
 ---
 
-**Relacionados:** [README.md](README.md) · [EVIDENCE.md](EVIDENCE.md) · [ROADMAP.md](ROADMAP.md) · [PROJECT.md](PROJECT.md) · [REQUIREMENTS.md](REQUIREMENTS.md) · [AI_USE.md](AI_USE.md) · [IMPACT.md](IMPACT.md)
+**Relacionados:** [README.md](../../README.md) · [EVIDENCE.md](EVIDENCE.md) · [ROADMAP.md](../ROADMAP.md) · [PROJECT.md](../PROJECT.md) · [REQUIREMENTS.md](../REQUIREMENTS.md) · [AI_USE.md](AI_USE.md) · [IMPACT.md](../IMPACT.md)
