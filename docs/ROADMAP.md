@@ -84,10 +84,11 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 | `app/domain/manipulation.py` — detección determinista + señal del LLM; el caso va a revisión humana | BR-17, BR-18, [ADR-005](adr/ADR-005-manipulacion-a-revision-humana.md) | ✅ sin falsos positivos en los escenarios legítimos |
 | Bandeja con pestañas "Por decidir" / "Todas", filtro de estado y rastro de la última decisión | RF-02, RF-09 | ✅ |
 | Rediseño visual (serif + Inter, tarjetas, tema claro/oscuro) — ver [DESIGN.md](../DESIGN.md) | RF-09 | ✅ |
-| Pruebas | — | ✅ 214 backend + 26 frontend |
+| Pruebas | — | ✅ 214 backend + 35 frontend |
 | CI en GitHub Actions: backend con Postgres real y frontend | — | ✅ |
 | `backend/evals/` — 22 casos contra el modelo real, corridas locales | métrica de BUSINESS_CASE (≥ 90 %) | ✅ 31/31 ítems, 22/22 casos |
 | Trazas en LangSmith (opcionales): grafo, llamada al LLM con modelo y tokens, respaldo etiquetado | RF-08 | ✅ |
+| Seed único: la demo importa `backend/app/data/*.json` en vez de copiarlo; la paridad se prueba contra el `expected_outcome` del mismo archivo | ADR-001 | ✅ |
 | Graphify regenerado sobre la Fase 4 y contrastado en `IMPACT.md` §3 | Mapa de impacto | ✅ 326 nodos, sin ciclos; [cómo regenerarlo](graphify/README.md) |
 
 **Hallazgos:**

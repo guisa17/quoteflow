@@ -11,7 +11,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { runIntake } from '@/mocks/engine'
-import { SCENARIOS } from '@/mocks/data'
+import { POLICY, PRODUCTS, SCENARIOS } from '@/mocks/data'
 import { fakeExtract } from '@/mocks/extract'
 import { createRequest, getRequest, submitDecision } from '@/mocks/store'
 import type { Outcome, ReasonCode } from '@/types/api'
@@ -99,6 +99,34 @@ describe('motor mock -- los 8 escenarios (AC-01..AC-08)', () => {
       'S8_inyeccion_de_prompt',
     ]
     expect(SCENARIOS.map((s) => s.id).sort()).toEqual(prefixes.sort())
+  })
+
+  // El resultado esperado sale del mismo sample_requests.json que verifica el
+  // backend (test_scenarios.py): un escenario nuevo queda cubierto aqui sin
+  // tocar esta suite.
+  it.each(SCENARIOS.map((s) => [s.id, s] as const))(
+    '%s: alcanza el expected_outcome del seed compartido',
+    (_id, s) => {
+      const result = runIntake(s.customer_id, s.raw_text, NOW)
+      expect(result.outcome).toBe(s.expected_outcome)
+      const reasons = [result.reason_code, ...result.approval_reasons.map((r) => r.reason_code)]
+      if (s.expected_reason === null) {
+        expect(reasons.filter(Boolean)).toEqual([])
+      } else {
+        expect(reasons).toContain(s.expected_reason)
+      }
+    },
+  )
+})
+
+describe('seed compartido con el backend', () => {
+  it('conserva la escala decimal del backend (dinero 2, porcentajes 1)', () => {
+    expect(PRODUCTS.find((p) => p.sku === 'HX-200')?.list_price_usd).toBe('45.00')
+    expect(PRODUCTS.find((p) => p.sku === 'GL-500')?.list_price_usd).toBe('18.50')
+    expect(POLICY.approval_threshold_usd).toBe('10000.00')
+    expect(POLICY.discount_by_tier.GOLD.max_discount_pct).toBe('12.0')
+    expect(POLICY.hard_discount_ceiling_pct).toBe('20.0')
+    expect(POLICY.tax.rate).toBe('0.18')
   })
 })
 
