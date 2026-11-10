@@ -79,9 +79,9 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 
 | Entregable | Sostiene | Estado |
 |------------|----------|--------|
-| `app/llm/gemini_extractor.py` — Gemini con salida JSON forzada por esquema; respaldo explícito al extractor de reglas si el proveedor no responde | RF-05, RF-10, ADR-002 | ✅ 8 escenarios + lenguaje natural ("dos docenas" = 24) |
+| `app/llm/gemini_extractor.py` — Gemini con salida JSON forzada por esquema; respaldo explícito al extractor de reglas si el proveedor no responde | RF-05, RF-10, [ADR-004](adr/ADR-004-extractor-gemini-con-respaldo.md) | ✅ 8 escenarios + lenguaje natural ("dos docenas" = 24) |
 | Procedencia de la lectura visible en el folio y en la auditoría | RF-08 | ✅ |
-| `app/domain/manipulation.py` — detección determinista + señal del LLM; el caso va a revisión humana | BR-17, BR-18 | ✅ sin falsos positivos en los escenarios legítimos |
+| `app/domain/manipulation.py` — detección determinista + señal del LLM; el caso va a revisión humana | BR-17, BR-18, [ADR-005](adr/ADR-005-manipulacion-a-revision-humana.md) | ✅ sin falsos positivos en los escenarios legítimos |
 | Bandeja con pestañas "Por decidir" / "Todas", filtro de estado y rastro de la última decisión | RF-02, RF-09 | ✅ |
 | Rediseño visual (serif + Inter, tarjetas, tema claro/oscuro) — ver [DESIGN.md](../DESIGN.md) | RF-09 | ✅ |
 | Pruebas | — | ✅ 205 backend + 24 frontend |
