@@ -65,7 +65,7 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 | `EVIDENCE.md` con comandos y salidas reales | "Documentación viva" | ✅ 12 secciones (E-01…E-12) |
 | `IMPACT.md` verificado contra el código construido | Mapa de impacto | ✅ contrastado con Graphify real + `app/api/` |
 | `README.md` validado desde un clon limpio | "Aplicación ejecutable" | ✅ `git clone` real — **encontró un bug** (E-12) |
-| Guion de demo: casos estándar, incompleto y con aprobación | "Casos representativos" | ✅ README, cifras verificadas contra el sistema real |
+| Guion de demo: casos estándar, incompleto y con aprobación | "Casos representativos" | ✅ [DEVELOPMENT.md](DEVELOPMENT.md#demo-script-about-5-minutes), cifras verificadas contra el sistema real |
 
 **Definition of Done:** ✅ los criterios de aceptación tienen evidencia asociada en `EVIDENCE.md`, y las limitaciones declaradas coinciden con el estado real del código.
 
