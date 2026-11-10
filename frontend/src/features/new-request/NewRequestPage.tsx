@@ -69,7 +69,7 @@ export function NewRequestPage() {
         Bandeja
       </Link>
 
-      <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule-strong mt-3 rounded-md border">
+      <form onSubmit={handleSubmit} noValidate className="bg-paper border-rule-strong mt-3 rounded-xl border">
         <header className="border-rule-strong border-b px-5 pt-4 pb-3.5">
           <p className="font-figures text-ink-faint text-xs">Folio Nº ——————</p>
           <h1 className="type-title mt-0.5">Nueva solicitud</h1>
@@ -160,7 +160,7 @@ export function NewRequestPage() {
                   key={ex.id}
                   type="button"
                   onClick={() => loadExample(ex.id)}
-                  className="border-rule-strong hover:bg-paper-ruled hover:border-ink-soft h-7 rounded-sm border px-2.5 text-xs font-medium transition-colors"
+                  className="border-rule-strong hover:bg-paper-ruled hover:border-ink-soft h-7 rounded-full border px-3 text-xs font-medium transition-colors"
                 >
                   {ex.label}
                 </button>

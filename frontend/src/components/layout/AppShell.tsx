@@ -1,15 +1,14 @@
-import { Monitor, Moon, Plus, Sun } from 'lucide-react'
+import { Moon, Plus, Sun } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 
 import { API_MODE } from '@/lib/config'
-import { useTheme } from '@/lib/theme'
+import { useTheme, type Theme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
-const THEME_META = {
-  system: { icon: Monitor, label: 'Tema: sistema' },
-  light: { icon: Sun, label: 'Tema: claro' },
-  dark: { icon: Moon, label: 'Tema: oscuro' },
-} as const
+const THEMES: { value: Theme; icon: typeof Sun; label: string }[] = [
+  { value: 'light', icon: Sun, label: 'Tema claro' },
+  { value: 'dark', icon: Moon, label: 'Tema oscuro' },
+]
 
 function navClass({ isActive }: { isActive: boolean }) {
   return cn(
@@ -24,8 +23,7 @@ function navClass({ isActive }: { isActive: boolean }) {
 /** Barra de tinta azul con la marca, la navegación y el tema. Debajo, el
  * escritorio sobre el que se apoyan los folios. */
 export function AppShell() {
-  const { choice, cycle } = useTheme()
-  const ThemeIcon = THEME_META[choice].icon
+  const { theme, setTheme } = useTheme()
 
   return (
     <div className="bg-desk text-ink flex min-h-dvh flex-col">
@@ -34,7 +32,7 @@ export function AppShell() {
           <NavLink to="/" className="mr-3 flex items-center gap-2" aria-label="QuoteFlow, ir a la bandeja">
             <span
               aria-hidden
-              className="border-bar-ink/70 font-code flex h-6 items-center rounded-[3px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
+              className="border-bar-ink/70 font-code flex h-6 items-center rounded-[5px] border-[1.5px] px-1 text-[0.6875rem] font-semibold tracking-tight outline outline-1 outline-offset-[1.5px] outline-bar-ink/35"
             >
               QF
             </span>
@@ -53,18 +51,34 @@ export function AppShell() {
                 Demo con datos ficticios · Ferrocima Industrial
               </span>
             )}
-            <button
-              type="button"
-              onClick={cycle}
-              aria-label={`${THEME_META[choice].label}. Cambiar tema`}
-              title={THEME_META[choice].label}
-              className="text-bar-ink-soft hover:text-bar-ink hover:bg-bar-ink/10 flex size-8 items-center justify-center rounded-md transition-colors"
+            <div
+              role="group"
+              aria-label="Tema"
+              className="bg-bar-ink/10 flex h-8 items-center gap-0.5 rounded-full p-0.5"
             >
-              <ThemeIcon aria-hidden className="size-4" />
-            </button>
+              {THEMES.map(({ value, icon: Icon, label }) => {
+                const active = theme === value
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={active}
+                    aria-label={label}
+                    title={label}
+                    onClick={() => setTheme(value)}
+                    className={cn(
+                      'flex size-7 items-center justify-center rounded-full transition-colors',
+                      active ? 'bg-bar-ink text-bar' : 'text-bar-ink-soft hover:text-bar-ink',
+                    )}
+                  >
+                    <Icon aria-hidden className="size-3.5 stroke-[2.25]" />
+                  </button>
+                )
+              })}
+            </div>
             <NavLink
               to="/new"
-              className="bg-bar-ink text-bar hover:bg-bar-ink/90 inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors"
+              className="bg-bar-ink text-bar hover:bg-bar-ink/90 inline-flex h-8 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold transition-colors"
             >
               <Plus aria-hidden className="size-4 stroke-[2.5]" />
               <span className="sm:hidden">Nueva</span>

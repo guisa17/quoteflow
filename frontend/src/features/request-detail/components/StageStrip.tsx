@@ -54,7 +54,7 @@ export function StageStrip({ events, outcome }: { events: AuditEvent[]; outcome:
       <h2 id="stages-title" className="field-label">
         Recorrido
       </h2>
-      <ol className="mt-2 grid grid-cols-4 gap-px overflow-hidden rounded-sm sm:grid-cols-6 xl:grid-cols-12">
+      <ol className="mt-2 grid grid-cols-4 gap-0.5 sm:grid-cols-6 xl:grid-cols-12">
         {STAGES.map((stage, i) => {
           const state = states[i]
           const Icon = state === 'done' ? Check : state === 'stopped' ? X : state === 'waiting' ? Clock3 : Minus
@@ -63,7 +63,7 @@ export function StageStrip({ events, outcome }: { events: AuditEvent[]; outcome:
               key={stage.node}
               title={notes.get(stage.node) ?? `${stage.label}: ${STATE_LABEL[state]}`}
               className={cn(
-                'flex min-w-0 flex-col gap-1.5 px-1.5 pt-2 pb-1.5',
+                'flex min-w-0 flex-col gap-1.5 rounded-md px-1.5 pt-2 pb-1.5',
                 state === 'done' && 'bg-paper-ruled',
                 state === 'stopped' && 'bg-red text-red-ink',
                 state === 'waiting' && 'bg-canary text-canary-ink',
