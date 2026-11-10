@@ -16,6 +16,7 @@
 import { fromCents, pctOfCents, roundHalfUpCents, sumCents, toCents } from '@/mocks/decimal'
 import { CUSTOMERS, INVENTORY, POLICY, PRODUCTS, type MockCustomer, type Tier } from '@/mocks/data'
 import { fakeExtract } from '@/mocks/extract'
+import { detectManipulation } from '@/mocks/manipulation'
 import type {
   ApprovalReason,
   AuditEvent,
@@ -134,6 +135,7 @@ function evaluatePolicy(
   customerIsKnown: boolean,
   requestedDiscountPct: string,
   netDecimal: string,
+  manipulationSignals: string[] = [],
 ): { rejection: ApprovalReason | null; approvalReasons: ApprovalReason[] } {
   const requested = Number(requestedDiscountPct)
   const hardCeiling = Number(POLICY.hard_discount_ceiling_pct)
@@ -149,6 +151,16 @@ function evaluatePolicy(
   }
 
   const reasons: ApprovalReason[] = []
+
+  if (manipulationSignals.length > 0) {
+    // BR-18: primero, porque es el motivo que la bandeja debe mostrar.
+    reasons.push(
+      reason(
+        'SUSPECTED_MANIPULATION',
+        `El texto intenta dar instrucciones al sistema (${manipulationSignals.join('; ')}). Se ignoraron; revisa el pedido antes de aprobar.`,
+      ),
+    )
+  }
 
   if (!customerIsKnown) {
     reasons.push(
@@ -206,6 +218,17 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
 
   const extraction = fakeExtract(rawText.trim())
   trail.push(event('extract', `${extraction.items.length} item(s) extraido(s) del texto.`, nowMs))
+  const manipulationSignals = detectManipulation(rawText)
+  if (manipulationSignals.length > 0) {
+    trail.push({
+      ...event(
+        'extract',
+        `Posible manipulacion en el texto del cliente: ${manipulationSignals.join('; ')}. Las instrucciones se ignoraron (BR-17).`,
+        nowMs,
+      ),
+      reason_code: 'SUSPECTED_MANIPULATION',
+    })
+  }
 
   const customer = lookupCustomer(customerId)
   const customerIsKnown = customer !== null
@@ -312,7 +335,7 @@ export function runIntake(customerId: string, rawText: string, nowMs: number): P
   )
 
   // BR-05..BR-09
-  const policyResult = evaluatePolicy(tier, customerIsKnown, discountPct, quote.net)
+  const policyResult = evaluatePolicy(tier, customerIsKnown, discountPct, quote.net, manipulationSignals)
   if (policyResult.rejection !== null) {
     trail.push(event('evaluate_policy', policyResult.rejection.detail, nowMs))
     return terminal('REJECTED_BY_POLICY', policyResult.rejection.reason_code, {

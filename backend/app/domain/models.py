@@ -102,6 +102,9 @@ class Extraction(BaseModel):
     site: str | None = None
     requested_date: str | None = None
     requested_discount_pct: Decimal | None = None
+    # Segunda senal de BR-18: el extractor real marca si el texto intenta dar
+    # ordenes al sistema. Solo puede provocar revision humana, nunca evitarla.
+    injection_suspected: bool = False
     # Procedencia: quien leyo el texto ("gemini-2.5-flash", "reglas locales"...).
     # No forma parte del esquema que ve el modelo; lo fija el extractor despues
     # de validar, asi que el LLM no puede escribirlo.

@@ -175,7 +175,12 @@ def to_request_detail(
         ),
         blocking_reason=resolve_blocking_reason(state, outcome),
         audit_trail=[
-            AuditEventOut(node=e.node, timestamp=e.timestamp.isoformat(), note=e.message)
+            AuditEventOut(
+                node=e.node,
+                timestamp=e.timestamp.isoformat(),
+                note=e.message,
+                reason_code=e.reason_code.value if e.reason_code else None,
+            )
             for e in state.audit_log
         ],
         human_decision=human_decision_out,

@@ -29,6 +29,7 @@ export type ReasonCode =
   | 'UNKNOWN_CUSTOMER'
   | 'DISCOUNT_ABOVE_HARD_CEILING'
   | 'EXTRACTION_FAILED'
+  | 'SUSPECTED_MANIPULATION'
 
 export type DecisionAction = 'APPROVE' | 'REJECT' | 'OBSERVE'
 
@@ -74,6 +75,8 @@ export interface AuditEvent {
   node: string // nombre del nodo del grafo que lo generó
   timestamp: string
   note: string
+  /** Presente cuando el evento registra un motivo (p. ej. SUSPECTED_MANIPULATION). */
+  reason_code?: ReasonCode | null
 }
 
 export interface HumanDecision {
