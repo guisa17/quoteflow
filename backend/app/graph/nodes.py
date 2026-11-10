@@ -26,9 +26,8 @@ Las rutas condicionales entre ellos son responsabilidad de `routing.py` (T10).
 """
 
 from collections import Counter
-from collections.abc import Awaitable, Callable
 from decimal import Decimal
-from typing import Any
+from typing import Any, Protocol
 
 from langgraph.types import interrupt
 
@@ -48,7 +47,14 @@ from app.domain.validation import check_completeness
 from app.graph.state import AuditEvent, QuoteState
 from app.llm.base import ExtractionError, Extractor
 
-NodeFn = Callable[[QuoteState], Awaitable[dict[str, Any]]]
+
+class NodeFn(Protocol):
+    """Firma de un nodo: un Protocol y no un `Callable[[QuoteState], ...]`
+    porque `StateGraph.add_node` tipa el nodo como un Protocol con el
+    parametro nombrado `state`; un `Callable` no conserva ese nombre y mypy
+    lo rechaza."""
+
+    async def __call__(self, state: QuoteState) -> dict[str, Any]: ...
 
 
 async def ingest(state: QuoteState) -> dict[str, Any]:

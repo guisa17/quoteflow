@@ -30,6 +30,7 @@ import psycopg
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from psycopg_pool import AsyncConnectionPool
 
 from app.api import store
 from app.api.routes import router
@@ -70,9 +71,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
             app.state.graph = graph
             app.state.pool = pool
-            app.state.checkpointer_pool = checkpointer.conn
+            # `checkpointer_context` siempre construye el saver sobre un pool;
+            # el tipo de `conn` admite tambien una conexion suelta.
+            checkpointer_pool = checkpointer.conn
+            assert isinstance(checkpointer_pool, AsyncConnectionPool)
+            app.state.checkpointer_pool = checkpointer_pool
 
-            maintenance = asyncio.create_task(maintain_pools(pool, checkpointer.conn))
+            maintenance = asyncio.create_task(maintain_pools(pool, checkpointer_pool))
             try:
                 yield
             finally:

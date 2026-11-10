@@ -39,7 +39,7 @@ def create_pool(database_url: str, **connection_kwargs: Any) -> AsyncConnectionP
     )
 
 
-async def maintain_pools(*pools: AsyncConnectionPool) -> None:
+async def maintain_pools(*pools: AsyncConnectionPool[Any]) -> None:
     """Corre hasta ser cancelada, durante toda la vida del proceso."""
     while True:
         await asyncio.sleep(_MAINTENANCE_INTERVAL_SECONDS)
