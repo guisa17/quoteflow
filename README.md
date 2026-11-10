@@ -5,7 +5,7 @@
 De una solicitud de cotización en texto libre a un borrador auditable, con cálculo determinista y pausa real para decisión humana.
 
 > **Autor:** Guillermo Salcedo. Los datos de demostración, incluida la empresa Ferrocima Industrial, son ficticios.
-> **Estado:** completo. Backend (205 tests) + API HTTP + frontend (24 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
+> **Estado:** completo. Backend (209 tests) + API HTTP + frontend (26 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
 
 ---
 
@@ -200,6 +200,8 @@ Por defecto el texto del cliente se lee con un extractor de reglas, sin red (`LL
 1. Crea una key gratuita en [Google AI Studio](https://aistudio.google.com).
 2. En `backend/.env`, define `LLM_MODE=real` y `GEMINI_API_KEY=...`. El modelo por defecto es `gemini-3.5-flash-lite` y se cambia con `GEMINI_MODEL`.
 
+La calidad de la lectura se mide con evaluaciones locales contra el modelo real (22 casos, hoy 100 % en SKU + cantidad); ver [backend/evals/](backend/evals/README.md).
+
 El modelo solo convierte el texto en ítems, cantidades, sede, fecha y descuento pedido, con salida JSON forzada por esquema. Precio, stock y política se siguen calculando con reglas deterministas. Si Gemini no responde (cuota agotada, error 5xx, red o key ausente), la solicitud se lee con el extractor de reglas y el folio lo indica en "Lo que se entendió del texto" y en la auditoría.
 
 ## Pruebas
@@ -208,7 +210,7 @@ La suite del backend corre **sin acceso a un LLM externo** (`LLM_MODE=fake`), se
 
 ```bash
 cd backend
-uv run pytest                 # 205 tests: unitarias + integración + API
+uv run pytest                 # 209 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
 uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
@@ -216,7 +218,7 @@ uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
 
 ```bash
 cd frontend
-pnpm test                     # 24 tests del motor mock: escenarios, reanudación, decisiones y BR-18
+pnpm test                     # 26 tests del motor mock: escenarios, reanudación, decisiones y BR-18
 pnpm typecheck
 ```
 

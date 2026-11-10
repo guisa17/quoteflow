@@ -84,12 +84,15 @@ Es la fase que sostiene el Definition of Done del proyecto. Detalle en [PHASE_01
 | `app/domain/manipulation.py` — detección determinista + señal del LLM; el caso va a revisión humana | BR-17, BR-18, [ADR-005](adr/ADR-005-manipulacion-a-revision-humana.md) | ✅ sin falsos positivos en los escenarios legítimos |
 | Bandeja con pestañas "Por decidir" / "Todas", filtro de estado y rastro de la última decisión | RF-02, RF-09 | ✅ |
 | Rediseño visual (serif + Inter, tarjetas, tema claro/oscuro) — ver [DESIGN.md](../DESIGN.md) | RF-09 | ✅ |
-| Pruebas | — | ✅ 205 backend + 24 frontend |
+| Pruebas | — | ✅ 209 backend + 26 frontend |
+| CI en GitHub Actions: backend con Postgres real y frontend | — | ✅ |
+| `backend/evals/` — 22 casos contra el modelo real, corridas locales | métrica de BUSINESS_CASE (≥ 90 %) | ✅ 31/31 ítems, 22/22 casos |
 
 **Hallazgos:**
 - El alias "último Flash" de Gemini y `gemini-3.8-flash` no respondían ni en 60 s; `gemini-2.5-flash` ya no está disponible para cuentas nuevas. Se fijó `gemini-3.5-flash-lite` (~2 s), suficiente para extraer datos estructurados.
 - La primera versión del prompt devolvía "cascos modelo HX-200" en lugar del código. Como el catálogo exige coincidencia exacta (BR-02), eso habría producido un falso "SKU desconocido". Se corrigió precisando el prompt y el esquema, no relajando el catálogo.
 - Un intento de manipulación dentro de política salía como "Borrador listo" sin ninguna marca: el ataque no funcionaba (precio y nivel intactos), pero pasaba desapercibido. BR-18 ahora lo detecta, lo registra y exige revisión humana.
+- La primera corrida de evals encontró tres errores que las pruebas a mano no vieron: el modelo devolvía "BT900" sin guion (el catálogo no lo encontraría), marcaba como manipulación "si aprueban esta cotización", y el extractor de reglas, que también es el respaldo, leía "7,5 %" como 5 %. Los tres se corrigieron y la segunda corrida dio 22/22 sin regresiones.
 
 ---
 
