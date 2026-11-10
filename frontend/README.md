@@ -69,6 +69,14 @@ mismo orden de nodos, mismos códigos de motivo, mismo redondeo
 `src/mocks/extract.ts` es el puerto de `app/llm/fake_extractor.py` (mismas
 reglas de texto: SKU `XX-000`, cantidad más cercana, `N%`, sede).
 
+**Datos: una sola fuente.** El catálogo, el inventario, la política, los
+clientes y los 8 escenarios no están copiados: `src/mocks/data.ts` importa
+directamente `backend/app/data/*.json` mediante el alias `@seed`
+(`vite.config.ts` y `tsconfig.app.json`). Si cambia el seed, la demo y el
+backend cambian juntos. La suite compara cada escenario contra el
+`expected_outcome` del mismo archivo, así que un escenario nuevo queda
+cubierto sin tocar las pruebas.
+
 Se verificó corriendo los 8 escenarios de `sample_requests.json` contra el
 motor y comparando `outcome`/`reason_code`/cifras con
 [`REQUIREMENTS.md` §5](../docs/REQUIREMENTS.md) (AC-01…AC-08) — los 8 coinciden,
@@ -118,7 +126,7 @@ que construyó el frontend), no solo tomada del reporte de esa sesión.
 - `pnpm typecheck` limpio (`strict`, `noUnusedLocals`, sin `any` implícitos).
 - `pnpm build` produce `dist/` sin errores (Vite 7, ~570 KB de bundle
   principal, sin code-splitting — aceptable para una consola de 3 pantallas).
-- **`pnpm test` (Vitest, `src/mocks/engine.test.ts`): 11/11 en verde** — los
+- **`pnpm test` (Vitest, `src/mocks/engine.test.ts`): 35/35 en verde** (11 en esta verificación inicial) — los
   8 escenarios de `sample_requests.json` corridos contra `src/mocks/engine.ts`
   de extremo a extremo, comparando `outcome`/`reason_code`/cifras exactas
   contra `REQUIREMENTS.md` §5 (AC-01…AC-08), más reanudación tras `APPROVE`

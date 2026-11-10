@@ -40,7 +40,7 @@ The model only interprets text; every price, stock check, discount limit and app
 
 ## Evidence on Hand
 
-- 8 seeded scenarios in `backend/app/data/sample_requests.json`, mirrored in `frontend/src/mocks/data.ts`, with hand-verifiable figures (S1: 900.00 → 72.00 → 828.00 → IGV 149.04 → 977.04).
+- 8 seeded scenarios in `backend/app/data/sample_requests.json`, imported directly by the demo engine (`frontend/src/mocks/data.ts`, alias `@seed`), so backend and demo can never drift, with hand-verifiable figures (S1: 900.00 → 72.00 → 828.00 → IGV 149.04 → 977.04).
 - No real customers, testimonials, metrics or pricing exist. Business-case figures are assumptions and must not appear as results.
 
 ## Product Principles

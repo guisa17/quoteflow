@@ -5,7 +5,7 @@
 De una solicitud de cotización en texto libre a un borrador auditable, con cálculo determinista y pausa real para decisión humana.
 
 > **Autor:** Guillermo Salcedo. Los datos de demostración, incluida la empresa Ferrocima Industrial, son ficticios.
-> **Estado:** completo. Backend (213 tests) + API HTTP + frontend (26 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
+> **Estado:** completo. Backend (214 tests) + API HTTP + frontend (35 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
 
 ---
 
@@ -234,7 +234,7 @@ uv run mypy app
 
 ```bash
 cd frontend
-pnpm test                     # 26 tests del motor mock: escenarios, reanudación, decisiones y BR-18
+pnpm test                     # 35 tests del motor mock: escenarios, paridad con el seed, reanudación, decisiones y BR-18
 pnpm typecheck
 ```
 
