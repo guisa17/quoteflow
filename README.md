@@ -1,5 +1,7 @@
 # QuoteFlow
 
+[![CI](https://github.com/guisa17/quoteflow/actions/workflows/ci.yml/badge.svg)](https://github.com/guisa17/quoteflow/actions/workflows/ci.yml)
+
 De una solicitud de cotización en texto libre a un borrador auditable, con cálculo determinista y pausa real para decisión humana.
 
 > **Autor:** Guillermo Salcedo. Los datos de demostración, incluida la empresa Ferrocima Industrial, son ficticios.
@@ -209,7 +211,7 @@ cd backend
 uv run pytest                 # 205 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
-uv run mypy app/domain app/graph/state.py
+uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
 ```
 
 ```bash
