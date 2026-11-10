@@ -294,7 +294,7 @@ Los cuatro casos cubren los flujos principales (estándar, incompleto, con aprob
 | [docs/adr/](docs/adr) | Decisiones de arquitectura y supuestos |
 | [docs/proceso/](docs/proceso/README.md) | Bitácora de construcción: fases, evidencia con salidas reales, uso de IA |
 | [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | Contrato de RF-01…RF-04, fijado antes de escribir código en ambos lados |
-| [docs/graphify/](docs/graphify/GRAPH_REPORT.md) | Reporte Graphify: 289 nodos, 622 aristas, 17 comunidades, sin ciclos de import |
+| [docs/graphify/](docs/graphify/README.md) | Reporte Graphify (Fase 4): 326 nodos, 703 aristas, 17 comunidades, sin ciclos de import. Cómo regenerarlo e historia por fase |
 | [docs/REFERENCES.md](docs/REFERENCES.md) | Referencias consultadas y dónde se aplicó cada una |
 
 ## Fuera de alcance
