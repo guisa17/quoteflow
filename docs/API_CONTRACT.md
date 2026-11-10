@@ -24,6 +24,7 @@ type ReasonCode =
   | "MISSING_PRODUCT_REFERENCE" | "MISSING_QUANTITY" | "UNKNOWN_SKU"
   | "INSUFFICIENT_STOCK" | "THRESHOLD_EXCEEDED" | "DISCOUNT_EXCEPTION"
   | "UNKNOWN_CUSTOMER" | "DISCOUNT_ABOVE_HARD_CEILING" | "EXTRACTION_FAILED"
+  | "SUSPECTED_MANIPULATION"             // BR-18: el texto intenta dar ordenes al sistema
 
 type DecisionAction = "APPROVE" | "REJECT" | "OBSERVE"
 
@@ -42,6 +43,7 @@ interface Extraction {
   site: string | null
   requested_date: string | null
   requested_discount_pct: string | null   // string decimal o null
+  source: string | null                   // quien leyo el texto: modelo o "reglas locales (respaldo: ...)"
 }
 
 interface QuoteLine {
@@ -67,6 +69,7 @@ interface AuditEvent {
   node: string           // nombre del nodo del grafo que lo genero
   timestamp: string
   note: string
+  reason_code: ReasonCode | null  // presente si el evento registra un motivo (p. ej. SUSPECTED_MANIPULATION)
 }
 
 interface HumanDecision {
