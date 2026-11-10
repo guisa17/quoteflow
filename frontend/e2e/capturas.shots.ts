@@ -81,7 +81,7 @@ test('folio en el móvil', async ({ browser }) => {
   await registrar(page, { ejemplo: 'Supera USD 10 000' })
   await expect(page.getByText('Pendiente de aprobación').first()).toBeVisible()
   // Al abrir un pendiente, el foco va al panel de decisión; la captura empieza desde arriba.
-  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.evaluate('window.scrollTo(0, 0)')
   await page.waitForTimeout(300)
   await page.screenshot({ path: `${OUT}/movil.png` })
   await context.close()
