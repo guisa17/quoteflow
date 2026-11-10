@@ -4,13 +4,13 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
 
 // Seed de dominio compartido con el backend (ADR-001): una sola fuente.
-const seedDir = path.resolve(__dirname, '../backend/app/data')
+const seedDir = path.resolve(import.meta.dirname, '../backend/app/data')
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
       '@seed': seedDir,
     },
   },

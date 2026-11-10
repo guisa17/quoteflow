@@ -124,7 +124,7 @@ Esta sección fue verificada de forma independiente (sesión separada de la
 que construyó el frontend), no solo tomada del reporte de esa sesión.
 
 - `pnpm typecheck` limpio (`strict`, `noUnusedLocals`, sin `any` implícitos).
-- `pnpm build` produce `dist/` sin errores (Vite 7, ~570 KB de bundle
+- `pnpm build` produce `dist/` sin errores (Vite 7 en esa verificación; hoy Vite 8. ~570 KB de bundle
   principal, sin code-splitting — aceptable para una consola de 3 pantallas).
 - **`pnpm test` (Vitest, `src/mocks/engine.test.ts`): 35/35 en verde** (11 en esta verificación inicial) — los
   8 escenarios de `sample_requests.json` corridos contra `src/mocks/engine.ts`
