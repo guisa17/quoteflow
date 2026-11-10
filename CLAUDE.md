@@ -103,6 +103,7 @@ uv run mypy app
 
 cd ../frontend
 pnpm typecheck && pnpm test && pnpm build
+pnpm test:e2e                                  # Playwright, escritorio y móvil (modo demo)
 ```
 
 **Hooks de pre-commit** (`.pre-commit-config.yaml`): ruff con correcciones, formato, bloqueo de `.env` y de claves privadas. Se instalan una vez por clon con `cd backend && uv run pre-commit install`. Si un hook corrige un archivo, el commit se aborta: hay que revisar el cambio, volver a hacer `git add` y repetir el commit. **Nunca se saltan con `--no-verify`.**
