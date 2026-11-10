@@ -14,7 +14,13 @@ una corutina ya seria tarde, el loop ya existiria.
 """
 
 import asyncio
+import os
 import sys
+
+# RF-10: la suite nunca sale a la red. Aunque backend/.env active las trazas
+# de LangSmith para uso local, las pruebas corren siempre sin ellas (la
+# variable de entorno tiene prioridad sobre .env en pydantic-settings).
+os.environ["LANGSMITH_TRACING"] = "false"
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

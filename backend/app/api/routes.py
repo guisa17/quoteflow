@@ -32,6 +32,13 @@ def _config(thread_id: str) -> dict[str, Any]:
     return {"configurable": {"thread_id": thread_id}}
 
 
+def _run_config(thread_id: str, run_name: str, **metadata: str) -> dict[str, Any]:
+    """Config para ejecutar el grafo. `run_name` y `metadata` solo se usan si
+    las trazas de LangSmith estan activas; `thread_id` agrupa en la vista de
+    hilos el registro y la decision de una misma solicitud."""
+    return {**_config(thread_id), "run_name": run_name, "metadata": metadata}
+
+
 def _reason_for_cache(state: QuoteState, outcome: Outcome) -> str | None:
     code = resolve_reason_code(state, outcome)
     return code.value if code is not None else None
@@ -73,7 +80,10 @@ async def create_request(body: CreateRequestBody, request: Request) -> RequestDe
 
     graph = request.app.state.graph
     initial_state = QuoteState(thread_id=id_, customer_id=body.customer_id, raw_text=body.raw_text)
-    await graph.ainvoke(initial_state, config=_config(id_))
+    await graph.ainvoke(
+        initial_state,
+        config=_run_config(id_, "quoteflow.registro", customer_id=body.customer_id),
+    )
 
     state, paused = await _current_state(request, id_)
     outcome = resolve_outcome(state, paused)
@@ -152,7 +162,15 @@ async def decide_request(id_: str, body: DecisionBody, request: Request) -> Requ
                 "comment": body.comment,
                 "timestamp": datetime.now(UTC).isoformat(),
             }
-            await graph.ainvoke(Command(resume=decision_payload), config=_config(thread_id))
+            await graph.ainvoke(
+                Command(resume=decision_payload),
+                config=_run_config(
+                    thread_id,
+                    "quoteflow.decision",
+                    customer_id=row["customer_id"],
+                    action=body.action.value,
+                ),
+            )
             state, paused = await _current_state(request, thread_id)
 
         outcome = resolve_outcome(state, paused)

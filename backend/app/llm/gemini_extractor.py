@@ -22,6 +22,8 @@ import json
 from typing import Any
 
 import httpx
+from langsmith import traceable
+from langsmith.run_helpers import get_current_run_tree
 from pydantic import ValidationError
 
 from app.domain.models import Extraction
@@ -80,6 +82,25 @@ class ProviderUnavailable(ExtractionError):
     """El proveedor no respondio; no es un problema del texto del cliente."""
 
 
+def _annotate_llm_run(model: str, usage: dict[str, Any] | None = None) -> None:
+    """Completa la traza de LangSmith, si hay una activa, con el proveedor, el
+    modelo y los tokens. `ls_provider` / `ls_model_name` y `usage_metadata`
+    son las claves que LangSmith usa para mostrar el modelo y calcular el
+    costo. Sin trazas activas no hace nada."""
+    run = get_current_run_tree()
+    if run is None:
+        return
+    run.add_metadata({"ls_provider": "google", "ls_model_name": model})
+    if usage:
+        run.set(
+            usage_metadata={
+                "input_tokens": int(usage.get("promptTokenCount", 0)),
+                "output_tokens": int(usage.get("candidatesTokenCount", 0)),
+                "total_tokens": int(usage.get("totalTokenCount", 0)),
+            }
+        )
+
+
 def _describe_http_error(status: int) -> str:
     if status == 429:
         return "cuota del proveedor agotada (429)"
@@ -105,7 +126,16 @@ class GeminiExtractor:
         self._timeout = timeout_seconds
         self._client = client
 
+    # En LangSmith aparece como llamada a un LLM, anidada bajo el nodo
+    # `extract` del grafo. Solo se registra el texto del cliente (sin `self`,
+    # que contiene la API key).
+    @traceable(
+        run_type="llm",
+        name="gemini.extract",
+        process_inputs=lambda inputs: {"raw_text": inputs.get("raw_text")},
+    )
     async def extract(self, raw_text: str) -> Extraction:
+        _annotate_llm_run(self._model)
         if not self._api_key:
             raise ProviderUnavailable("GEMINI_API_KEY no configurada")
 
@@ -140,6 +170,7 @@ class GeminiExtractor:
             raise ExtractionError(detail)
 
         data = response.json()
+        _annotate_llm_run(data.get("modelVersion") or self._model, data.get("usageMetadata"))
         text = self._first_text(data)
         try:
             payload = json.loads(text)

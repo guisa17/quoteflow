@@ -22,6 +22,7 @@ loop que usan), asi que no hace falta una rama por plataforma.
 """
 
 import asyncio
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
 
@@ -32,10 +33,13 @@ from fastapi.responses import JSONResponse
 
 from app.api import store
 from app.api.routes import router
-from app.config import get_settings
+from app.config import configure_tracing, get_settings
 from app.db import create_pool, maintain_pools
 from app.graph.build import build_graph
 from app.graph.checkpointer import checkpointer_context
+
+# El logger de uvicorn ya esta configurado: sus mensajes INFO se ven en consola.
+logger = logging.getLogger("uvicorn.error")
 
 _HEALTH_ACQUIRE_TIMEOUT_SECONDS = 2.0
 
@@ -55,6 +59,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     si no existe. Todo queda en `app.state` para que las rutas lo reusen sin
     reabrir nada por request."""
     settings = get_settings()
+    if configure_tracing(settings):
+        logger.info("Trazas de LangSmith activas (proyecto %s).", settings.langsmith_project)
     async with checkpointer_context(settings) as checkpointer:
         graph = build_graph(checkpointer, settings)
 
