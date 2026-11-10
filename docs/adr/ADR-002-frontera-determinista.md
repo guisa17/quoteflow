@@ -1,9 +1,10 @@
 # ADR-002 — Frontera determinista: el LLM interpreta y redacta; nunca decide
 
-- **Estado:** Aceptada
+- **Estado:** Aceptada · enmendada el 2026-11-09 (ver al final)
 - **Fecha:** 2026-08-04
 - **Decisor:** Guillermo Salcedo
 - **Afecta a:** arquitectura del grafo, `app/domain`, `app/llm`, estrategia de pruebas, nivel de autonomía
+- **Ampliada por:** [ADR-004](ADR-004-extractor-gemini-con-respaldo.md) (extractor real y respaldo), [ADR-005](ADR-005-manipulacion-a-revision-humana.md) (manipulación a revisión humana)
 
 ---
 
@@ -68,4 +69,14 @@ Reglas de frontera derivadas:
 - `tests/unit/test_pricing.py`, `test_policy.py` — reglas sin LLM.
 - `tests/unit/test_extraction_sanitization.py` — una extracción que trae precio/nivel/aprobación es saneada.
 - `tests/integration/test_scenarios.py` — los 8 escenarios del seed con extractor fake.
-- `tests/integration/test_prompt_injection.py` — `S8` nunca produce `APPROVED`.
+- `tests/integration/test_scenarios.py` y `tests/integration/test_api.py` — `S8` nunca produce una aprobación.
+
+## Enmiendas
+
+El texto de arriba se conserva tal como se aceptó. Estas notas registran en qué difiere la implementación y por qué.
+
+**2026-11-09 — La redacción es siempre una plantilla determinista.** La tabla de la decisión dejaba abierta la redacción del borrador a "LLM (o plantilla determinista)". Lo construido usa la plantilla en todos los modos (`compose_draft` en `app/graph/nodes.py`): el LLM solo interpreta el texto. No cambia la decisión, la acota. Una redacción con LLM sería una extensión futura y tendría que respetar la regla 5.
+
+**2026-11-09 — El parser de reglas vuelve, pero solo como respaldo.** La tabla de alternativas descarta un parser de reglas como solución principal, y eso se mantiene. [ADR-004](ADR-004-extractor-gemini-con-respaldo.md) lo usa únicamente cuando el proveedor del LLM no responde, y siempre de forma visible.
+
+**2026-11-09 — Verificación corregida.** Esta sección citaba `tests/integration/test_prompt_injection.py`, un archivo que nunca existió; `S8` se prueba en `test_scenarios.py` y `test_api.py`.
