@@ -46,6 +46,38 @@ Verificación rápida: `app/domain/` **no importa nada de `app/llm/`**. Si esa l
 3. **Verificar** — comandos abajo. **Un cambio sin prueba ejecutada no está hecho.**
 4. **Handoff** — merge `--no-ff` a `main` solo con la suite en verde; actualizar `docs/ROADMAP.md` si cambia un pendiente y `docs/proceso/EVIDENCE.md` si hay una verificación nueva que registrar (comando + salida **real**).
 
+### Commits y ramas
+
+Se sigue [Conventional Commits 1.0](https://www.conventionalcommits.org/es/v1.0.0/), con la descripción en español:
+
+```
+tipo(ámbito): descripción en imperativo, minúscula, sin punto final
+
+Cuerpo opcional: por qué se hace el cambio, no qué líneas cambian.
+Refs: BR-18, ADR-005
+```
+
+| Tipo | Cuándo |
+|------|--------|
+| `feat` | Funcionalidad nueva para quien usa el sistema |
+| `fix` | Corrige un comportamiento incorrecto |
+| `docs` | Solo documentación (incluye ADR, README, ROADMAP) |
+| `test` | Agrega o corrige pruebas, sin cambiar código de producción |
+| `refactor` | Cambia la estructura sin cambiar el comportamiento |
+| `style` | Formato o estilos visuales sin cambio de lógica |
+| `perf` | Mejora de rendimiento |
+| `build` | Dependencias, empaquetado, configuración de herramientas |
+| `ci` | Workflows de GitHub Actions |
+| `chore` | Mantenimiento que no encaja en lo anterior |
+
+- **Ámbitos habituales:** `domain`, `graph`, `llm`, `api`, `ui`, `mocks`, `adr`, `evals`, `deps`.
+- **Cambio incompatible:** `!` después del tipo (`feat(api)!: ...`) y un pie `BREAKING CHANGE: ...` que explique la migración.
+- **Un commit, una intención.** Si la descripción necesita "y además", son dos commits.
+- **Ramas:** `tipo/descripcion-corta`, por ejemplo `feat/evals-extractor` o `docs/adr-fase-4`. Se unen a `main` con `--no-ff` y el mensaje `Merge rama 'tipo/descripcion-corta'`.
+- **Versiones:** [SemVer](https://semver.org/lang/es/) con tags anotados (`v0.5.0`). Antes de `v1.0.0`, `feat` sube la versión menor y `fix` la de parche.
+
+El historial anterior a `v0.5.0` no sigue esta convención y no se reescribe: ya está publicado.
+
 ### Comandos de verificación
 
 Son los mismos que corre el CI (`.github/workflows/ci.yml`) en cada push a `main` y en cada pull request.
