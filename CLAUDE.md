@@ -105,6 +105,8 @@ cd ../frontend
 pnpm typecheck && pnpm test && pnpm build
 ```
 
+**Hooks de pre-commit** (`.pre-commit-config.yaml`): ruff con correcciones, formato, bloqueo de `.env` y de claves privadas. Se instalan una vez por clon con `cd backend && uv run pre-commit install`. Si un hook corrige un archivo, el commit se aborta: hay que revisar el cambio, volver a hacer `git add` y repetir el commit. **Nunca se saltan con `--no-verify`.**
+
 ## 5. Honestidad de la evidencia
 
 - En `EVIDENCE.md` va la **salida real** del comando, no la esperada. Si un test falla, se registra que falla.

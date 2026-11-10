@@ -1,0 +1,39 @@
+# Hooks de pre-commit: atrapan errores antes del commit, no recién en el CI.
+# Instalación (una vez por clon):  cd backend && uv run pre-commit install
+# Correr a mano sobre todo el repo: cd backend && uv run pre-commit run --all-files
+#
+# Ruff corre con `uv run --project backend`, es decir, la misma versión
+# fijada en backend/uv.lock que usa el CI. Así el hook y el CI nunca discrepan
+# por una diferencia de versión.
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff (lint, con correcciones automáticas)
+        entry: uv run --project backend ruff check --fix --force-exclude
+        language: system
+        types: [python]
+        files: ^backend/
+      - id: ruff-format
+        name: ruff (formato)
+        entry: uv run --project backend ruff format --force-exclude
+        language: system
+        types: [python]
+        files: ^backend/
+      - id: no-env
+        name: nunca versionar .env
+        entry: los archivos .env tienen secretos; usa .env.example
+        language: fail
+        files: (^|/)\.env$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+        exclude: tsconfig.*\.json$
