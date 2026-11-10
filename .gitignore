@@ -43,3 +43,6 @@ backend/evals/results/
 # Artefactos locales de revisión de diseño
 .impeccable/review/
 .impeccable/questions/
+
+# Salida temporal de Graphify (el reporte versionado vive en docs/graphify/)
+graphify-out/

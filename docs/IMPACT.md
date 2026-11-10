@@ -119,13 +119,13 @@ Cuatro observaciones del mapa se tradujeron en decisiones concretas de [PHASE_01
 
 Y una quinta observación condicionó el diseño de datos: **`policies.json` es leído por un solo módulo** (`PolicyRepository`). Esa concentración es lo que hace posible la sección 2 de este documento. Si la política se leyera desde varios puntos, cambiarla dejaría de ser un cambio de un valor y pasaría a ser una refactorización.
 
-**Contraste contra el código real (proyecto completo):** el reporte de [`docs/graphify/GRAPH_REPORT.md`](graphify/GRAPH_REPORT.md), regenerado sobre el código final (265 nodos, 588 aristas, 15 comunidades), confirma las cinco observaciones sin ajustes:
+**Contraste contra el código real (Fase 4, v0.5.x):** el reporte de [`docs/graphify/GRAPH_REPORT.md`](graphify/GRAPH_REPORT.md), regenerado con el extractor de Gemini, el respaldo y el detector de manipulación ya incluidos (326 nodos, 703 aristas, 17 comunidades), confirma las cinco observaciones:
 
-- **`QuoteState` es el nodo más conectado** (38 aristas), seguido de los enumerados del dominio (`ReasonCode` 31, `DecisionAction` 26, `AuditEvent` 23). Coincide con la observación 2: es el punto por el que pasan todos los nodos, y por eso tiene `mypy` obligatorio.
-- **Las comunidades detectadas separan limpiamente las capas**: dominio (`PolicyEvaluation`, `calculate_quote`, `tools.py`), grafo (`build_graph`), LLM (`FakeExtractor`, `prompts.py`) y API (`decide_request`) aparecen como grupos distintos, sin mezclarse.
-- **Sin ciclos de import** — la frontera de ADR-002 se sostiene estructuralmente, no solo por convención.
+- **`QuoteState` es el nodo más conectado** (40 aristas), seguido de los enumerados del dominio (`ReasonCode` 32, `DecisionAction` 29, `AuditEvent` 24). Coincide con la observación 2: es el punto por el que pasan todos los nodos.
+- **Las comunidades siguen las capas.** Medido por archivo de origen, la comunidad de la capa LLM tiene 43 nodos de `llm/` y solo 2 del dominio (los modelos `Extraction` y `ExtractedLineItem`, que son su contrato de salida). La del grafo es 100 % `graph/` y las seis del dominio son 100 % `domain/`. `domain/manipulation.py` forma su propia comunidad. La única mezcla visible es que `ReasonCode` se agrupa con la API (23 nodos de `api/` y 7 de `domain/`), porque `api/mapping.py` traduce cada motivo a su etiqueta. Es una dependencia de la API hacia el dominio, en la dirección permitida.
+- **Sin ciclos de import, y `llm/` sigue sin salidas hacia las reglas.** Ninguna arista va de `llm/` a política, precios o inventario. El detector de manipulación vive en `domain/`, no en `llm/`, porque la decisión de mandar a revisión humana es de las reglas (ADR-005). La frontera de ADR-002 se sostiene estructuralmente, no solo por convención.
 
-El mapa de esta sección deja de ser "de diseño" y pasa a estar verificado contra el código construido.
+Cómo regenerarlo y qué cambió en cada fase: [docs/graphify/README.md](graphify/README.md).
 
 ---
 
