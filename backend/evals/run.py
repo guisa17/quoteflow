@@ -22,7 +22,9 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-from app.config import get_settings
+from langsmith import traceable
+
+from app.config import configure_tracing, get_settings
 from app.domain.manipulation import detect_manipulation
 from app.domain.models import Extraction
 from app.domain.repositories import _normalize_reference
@@ -112,10 +114,26 @@ def score(case: dict[str, Any], extraction: Extraction, raw_text: str) -> CaseRe
     )
 
 
+@traceable(
+    run_type="chain",
+    name="eval-case",
+    process_inputs=lambda inputs: {"case_id": inputs.get("case_id"), "text": inputs.get("text")},
+)
+async def _extract_case(extractor: Extractor, case_id: str, text: str) -> Extraction:
+    """Un caso de evaluacion. Si las trazas estan activas, cada caso es una
+    traza en LangSmith con su id y categoria como metadatos."""
+    return await extractor.extract(text)
+
+
 def build_extractor(kind: str, model: str | None) -> tuple[Extractor, str]:
+    settings = get_settings()
+    # Proyecto aparte, para no mezclar las corridas de evals con el uso normal.
+    if configure_tracing(
+        settings.model_copy(update={"langsmith_project": f"{settings.langsmith_project}-evals"})
+    ):
+        print(f"Trazas en LangSmith: proyecto {settings.langsmith_project}-evals")
     if kind == "rules":
         return FakeExtractor(), "reglas locales"
-    settings = get_settings()
     if not settings.gemini_api_key:
         sys.exit("Falta GEMINI_API_KEY en backend/.env (ver evals/README.md).")
     chosen = model or settings.gemini_model
@@ -142,7 +160,15 @@ async def run(args: argparse.Namespace) -> int:
             await asyncio.sleep(args.delay)  # cuota por minuto del plan gratuito
         start = time.perf_counter()
         try:
-            extraction = await extractor.extract(case["text"])
+            extraction = await _extract_case(
+                extractor,
+                case["id"],
+                case["text"],
+                langsmith_extra={
+                    "metadata": {"case_id": case["id"], "category": case["category"]},
+                    "tags": [case["category"]],
+                },
+            )
             result = score(case, extraction, case["text"])
         except ExtractionError as exc:
             expected_items = len(case["expected"]["items"])

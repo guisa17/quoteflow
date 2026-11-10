@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -40,6 +41,13 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     llm_model: str = "claude-sonnet-5"
 
+    # Trazas en LangSmith (opcional). Apagadas por defecto: con ellas, el texto
+    # del cliente sale hacia un servicio externo. Ver configure_tracing().
+    langsmith_tracing: bool = False
+    langsmith_api_key: str = ""
+    langsmith_project: str = "quoteflow"
+    langsmith_endpoint: str = ""  # vacio = region por defecto (EE. UU.)
+
     app_env: str = "local"
     log_level: str = "INFO"
     cors_origins: str = "http://localhost:5173"
@@ -52,3 +60,25 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def configure_tracing(settings: Settings) -> bool:
+    """Activa las trazas de LangSmith si la configuracion lo pide.
+
+    La SDK de LangSmith (y LangGraph a traves de ella) lee `os.environ`, pero
+    pydantic-settings carga `.env` sin copiarlo al entorno del proceso. Sin
+    este paso, `LANGSMITH_TRACING=true` en `backend/.env` no tendria ningun
+    efecto y nada lo avisaria.
+
+    Devuelve True si las trazas quedaron activas. Sin key no se activan: una
+    traza que no puede enviarse solo produce errores en segundo plano.
+    """
+    if not (settings.langsmith_tracing and settings.langsmith_api_key):
+        os.environ["LANGSMITH_TRACING"] = "false"
+        return False
+    os.environ["LANGSMITH_TRACING"] = "true"
+    os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
+    os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
+    if settings.langsmith_endpoint:
+        os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
+    return True
