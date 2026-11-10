@@ -229,7 +229,7 @@ cd backend
 uv run pytest                 # 213 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
-uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
+uv run mypy app
 ```
 
 ```bash

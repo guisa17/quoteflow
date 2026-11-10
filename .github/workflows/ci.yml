@@ -62,7 +62,7 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Tipos
-        run: uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
+        run: uv run mypy app
 
       - name: Pruebas
         run: uv run pytest -q
