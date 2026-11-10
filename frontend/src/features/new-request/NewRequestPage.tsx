@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, LoaderCircle } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
@@ -180,7 +180,7 @@ export function NewRequestPage() {
             disabled={createRequest.isPending}
             className="bg-ink text-paper inline-flex h-10 items-center gap-2 rounded-md px-5 text-sm font-medium transition-opacity hover:opacity-85 disabled:opacity-50"
           >
-            {createRequest.isPending && <Loader2 aria-hidden className="size-4 animate-spin" />}
+            {createRequest.isPending && <LoaderCircle aria-hidden className="size-4 animate-spin" />}
             Registrar y resolver
           </button>
         </footer>
