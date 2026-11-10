@@ -56,7 +56,7 @@ Se fija un nombre concreto en vez del alias: un alias cambia de modelo sin aviso
 
 | Alternativa | Descartada porque |
 |-------------|-------------------|
-| Claude (Anthropic), previsto en el diseño original | No tiene plan gratuito para la API. Queda como segundo proveedor: `LLM_PROVIDER=anthropic` está reservado |
+| Claude (Anthropic), previsto en el diseño original | No tiene plan gratuito para la API. Queda como segundo proveedor (resuelto en ADR-006) |
 | SDK oficial de Gemini | Una dependencia más para una sola llamada HTTP; la API REST es estable y `httpx` ya estaba en el proyecto |
 | Sin respaldo: si el proveedor falla, `NEEDS_CLARIFICATION` | Con una cuota gratuita, la demo fallaría justo cuando alguien la prueba. Además confunde "el proveedor no respondió" con "el texto es ambiguo" |
 | Respaldo silencioso | Esconde una degradación de calidad: el operador revisaría con menos cuidado una lectura que vino de reglas |
@@ -75,6 +75,10 @@ Se fija un nombre concreto en vez del alias: un alias cambia de modelo sin aviso
 - En el plan gratuito, Google puede usar lo enviado para mejorar sus productos. Se acepta porque todos los datos son ficticios ([ADR-001](ADR-001-datos-ficticios-propios.md)); con datos reales habría que pasar a un plan de pago.
 - La calidad de la extracción depende de un modelo que puede cambiar o retirarse; por eso se fija el nombre y se mide con evaluaciones aparte de la suite.
 - El extractor de reglas sigue siendo rígido: en respaldo, un pedido en lenguaje natural puede terminar en aclaración.
+
+## Enmiendas
+
+- **2026-11-10 — Proveedor intercambiable ([ADR-006](ADR-006-proveedor-llm-intercambiable.md)).** `LLM_PROVIDER` se reemplaza por `LLM_MODEL=proveedor:modelo`. Gemini sigue siendo el valor por defecto y conserva este extractor REST; los demás proveedores, Claude incluido, pasan por LangChain. `ProviderUnavailable` se movió a `app/llm/base.py` porque ahora lo lanzan todos los extractores reales.
 
 ## Verificación
 

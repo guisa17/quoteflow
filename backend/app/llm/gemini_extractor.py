@@ -27,8 +27,15 @@ from langsmith.run_helpers import get_current_run_tree
 from pydantic import ValidationError
 
 from app.domain.models import Extraction
-from app.llm.base import ExtractionError
+from app.llm.base import (
+    ExtractionError,
+    ProviderUnavailable,
+    describe_http_error,
+    is_unavailable_status,
+)
 from app.llm.prompts import build_messages
+
+__all__ = ["GeminiExtractor", "ProviderUnavailable", "RESPONSE_SCHEMA"]
 
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
@@ -78,10 +85,6 @@ RESPONSE_SCHEMA: dict[str, Any] = {
 }
 
 
-class ProviderUnavailable(ExtractionError):
-    """El proveedor no respondio; no es un problema del texto del cliente."""
-
-
 def _annotate_llm_run(model: str, usage: dict[str, Any] | None = None) -> None:
     """Completa la traza de LangSmith, si hay una activa, con el proveedor, el
     modelo y los tokens. `ls_provider` / `ls_model_name` y `usage_metadata`
@@ -99,16 +102,6 @@ def _annotate_llm_run(model: str, usage: dict[str, Any] | None = None) -> None:
                 "total_tokens": int(usage.get("totalTokenCount", 0)),
             }
         )
-
-
-def _describe_http_error(status: int) -> str:
-    if status == 429:
-        return "cuota del proveedor agotada (429)"
-    if status in (401, 403):
-        return f"API key rechazada ({status})"
-    if status >= 500:
-        return f"error del proveedor ({status})"
-    return f"respuesta HTTP {status}"
 
 
 class GeminiExtractor:
@@ -160,12 +153,8 @@ class GeminiExtractor:
             ) from exc
 
         if response.status_code != 200:
-            detail = _describe_http_error(response.status_code)
-            if (
-                response.status_code == 429
-                or response.status_code >= 500
-                or response.status_code in (401, 403)
-            ):
+            detail = describe_http_error(response.status_code)
+            if is_unavailable_status(response.status_code):
                 raise ProviderUnavailable(detail)
             raise ExtractionError(detail)
 

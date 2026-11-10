@@ -1,9 +1,10 @@
 """Corre los casos de `evals/cases.json` contra un extractor y los puntua.
 
-    uv run python -m evals.run                      # Gemini, todos los casos
+    uv run python -m evals.run                      # modelo de LLM_MODEL, todos los casos
     uv run python -m evals.run --extractor rules    # extractor de reglas, sin red
+    uv run python -m evals.run --model anthropic:claude-haiku-5-5
     uv run python -m evals.run --only N1-docenas,M2-parafrasis
-    uv run python -m evals.run --category manipulacion --model gemini-3.5-flash
+    uv run python -m evals.run --category manipulacion --model gemini:gemini-3.5-flash
 
 Metrica principal: acierto de SKU + cantidad por item (meta >= 90 %,
 docs/BUSINESS_CASE.md). Termina con codigo 1 si no se alcanza.
@@ -31,8 +32,9 @@ from app.domain.manipulation import detect_manipulation
 from app.domain.models import Extraction
 from app.domain.repositories import _normalize_reference
 from app.llm.base import ExtractionError, Extractor
+from app.llm.factory import NATIVE_GEMINI, build_llm_extractor, parse_model_spec
 from app.llm.fake_extractor import FakeExtractor
-from app.llm.gemini_extractor import GeminiExtractor
+from app.llm.langchain_extractor import LLMConfigError
 
 EVALS_DIR = Path(__file__).resolve().parent
 ANY = "*"
@@ -136,10 +138,13 @@ def build_extractor(kind: str, model: str | None) -> tuple[Extractor, str]:
         print(f"Trazas en LangSmith: proyecto {settings.langsmith_project}-evals")
     if kind == "rules":
         return FakeExtractor(), "reglas locales"
-    if not settings.gemini_api_key:
-        sys.exit("Falta GEMINI_API_KEY en backend/.env (ver evals/README.md).")
-    chosen = model or settings.gemini_model
-    return GeminiExtractor(settings.gemini_api_key, chosen, settings.llm_timeout_seconds), chosen
+    try:
+        spec = parse_model_spec(settings, model)
+        if spec.provider == NATIVE_GEMINI and not (settings.llm_api_key or settings.gemini_api_key):
+            sys.exit("Falta GEMINI_API_KEY (o LLM_API_KEY) en backend/.env (ver evals/README.md).")
+        return build_llm_extractor(settings, str(spec)), str(spec)
+    except LLMConfigError as exc:
+        sys.exit(str(exc))
 
 
 async def run(args: argparse.Namespace) -> int:
@@ -158,8 +163,8 @@ async def run(args: argparse.Namespace) -> int:
 
     results: list[CaseResult] = []
     for n, case in enumerate(cases):
-        if n and args.extractor == "gemini":
-            await asyncio.sleep(args.delay)  # cuota por minuto del plan gratuito
+        if n and args.extractor != "rules":
+            await asyncio.sleep(args.delay)  # cuota por minuto de los planes gratuitos
         start = time.perf_counter()
         try:
             extraction = await _extract_case(
@@ -222,7 +227,7 @@ async def run(args: argparse.Namespace) -> int:
     out_dir = EVALS_DIR / "results"
     out_dir.mkdir(exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    out_file = out_dir / f"{stamp}-{label.replace(' ', '-')}.json"
+    out_file = out_dir / f"{stamp}-{label.replace(' ', '-').replace(':', '_')}.json"
     out_file.write_text(
         json.dumps(
             {
@@ -246,8 +251,9 @@ def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="Evalua el extractor contra evals/cases.json")
-    parser.add_argument("--extractor", choices=["gemini", "rules"], default="gemini")
-    parser.add_argument("--model", help="modelo de Gemini (por defecto, GEMINI_MODEL)")
+    # "gemini" se mantiene como alias de "llm" para los comandos ya documentados.
+    parser.add_argument("--extractor", choices=["llm", "gemini", "rules"], default="llm")
+    parser.add_argument("--model", help="proveedor:modelo (por defecto, LLM_MODEL)")
     parser.add_argument("--only", help="ids separados por coma")
     parser.add_argument("--category", help="solo una categoria de casos")
     parser.add_argument("--delay", type=float, default=4.0, help="segundos entre llamadas")

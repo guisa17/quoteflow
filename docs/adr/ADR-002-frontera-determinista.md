@@ -4,7 +4,7 @@
 - **Fecha:** 2026-08-04
 - **Decisor:** Guillermo Salcedo
 - **Afecta a:** arquitectura del grafo, `app/domain`, `app/llm`, estrategia de pruebas, nivel de autonomía
-- **Ampliada por:** [ADR-004](ADR-004-extractor-gemini-con-respaldo.md) (extractor real y respaldo), [ADR-005](ADR-005-manipulacion-a-revision-humana.md) (manipulación a revisión humana)
+- **Ampliada por:** [ADR-004](ADR-004-extractor-gemini-con-respaldo.md) (extractor real y respaldo), [ADR-005](ADR-005-manipulacion-a-revision-humana.md) (manipulación a revisión humana), [ADR-006](ADR-006-proveedor-llm-intercambiable.md) (proveedor intercambiable, misma frontera)
 
 ---
 

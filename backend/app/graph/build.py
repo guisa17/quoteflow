@@ -14,31 +14,21 @@ from app.config import Settings, get_settings
 from app.graph import nodes, routing
 from app.graph.state import QuoteState
 from app.llm.base import Extractor
+from app.llm.factory import build_llm_extractor
 from app.llm.fake_extractor import FakeExtractor
 from app.llm.fallback import FallbackExtractor
-from app.llm.gemini_extractor import GeminiExtractor
 
 
 def _resolve_extractor(settings: Settings) -> Extractor:
     """`fake`: extractor de reglas, sin red (tests y demo sin key).
 
-    `real` + `gemini`: Gemini con respaldo explicito al extractor de reglas
-    cuando el proveedor no responde; la procedencia queda en la auditoria.
-
-    `real` + `anthropic`: aun no construido. Falla explicito en vez de
-    degradar en silencio."""
+    `real`: el modelo de `LLM_MODEL` (ADR-006), con respaldo explicito al
+    extractor de reglas cuando el proveedor no responde; la procedencia queda
+    en la auditoria. Una configuracion imposible (proveedor desconocido, sin
+    paquete, `LLM_MODEL` mal formado) lanza `LLMConfigError` al arrancar."""
     if settings.llm_mode == "fake":
         return FakeExtractor()
-    if settings.llm_provider == "gemini":
-        primary = GeminiExtractor(
-            api_key=settings.gemini_api_key,
-            model=settings.gemini_model,
-            timeout_seconds=settings.llm_timeout_seconds,
-        )
-        return FallbackExtractor(primary=primary, fallback=FakeExtractor())
-    raise NotImplementedError(
-        "LLM_PROVIDER=anthropic aun no tiene extractor; usa LLM_PROVIDER=gemini."
-    )
+    return FallbackExtractor(primary=build_llm_extractor(settings), fallback=FakeExtractor())
 
 
 def build_graph(

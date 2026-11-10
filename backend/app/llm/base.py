@@ -1,9 +1,10 @@
 """Frontera del LLM (ADR-002, T8).
 
 Protocolo minimo que cualquier extractor -- real o de pruebas -- debe cumplir.
-Lo implementan `FakeExtractor` (reglas, sin red), `GeminiExtractor` (real) y
-`FallbackExtractor` (Gemini con respaldo explicito a reglas). Aqui solo vive
-el contrato y el tipo de error que comparten.
+Lo implementan `FakeExtractor` (reglas, sin red), `GeminiExtractor` (Gemini
+por REST), `LangChainExtractor` (cualquier otro proveedor, ADR-006) y
+`FallbackExtractor` (el extractor real con respaldo explicito a reglas). Aqui
+solo viven el contrato y los tipos de error que comparten.
 
 Un extractor:
 - Recibe `raw_text`, el texto del cliente. Es entrada no confiable (BR-17):
@@ -34,6 +35,30 @@ class ExtractionError(Exception):
     como un fallo del propio proveedor (red, timeout, respuesta vacia). RF-05
     trata ambos casos igual: un reintento, y si persiste, fallo recuperable.
     """
+
+
+class ProviderUnavailable(ExtractionError):
+    """El proveedor no respondio (sin key, cuota agotada, 5xx, red, timeout).
+
+    No dice nada sobre el texto del cliente, asi que `FallbackExtractor` puede
+    recurrir al extractor de reglas (RF-10). Lo lanzan todos los extractores
+    reales, sea cual sea el proveedor."""
+
+
+def describe_http_error(status: int) -> str:
+    if status == 429:
+        return "cuota del proveedor agotada (429)"
+    if status in (401, 403):
+        return f"API key rechazada ({status})"
+    if status >= 500:
+        return f"error del proveedor ({status})"
+    return f"respuesta HTTP {status}"
+
+
+def is_unavailable_status(status: int) -> bool:
+    """Estados que indican un proveedor caido o inaccesible, no un problema
+    de la salida: cuota, credenciales y errores del servidor."""
+    return status == 429 or status in (401, 403) or status >= 500
 
 
 @runtime_checkable

@@ -14,6 +14,21 @@ dependencies = [
     "pydantic-settings>=2.6",
     "httpx>=0.27",
     "langsmith>=0.10",
+    "langchain>=1.0",
+]
+
+[project.optional-dependencies]
+openai = [
+    "langchain-openai>=1.7.4",
+]
+anthropic = [
+    "langchain-anthropic>=1.7.10",
+]
+google = [
+    "langchain-google-genai>=4.4.3",
+]
+ollama = [
+    "langchain-ollama>=1.1.0",
 ]
 
 [dependency-groups]
