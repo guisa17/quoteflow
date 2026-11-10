@@ -5,7 +5,7 @@
 De una solicitud de cotización en texto libre a un borrador auditable, con cálculo determinista y pausa real para decisión humana.
 
 > **Autor:** Guillermo Salcedo. Los datos de demostración, incluida la empresa Ferrocima Industrial, son ficticios.
-> **Estado:** completo. Backend (209 tests) + API HTTP + frontend (26 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
+> **Estado:** completo. Backend (213 tests) + API HTTP + frontend (26 tests). Lee el texto con Gemini o, sin key, con un extractor de reglas; las pruebas no dependen de un LLM externo. Pendientes conocidos en [ROADMAP.md](docs/ROADMAP.md); evidencia con salidas reales en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
 
 ---
 
@@ -204,13 +204,29 @@ La calidad de la lectura se mide con evaluaciones locales contra el modelo real 
 
 El modelo solo convierte el texto en ítems, cantidades, sede, fecha y descuento pedido, con salida JSON forzada por esquema. Precio, stock y política se siguen calculando con reglas deterministas. Si Gemini no responde (cuota agotada, error 5xx, red o key ausente), la solicitud se lee con el extractor de reglas y el folio lo indica en "Lo que se entendió del texto" y en la auditoría.
 
+## Trazas con LangSmith (opcional)
+
+Con `LANGSMITH_TRACING=true` y `LANGSMITH_API_KEY` en `backend/.env`, cada solicitud queda registrada en [LangSmith](https://smith.langchain.com) como un árbol de pasos:
+
+```
+quoteflow.registro                 (thread_id, customer_id)
+├── ingest
+├── extract
+│   └── extractor                  (etiqueta "respaldo" si Gemini no respondió)
+│       └── gemini.extract  [llm]  modelo, tokens, latencia, entrada y salida
+├── resolve_customer … evaluate_policy
+└── human_approval                 (la decisión posterior es otra traza del mismo hilo)
+```
+
+El registro y la decisión de una misma solicitud comparten `thread_id`, así que aparecen juntos en la vista de hilos. Las evals, si las trazas están activas, van a un proyecto aparte (`quoteflow-evals`), con cada caso etiquetado por su categoría. Las pruebas nunca envían trazas.
+
 ## Pruebas
 
 La suite del backend corre **sin acceso a un LLM externo** (`LLM_MODE=fake`), según el requisito RF-10. Las pruebas del extractor de Gemini simulan las respuestas del proveedor con `httpx.MockTransport`.
 
 ```bash
 cd backend
-uv run pytest                 # 209 tests: unitarias + integración + API
+uv run pytest                 # 213 tests: unitarias + integración + API
 uv run pytest tests/unit      # solo reglas de dominio, no requiere Postgres
 uv run ruff check .
 uv run mypy app/domain app/graph/state.py app/llm app/api app/config.py
