@@ -135,8 +135,8 @@ Yellow: the model. Blue: deterministic domain. Purple: human decision. Dashed ar
 | What | Result |
 |------|--------|
 | Backend: unit, integration with real Postgres, API | **241** tests, no LLM calls |
-| Frontend: demo engine and parity with the backend data | **35** tests |
-| End-to-end in a browser (desktop and mobile) | **10** Playwright runs |
+| Frontend: demo engine, parity with the backend data, inbox URL | **47** tests |
+| End-to-end in a browser (desktop and mobile) | **12** Playwright runs |
 | **Reading with the real model**: 22 cases (scenarios, natural language, ambiguous, manipulation) | **31/31 items (100%)**, 22/22 cases. Business target: ≥ 90% |
 | The same evals with the rules extractor (the fallback) | 22/31 items (71%): fine for the scenarios, not for natural language |
 | CI with three required jobs; `main` only accepts green PRs | Backend · Frontend · E2E |

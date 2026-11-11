@@ -14,7 +14,7 @@ Criterio de handoff: **otra persona puede continuar desde aquí sin reconstruir 
 |---|---|
 | **Fases** | **0 a 4 completas** ([ROADMAP.md](../ROADMAP.md)). La Fase 4 agregó LLM real, detección de manipulación, CI, evals, trazas y la nueva interfaz |
 | **Repositorio** | [github.com/guisa17/quoteflow](https://github.com/guisa17/quoteflow), `main` protegida: solo entra por pull request con el CI en verde |
-| **Aplicación** | Backend (241 tests) + API HTTP + frontend (35 tests). Lee el texto con cualquier LLM (`LLM_MODEL=proveedor:modelo`, Gemini por defecto) o, sin key, con un extractor de reglas |
+| **Aplicación** | Backend (241 tests) + API HTTP + frontend (47 tests). Lee el texto con cualquier LLM (`LLM_MODEL=proveedor:modelo`, Gemini por defecto) o, sin key, con un extractor de reglas |
 | **Versiones** | `v0.4.0` (fases 0-3) · `v0.5.0` (Fase 4) · `v0.5.1` (endurecimiento del proceso). Releases en GitHub |
 
 ## Qué está construido
@@ -52,7 +52,7 @@ Las decisiones de arquitectura están en los ADRs. Las de proceso, en [CLAUDE.md
 | Qué | Cómo | Resultado |
 |-----|------|-----------|
 | Suite de backend | `pytest` en el CI, con Postgres 16 real | ✅ **241/241** (también en local, E-14 y E-15) |
-| Frontend | `pnpm test` · `typecheck` · `build` | ✅ **35/35**, limpio |
+| Frontend | `pnpm test` · `typecheck` · `build` | ✅ **47/47**, limpio |
 | **End-to-end en navegador** | Playwright, 5 recorridos en escritorio y en móvil, también en el CI | ✅ **10/10**; la prueba del 404 falla si se quita la ruta comodín |
 | Lint, formato y tipos | `ruff` · `ruff format` · `mypy app` | ✅ limpios (31 archivos con mypy) |
 | **Extractor con el modelo real** | `python -m evals.run`, 22 casos en 4 categorías | ✅ **31/31 ítems (100 %), 22/22 casos.** Meta ≥ 90 % |

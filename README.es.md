@@ -79,7 +79,7 @@ QuoteFlow prepara borradores. Nunca envía nada al cliente.
 ## Evidencia
 
 - **Evals con el modelo real:** 31/31 ítems en 22 casos (pedidos estándar, lenguaje natural, textos ambiguos, manipulación). El extractor de reglas logra 22/31 (71 %). [Resultados](backend/evals/README.md)
-- **Pruebas:** 241 de backend (unitarias, integración con Postgres y API), 35 de frontend y 10 end-to-end con Playwright. Ninguna llama a un LLM.
+- **Pruebas:** 241 de backend (unitarias, integración con Postgres y API), 47 de frontend y 12 end-to-end con Playwright. Ninguna llama a un LLM.
 - **Proceso:** `main` solo acepta PRs con tres jobs de CI en verde. Ejecutar el sistema de verdad encontró errores que la suite no veía; están registrados con su salida real en [EVIDENCE.md](docs/proceso/EVIDENCE.md).
 
 **Stack:** LangGraph · FastAPI · Postgres · React 19 · TypeScript · Tailwind · LangSmith

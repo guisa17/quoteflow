@@ -79,7 +79,7 @@ QuoteFlow prepares drafts. It never sends anything to the customer.
 ## Evidence
 
 - **Real-model evals:** 31/31 items across 22 cases (standard orders, natural language, ambiguous text, manipulation). The rules fallback gets 22/31 (71%). [Results](backend/evals/README.md)
-- **Tests:** 241 backend (unit, Postgres integration, API), 35 frontend, 10 end-to-end with Playwright. None call an LLM.
+- **Tests:** 241 backend (unit, Postgres integration, API), 47 frontend, 12 end-to-end with Playwright. None call an LLM.
 - **Process:** `main` only accepts PRs with three green CI jobs. Running the real system found bugs the suite missed; they're logged with real output in [EVIDENCE.md](docs/proceso/EVIDENCE.md).
 
 **Stack:** LangGraph · FastAPI · Postgres · React 19 · TypeScript · Tailwind · LangSmith

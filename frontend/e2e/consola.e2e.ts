@@ -25,6 +25,23 @@ test('la bandeja muestra los casos de demostración y los pendientes', async ({ 
   await expect(folios).toHaveCount(8)
 })
 
+test('la vista de la bandeja vive en la URL con una sola convención', async ({ page }) => {
+  // Una URL antigua, con el código interno de la API, se reescribe sin cambiar la vista.
+  await page.goto('/?vista=todas&estado=BLOCKED')
+  await expect(page).toHaveURL(/\/\?estado=detenida$/)
+  await expect(page.getByRole('tab', { name: /Todas/ })).toHaveAttribute('aria-selected', 'true')
+
+  // Filtrar escribe solo el estado; Pendiente de aprobación es la pestaña Por decidir.
+  await page.getByRole('combobox', { name: 'Filtrar por estado' }).click()
+  await page.getByRole('option', { name: /Pendiente de aprobación/ }).click()
+  await expect(page).toHaveURL(/\/\?vista=por-decidir$/)
+  await expect(page.getByRole('tab', { name: /Por decidir/ })).toHaveAttribute('aria-selected', 'true')
+
+  // Recargar conserva la vista.
+  await page.reload()
+  await expect(page.getByRole('tab', { name: /Por decidir/ })).toHaveAttribute('aria-selected', 'true')
+})
+
 test('un pedido estándar se resuelve solo, con las cifras exactas de S1', async ({ page }) => {
   await registrar(page, 'Pedido estándar')
   await expect(page.getByText('Borrador listo').first()).toBeVisible()
