@@ -13,12 +13,12 @@ import { ACTION_PAST, clearRecentDecisions, readRecentDecisions } from '@/lib/re
 import { cn } from '@/lib/utils'
 import type { DecisionAction, Outcome, RequestSummary } from '@/types/api'
 
-/** Dos vistas, como en las bandejas de aprobación habituales: la cola de
- * trabajo (lo que espera tu decisión) y el archivo completo. Lo que decides
- * sale de la cola; el estado se filtra aparte, junto al buscador. */
-type View = 'pending' | 'all'
+import { type InboxView, inboxSearch, parseInboxParams, resolveView } from './inboxUrl'
 
-const VIEW_PARAM: Record<View, string> = { pending: 'por-decidir', all: 'todas' }
+/* Dos vistas, como en las bandejas de aprobación habituales: la cola de
+ * trabajo (lo que espera tu decisión) y el archivo completo. Lo que decides
+ * sale de la cola; el estado se filtra aparte, junto al buscador. La forma de
+ * la URL está en `inboxUrl.ts`. */
 
 const ACTION_VERB: Record<DecisionAction, string> = {
   APPROVE: 'Aprobaste',
@@ -43,10 +43,6 @@ function byAttention(a: RequestSummary, b: RequestSummary): number {
   return rank !== 0 ? rank : b.updated_at.localeCompare(a.updated_at)
 }
 
-function parseStatus(value: string | null): Outcome | null {
-  return value && (OUTCOME_ORDER as string[]).includes(value) ? (value as Outcome) : null
-}
-
 export function InboxPage() {
   const navigate = useNavigate()
   const { data, isPending, isError, error, refetch } = useRequestList()
@@ -65,22 +61,23 @@ export function InboxPage() {
   const pendingCount = counts.PENDING_APPROVAL
 
   // La vista vive en la URL: el botón Atrás y los enlaces la conservan.
-  // Sin elección explícita, abre la cola si hay algo por decidir.
-  const status = parseStatus(params.get('estado'))
-  const viewParam = params.get('vista')
-  const view: View =
-    status || viewParam === VIEW_PARAM.all
-      ? 'all'
-      : viewParam === VIEW_PARAM.pending || isPending || pendingCount > 0
-        ? 'pending'
-        : 'all'
+  const urlState = parseInboxParams(params)
+  const status = urlState.status
+  const view = resolveView(urlState, pendingCount, isPending)
 
-  function setView(next: View) {
-    setParams({ vista: VIEW_PARAM[next] }, { replace: true })
+  function setView(next: InboxView) {
+    setParams(inboxSearch({ view: next, status: null }), { replace: true })
   }
   function setStatus(next: Outcome | null) {
-    setParams(next ? { vista: VIEW_PARAM.all, estado: next } : { vista: VIEW_PARAM.all }, { replace: true })
+    setParams(inboxSearch({ view: 'all', status: next }), { replace: true })
   }
+
+  // Una URL antigua o redundante se reescribe a su forma canónica, sin
+  // cambiar lo que se ve.
+  const canonical = new URLSearchParams(inboxSearch(urlState)).toString()
+  useEffect(() => {
+    if (canonical !== params.toString()) setParams(canonical, { replace: true })
+  }, [canonical, params, setParams])
 
   const rows = useMemo(
     () =>

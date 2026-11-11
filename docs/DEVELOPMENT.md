@@ -59,8 +59,8 @@ uv run ruff check . && uv run mypy app
 uv run python -m evals.run    # evals against the LLM_MODEL model (needs its key)
 
 cd ../frontend
-pnpm test                     # 35 demo-engine tests
-pnpm test:e2e                 # 10 Playwright journeys
+pnpm test                     # 47 tests (demo engine and inbox URL)
+pnpm test:e2e                 # 12 Playwright runs (6 journeys, desktop and mobile)
 pnpm typecheck && pnpm build
 pnpm capturas                 # regenerate the screenshots in docs/img/
 ```
