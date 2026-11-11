@@ -7,6 +7,8 @@ import { defineConfig, searchForWorkspaceRoot } from 'vite'
 const seedDir = path.resolve(import.meta.dirname, '../backend/app/data')
 
 export default defineConfig({
+  // GitHub Pages sirve la demo en /quoteflow/; en local y en el CI, en la raiz.
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

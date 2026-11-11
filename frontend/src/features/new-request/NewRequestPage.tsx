@@ -143,12 +143,18 @@ export function NewRequestPage() {
             <div className="mt-1 flex justify-between gap-4 text-xs">
               {touched && !rawTextValid ? (
                 <p className="text-red-ink font-semibold">Describe el pedido con al menos {MIN_TEXT} caracteres.</p>
+              ) : API_MODE === 'mock' ? (
+                <p className="text-ink-faint">
+                  En la demo el pedido se lee con reglas: usa códigos como{' '}
+                  <span className="font-figures">HX-200</span> y cantidades en cifras. El sistema completo lo lee
+                  con un LLM y entiende frases como «dos docenas».
+                </p>
               ) : (
                 <p className="text-ink-faint">
                   Las referencias de producto tienen la forma <span className="font-figures">HX-200</span>.
                 </p>
               )}
-              <span className="font-figures text-ink-faint">{rawText.length.toLocaleString('es-PE')}/10 000</span>
+              <span className="font-figures text-ink-faint shrink-0 whitespace-nowrap">{rawText.length.toLocaleString('es-PE')}/10 000</span>
             </div>
           </div>
 

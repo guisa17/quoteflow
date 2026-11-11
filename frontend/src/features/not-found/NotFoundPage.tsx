@@ -49,7 +49,7 @@ export function RouteErrorPage() {
         <h1 className="mt-4 font-semibold">Algo salió mal al mostrar esta pantalla.</h1>
         <p className="text-ink-soft mt-1 text-sm">{detail}</p>
         <a
-          href="/"
+          href={import.meta.env.BASE_URL}
           className="bg-ink text-paper mt-5 inline-flex h-9 items-center rounded-md px-3 text-sm font-semibold"
         >
           Volver a la bandeja

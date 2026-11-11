@@ -9,7 +9,7 @@ An LLM reads it. Plain, tested code checks the catalog, stock, price and policy.
 [![Release](https://img.shields.io/github/v/release/guisa17/quoteflow?label=release)](https://github.com/guisa17/quoteflow/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[Español](README.es.md) · [Architecture](docs/ARCHITECTURE.md) · [Run it](docs/DEVELOPMENT.md)
+**[Live demo](https://guisa17.github.io/quoteflow/)** · [Español](README.es.md) · [Architecture](docs/ARCHITECTURE.md) · [Run it](docs/DEVELOPMENT.md)
 
 <img src="docs/img/flujo-aprobacion.gif" alt="An order over USD 10,000 stops for approval; a person approves it and the draft quote is generated" width="100%">
 
@@ -57,6 +57,8 @@ flowchart LR
     style human fill:transparent,stroke:#7c3aed,stroke-dasharray:5 4
 ```
 
+The model never sees inventory or policy, and any price, stock or customer tier it returns is discarded ([ADR-002](docs/adr/ADR-002-frontera-determinista.md)).
+
 Every request ends in one of five outcomes:
 
 | Outcome | When |
@@ -64,16 +66,14 @@ Every request ends in one of five outcomes:
 | **Draft ready** | Everything valid and within policy |
 | **Needs clarification** | Something essential is missing, like a quantity. It asks instead of guessing |
 | **Blocked** | Unknown SKU or not enough stock |
-| **Pending approval** | Net over USD 10,000, a discount above the customer's tier, an unregistered customer, or text that tries to give the system orders |
+| **Pending approval** | Net over USD 10,000, a discount above the customer's tier, an unregistered customer, or text that tries to give the system orders, which can't change a price ([ADR-005](docs/adr/ADR-005-manipulacion-a-revision-humana.md)) |
 | **Rejected** | Discount above the 20% hard ceiling, which nobody can approve |
 
 QuoteFlow prepares drafts. It never sends anything to the customer.
 
-## Key decisions
+## Under the hood
 
-- **The LLM reads, it never decides.** Its output is forced into a schema and validated; any price, stock or customer tier it returns is discarded. ([ADR-002](docs/adr/ADR-002-frontera-determinista.md))
 - **Human approval survives a restart.** The LangGraph run pauses with `interrupt()` and its state lives in Postgres. Decisions are idempotent; a contradictory one gets `409`. ([ADR-003](docs/adr/ADR-003-persistencia-checkpointer.md))
-- **Manipulation goes to a person.** An order that tries to instruct the system can't change a price, and it's flagged for review. ([ADR-005](docs/adr/ADR-005-manipulacion-a-revision-humana.md))
 - **Any LLM, with a visible fallback.** `LLM_MODEL=provider:model` picks Gemini, Claude, OpenAI, Ollama and others. If the provider is down, a rules extractor takes over and the quote says so. ([ADR-004](docs/adr/ADR-004-extractor-gemini-con-respaldo.md), [ADR-006](docs/adr/ADR-006-proveedor-llm-intercambiable.md))
 
 ## Evidence
@@ -86,7 +86,9 @@ QuoteFlow prepares drafts. It never sends anything to the customer.
 
 ## Try it
 
-The console has a demo mode that runs the same rules in the browser with sample data. No Docker, database or API keys. The demo reads orders with the rules extractor, not an LLM.
+**[guisa17.github.io/quoteflow](https://guisa17.github.io/quoteflow/)**: the same rules running in your browser with sample data, no sign-up. The demo reads orders with the rules extractor, not an LLM, so use product codes like `HX-200` and numeric quantities. The sample cases cover all five outcomes.
+
+To run the demo locally (no Docker, database or API keys):
 
 ```bash
 git clone https://github.com/guisa17/quoteflow.git
