@@ -9,7 +9,7 @@ Un LLM lo lee. Código determinista y probado revisa catálogo, stock, precio y 
 [![Release](https://img.shields.io/github/v/release/guisa17/quoteflow?label=release)](https://github.com/guisa17/quoteflow/releases)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
 
-[English](README.md) · [Arquitectura](docs/ARCHITECTURE.md) (en inglés) · [Ejecutarlo](docs/DEVELOPMENT.md) (en inglés)
+**[Demo en vivo](https://guisa17.github.io/quoteflow/)** · [English](README.md) · [Arquitectura](docs/ARCHITECTURE.md) (en inglés) · [Ejecutarlo](docs/DEVELOPMENT.md) (en inglés)
 
 <img src="docs/img/flujo-aprobacion.gif" alt="Un pedido sobre USD 10 000 se detiene para aprobación; una persona lo aprueba y se genera el borrador" width="100%">
 
@@ -57,6 +57,8 @@ flowchart LR
     style persona fill:transparent,stroke:#7c3aed,stroke-dasharray:5 4
 ```
 
+El modelo nunca ve el inventario ni la política, y cualquier precio, stock o nivel de cliente que devuelva se descarta ([ADR-002](docs/adr/ADR-002-frontera-determinista.md)).
+
 Cada solicitud termina en uno de cinco resultados:
 
 | Resultado | Cuándo |
@@ -64,16 +66,14 @@ Cada solicitud termina en uno de cinco resultados:
 | **Borrador listo** | Todo válido y dentro de política |
 | **Necesita aclaración** | Falta algo esencial, como la cantidad. Pregunta en vez de inventar |
 | **Detenida** | SKU inexistente o stock insuficiente |
-| **Pendiente de aprobación** | Neto sobre USD 10 000, descuento fuera del nivel del cliente, cliente no registrado, o un texto que intenta dar órdenes al sistema |
+| **Pendiente de aprobación** | Neto sobre USD 10 000, descuento fuera del nivel del cliente, cliente no registrado, o un texto que intenta dar órdenes al sistema, que no puede cambiar un precio ([ADR-005](docs/adr/ADR-005-manipulacion-a-revision-humana.md)) |
 | **Rechazada** | Descuento sobre el techo duro del 20 %, que nadie puede aprobar |
 
 QuoteFlow prepara borradores. Nunca envía nada al cliente.
 
-## Decisiones clave
+## Por dentro
 
-- **El LLM lee, nunca decide.** Su salida está forzada por un esquema y se valida; cualquier precio, stock o nivel de cliente que devuelva se descarta. ([ADR-002](docs/adr/ADR-002-frontera-determinista.md))
 - **La aprobación humana sobrevive a un reinicio.** El grafo de LangGraph se pausa con `interrupt()` y su estado vive en Postgres. Las decisiones son idempotentes; una contradictoria recibe `409`. ([ADR-003](docs/adr/ADR-003-persistencia-checkpointer.md))
-- **La manipulación va a una persona.** Un pedido que intenta dar órdenes no puede cambiar un precio y queda marcado para revisión. ([ADR-005](docs/adr/ADR-005-manipulacion-a-revision-humana.md))
 - **Cualquier LLM, con respaldo visible.** `LLM_MODEL=proveedor:modelo` elige Gemini, Claude, OpenAI, Ollama y otros. Si el proveedor cae, un extractor de reglas toma el relevo y el folio lo dice. ([ADR-004](docs/adr/ADR-004-extractor-gemini-con-respaldo.md), [ADR-006](docs/adr/ADR-006-proveedor-llm-intercambiable.md))
 
 ## Evidencia
@@ -86,7 +86,9 @@ QuoteFlow prepara borradores. Nunca envía nada al cliente.
 
 ## Pruébalo
 
-La consola tiene un modo demo que corre las mismas reglas en el navegador con datos de ejemplo. No necesita Docker, base de datos ni API keys. En la demo, el pedido se lee con el extractor de reglas, no con un LLM.
+**[guisa17.github.io/quoteflow](https://guisa17.github.io/quoteflow/)**: las mismas reglas corriendo en tu navegador con datos de ejemplo, sin registro. En la demo el pedido se lee con el extractor de reglas, no con un LLM, así que usa códigos como `HX-200` y cantidades en cifras. Los casos de ejemplo cubren los cinco resultados.
+
+Para correr la demo en local (sin Docker, base de datos ni API keys):
 
 ```bash
 git clone https://github.com/guisa17/quoteflow.git
